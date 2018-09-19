@@ -2,6 +2,7 @@
 module.exports = function (app) {
   // API middlewares go here
   app.use('/api/v1/test', require('./api/v1/test'))
+  app.use('/api/v1/user', require('./api/v1/user'))
 
   // auth middleware go here
 
