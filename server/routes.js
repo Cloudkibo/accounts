@@ -5,6 +5,7 @@ module.exports = function (app) {
   app.use('/api/v1/user', require('./api/v1/user'))
 
   // auth middleware go here
+  app.use('/auth', require('./auth'))
 
   app.route('/:url(api|auth)/*').get((req, res) => {
     res.status(404).send({url: `${req.originalUrl} not found`})

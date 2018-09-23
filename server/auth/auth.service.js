@@ -27,7 +27,7 @@ function isAuthenticated () {
     })
     // Attach user to request
     .use((req, res, next) => {
-      Users.findOne({fbId: req.user._id}, (err, user) => {
+      Users.findOne({_id: req.user._id}, (err, user) => {
         if (err) {
           return res.status(500)
             .json({status: 'failed', description: 'Internal Server Error'})
@@ -41,6 +41,21 @@ function isAuthenticated () {
         next()
       })
     })
+}
+
+// eslint-disable-next-line no-unused-vars
+function isAuthorizedWebHookTrigger () {
+  return compose().use((req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
+      req.socket.remoteAddress || req.connection.socket.remoteAddress
+    logger.serverLog(TAG, req.ip)
+    logger.serverLog(TAG, ip)
+    logger.serverLog(TAG, 'This is middleware')
+    logger.serverLog(TAG, req.body)
+    // We need to change it to based on the requestee app
+    if (ip === '165.227.130.222') next()
+    else res.send(403)
+  })
 }
 
 /**
@@ -76,10 +91,11 @@ function setTokenCookie (req, res) {
       description: 'Something went wrong, please try again.'
     })
   }
-  const token = signToken(req.user.fbId)
+  const token = signToken(req.user._id)
   logger.serverLog(TAG, `Here is the signed token: ${token}`)
   res.cookie('token', token)
-  return res.redirect('/')
+  // We will change it to based on the request of project
+  return res.redirect('165.227.130.222')
 }
 
 exports.isAuthenticated = isAuthenticated

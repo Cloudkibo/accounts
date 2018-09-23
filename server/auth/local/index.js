@@ -15,14 +15,6 @@ router.post('/', function (req, res, next) {
       req.user = user
       return auth.setTokenCookie(req, res)
     })(req, res, next)
-  } else if (req.body.phone) {
-    passport.authenticate('phone-local', function (err, user, info) {
-      var error = err || info
-      if (error) return res.status(501).json({status: 'failed', description: 'Internal Server Error'})
-      if (!user) return res.json(404).json({message: 'User Not Found'})
-      req.user = user
-      return auth.setTokenCookie(req, res)
-    })(req, res, next)
   }
 })
 
