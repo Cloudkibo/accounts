@@ -6,7 +6,7 @@ const router = express.Router()
 
 const logger = require('../components/logger')
 const config = require('../config/environment')
-const Users = require('./../api/v1/users/users.model')
+const Users = require('./../api/v1/user/user.model')
 
 const TAG = 'auth/index.js'
 
