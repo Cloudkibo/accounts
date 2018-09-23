@@ -17,7 +17,7 @@ require('./local/passport').setup(Users, config)
 // router.use('/facebook', require('./facebook'))
 router.use('/local', require('./local'))
 
-router.use('/scripts/jsonp').get((req, res) => {
+router.get('/scripts/jsonp', (req, res) => {
   logger.serverLog(TAG, req.query.callback)
   logger.serverLog(TAG, req.cookies)
 

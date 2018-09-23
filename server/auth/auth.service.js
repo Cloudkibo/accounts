@@ -4,7 +4,7 @@ const config = require('../config/environment')
 const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
 const compose = require('composable-middleware')
-const Users = require('../api/v1/users/users.model')
+const Users = require('../api/v1/user/user.model')
 const validateJwt = expressJwt({secret: config.secrets.session})
 
 const logger = require('../components/logger')
