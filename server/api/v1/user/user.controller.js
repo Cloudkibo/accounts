@@ -24,12 +24,32 @@ exports.index = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
-  dataLayer.createUserObject(req.body.name, req.body.password, req.body.email, req.body.uiMode)
+  let isTeam = logicLayer.isTeamAccount(req.body)
+
+  logicLayer
+    .isEmailAndDomainFound(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
-    })
-    .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      if (result.email) {
+        return res.status(422).json({
+          status: 'failed',
+          description: 'This email address already has an account on KiboPush. Contact support for more information.'
+        })
+      } else if (result.domain) {
+        return res.status(422).json({
+          status: 'failed',
+          description: 'This workspace name already has an account on KiboPush. Contact support for more information.'
+        })
+      } else {
+        let payload = logicLayer.prepareUserPayload(req.body, isTeam)
+        dataLayer.createUserObject(payload)
+          .then(result => {
+
+            // res.status(200).json({status: 'success', payload: result})
+          })
+          .catch(err => {
+            res.status(500).json({status: 'failed', payload: err})
+          })
+      }
     })
 }
 
@@ -80,7 +100,7 @@ exports.delete = function (req, res) {
     })
 }
 
-exports.enableDelete = function(req, res) {
+exports.enableDelete = function (req, res) {
   logger.serverLog(TAG, 'Enabling GDPR Delete')
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
@@ -94,7 +114,7 @@ exports.enableDelete = function(req, res) {
     })
 }
 
-exports.cancelDeletion = function(req, res) {
+exports.cancelDeletion = function (req, res) {
   logger.serverLog(TAG, 'Disabling GDPR Delete')
 
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}

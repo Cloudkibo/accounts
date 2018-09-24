@@ -19,6 +19,10 @@ exports.userPayload = {
       type: 'string',
       required: true
     },
+    domain: {
+      type: 'string',
+      required: false
+    },
     uiMode: {
       type: 'string',
       required: false
