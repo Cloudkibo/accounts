@@ -63,7 +63,7 @@ exports.update = function (req, res) {
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create user controller index')
+  logger.serverLog(TAG, 'Hit the delete user controller index')
 
   let id
   req.params._id
