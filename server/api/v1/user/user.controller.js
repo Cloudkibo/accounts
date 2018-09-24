@@ -79,3 +79,31 @@ exports.delete = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.enableDelete = function(req, res) {
+  logger.serverLog(TAG, 'Enabling GDPR Delete')
+
+  let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
+  dataLayer.updateUserObject(req.params._id, {deleteInformation})
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.cancelDeletion = function(req, res) {
+  logger.serverLog(TAG, 'Disabling GDPR Delete')
+
+  let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
+  dataLayer.updateUserObject(req.params._id, {deleteInformation})
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}

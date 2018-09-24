@@ -47,3 +47,18 @@ exports.updateUserPayload = {
     }
   }
 }
+
+
+exports.enableGDPRDelete = {
+  type: 'object',
+  properties: {
+    delete_option: {
+      type: 'string',
+      required: true
+    },
+    deletion_date: {
+      type: 'string',
+      required: true
+    }
+  }
+}
