@@ -26,11 +26,10 @@ router.get('/:_id/disconnect',
   controller.disconnect)
 
 router.get('/:_id/greetingText',
-  controller.getGreetingText) 
+  controller.getGreetingText)
 
 router.put('/:_id/greetingText',
   validate({body: validationSchema.updateGreetingText}),
   controller.setGreetingText)
-  
 
 module.exports = router
