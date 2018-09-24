@@ -8,9 +8,9 @@ const util = require('util')
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find subscriber controller index')
 
-  dataLayer.findOnePageObject(id)
-    .then(pageObject => {
-      res.status(200).json({status: 'success', payload: pageObject})
+  dataLayer.findOnePageObject(req.params._id)
+    .then(subscriberObject => {
+      res.status(200).json({status: 'success', payload: subscriberObject})
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
