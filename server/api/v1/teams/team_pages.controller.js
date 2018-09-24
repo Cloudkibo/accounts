@@ -10,10 +10,10 @@ exports.index = function (req, res) {
   dataLayer
     .findAllTeamObjects()
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -26,10 +26,10 @@ exports.create = function (req, res) {
       req.body.companyId,
       req.body.pageId)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -41,10 +41,10 @@ exports.delete = function (req, res) {
     req.body.companyId,
     req.body.pageId)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }

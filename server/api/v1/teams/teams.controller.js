@@ -11,10 +11,10 @@ exports.index = function (req, res) {
   dataLayer
     .findAllTeamObjects()
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -24,10 +24,10 @@ exports.findOne = function (req, res) {
   dataLayer
     .findOneTeamObject(req.params.id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -43,10 +43,10 @@ exports.create = function (req, res) {
       req.body.teamPages,
       req.body.teamPagesIds)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -57,15 +57,15 @@ exports.update = function (req, res) {
   if (Object.keys(payload).length > 0) {
     dataLayer.updateTeamObject(req.params.id, payload)
       .then(result => {
-        res.status(200).json({status: 'success', payload: result})
+        return res.status(200).json({status: 'success', payload: result})
       })
       .catch(err => {
         logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
-        res.status(500).json({status: 'failed', payload: err})
+        return res.status(500).json({status: 'failed', payload: err})
       })
   } else {
     logger.serverLog(TAG, `No field provided to update`)
-    res.status(500).json({status: 'failed', payload: 'Provide field to update'})
+    return res.status(500).json({status: 'failed', payload: 'Provide field to update'})
   }
 }
 
@@ -74,10 +74,10 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteTeamObject(req.params.id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }

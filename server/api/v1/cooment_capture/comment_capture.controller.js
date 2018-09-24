@@ -10,10 +10,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOnePostObject(req.params.id)
     .then(post => {
-      res.status(200).json({status: 'success', payload: post})
+      return res.status(200).json({status: 'success', payload: post})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -21,10 +21,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create post controller index')
   dataLayer.createPostObject(logicLayer.preparePostPayload(req.body))
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -33,11 +33,11 @@ exports.update = function (req, res) {
 
   dataLayer.updatePostObject(req.params.id, logicLayer.prepareUpdatePostPayload(req.body))
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
@@ -46,10 +46,10 @@ exports.delete = function (req, res) {
 
   dataLayer.deletePostObject(req.params.id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
