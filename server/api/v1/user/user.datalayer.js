@@ -10,13 +10,22 @@ exports.findOneUserObject = (userId) => {
     .exec()
 }
 
-exports.createUserObject = (name, password, email, uiMode) => {
-  let payload = { name, password, email, uiMode }
+exports.createUserObject = (payload) => {
   let obj = new UserModel(payload)
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+exports.findOneUserByEmail = (body) => {
+  return UserModel.findOne({email: body.email})
+    .exec()
+}
+
+exports.findOneUserByDomain = (body) => {
+  return UserModel.findOne({domain: body.domain})
+    .exec()
+}
+
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateUserObject = (userId, payload) => {
   return UserModel.updateOne({_id: userId}, payload)

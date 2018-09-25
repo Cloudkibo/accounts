@@ -4,65 +4,49 @@ By separating it from controller, we are cleaning the code.
 Now the middleware will automatically send error response if the payload fails
 */
 
-exports.userPayload = {
+exports.postPayload = {
   type: 'object',
   properties: {
-    name: {
+    pageId: {
       type: 'string',
       required: true
     },
-    email: {
+    companyId: {
       type: 'string',
       required: true
     },
-    password: {
+    userId: {
       type: 'string',
       required: true
     },
-    domain: {
+    reply: {
       type: 'string',
-      required: false
+      required: true
     },
-    uiMode: {
+    payload: {
+      type: 'object'
+    },
+    includedKeywords: {
       type: 'string',
-      required: false
+      required: true
+    },
+    excludedKeywords: {
+      type: 'string',
+      required: true
     }
   }
 }
 
-exports.updateUserPayload = {
+exports.updatePostPayload = {
   type: 'object',
   properties: {
-    name: {
+    includedKeywords: {
       type: 'string',
       required: false
     },
-    email: {
+    excludedKeywords: {
       type: 'string',
       required: false
-    },
-    password: {
-      type: 'string',
-      required: false
-    },
-    uiMode: {
-      type: 'string',
-      required: false
-    }
-  }
-}
-
-
-exports.enableGDPRDelete = {
-  type: 'object',
-  properties: {
-    delete_option: {
-      type: 'string',
-      required: true
-    },
-    deletion_date: {
-      type: 'string',
-      required: true
     }
   }
 }

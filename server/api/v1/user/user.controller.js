@@ -15,21 +15,41 @@ exports.index = function (req, res) {
 
   dataLayer.findOneUserObject(id)
     .then(userObject => {
-      res.status(200).json({status: 'success', payload: userObject})
+      return res.status(200).json({status: 'success', payload: userObject})
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
-  dataLayer.createUserObject(req.body.name, req.body.password, req.body.email, req.body.uiMode)
+  let isTeam = logicLayer.isTeamAccount(req.body)
+
+  logicLayer
+    .isEmailAndDomainFound(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
-    })
-    .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      if (result.email) {
+        return res.status(422).json({
+          status: 'failed',
+          description: 'This email address already has an account on KiboPush. Contact support for more information.'
+        })
+      } else if (result.domain) {
+        return res.status(422).json({
+          status: 'failed',
+          description: 'This workspace name already has an account on KiboPush. Contact support for more information.'
+        })
+      } else {
+        let payload = logicLayer.prepareUserPayload(req.body, isTeam)
+        dataLayer.createUserObject(payload)
+          .then(result => {
+
+            return res.status(200).json({status: 'success', payload: result})
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+      }
     })
 }
 
@@ -50,15 +70,15 @@ exports.update = function (req, res) {
   if (Object.keys(payload).length > 0) {
     dataLayer.updateUserObject(id, payload)
       .then(result => {
-        res.status(200).json({status: 'success', payload: result})
+        return res.status(200).json({status: 'success', payload: result})
       })
       .catch(err => {
         logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
-        res.status(500).json({status: 'failed', payload: err})
+        return res.status(500).json({status: 'failed', payload: err})
       })
   } else {
     logger.serverLog(TAG, `No field provided to update`)
-    res.status(500).json({status: 'failed', payload: 'Provide field to update'})
+    return res.status(500).json({status: 'failed', payload: 'Provide field to update'})
   }
 }
 
@@ -72,38 +92,38 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteUserObject(id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
-exports.enableDelete = function(req, res) {
+exports.enableDelete = function (req, res) {
   logger.serverLog(TAG, 'Enabling GDPR Delete')
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
   dataLayer.updateUserObject(req.params._id, {deleteInformation})
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
-exports.cancelDeletion = function(req, res) {
+exports.cancelDeletion = function (req, res) {
   logger.serverLog(TAG, 'Disabling GDPR Delete')
 
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.params._id, {deleteInformation})
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
