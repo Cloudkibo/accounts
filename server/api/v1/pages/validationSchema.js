@@ -107,3 +107,13 @@ exports.pageUpdatePayload = {
     }
   }
 }
+
+exports.updateGreetingText = {
+  type: 'object',
+  properties: {
+    greetingText: {
+      type: 'string',
+      required: true
+    }
+  }
+}

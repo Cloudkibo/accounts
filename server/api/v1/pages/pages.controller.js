@@ -7,7 +7,7 @@ const util = require('util')
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find page controller index')
 
-  dataLayer.findOnePageObject(id)
+  dataLayer.findOnePageObject(req.params._id)
     .then(pageObject => {
       res.status(200).json({status: 'success', payload: pageObject})
     })
@@ -80,6 +80,29 @@ exports.disconnect = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.getGreetingText = function(req, res) {
+  dataLayer.findOnePageObject(req.params._id)
+  .then(pageObject => {
+    res.status(200).json({status: 'success', payload: pageObject.greetingText})
+  })
+  .catch(err => {
+    res.status(500).json({status: 'failed', payload: err})
+  })
+}
+
+exports.setGreetingText = function (req, res) {
+  logger.serverLog(TAG, 'Hit the setGreetingText page controller index')
+
+  dataLayer.updatePageObject(req.params._id, req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at updated greetingText ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
     })
 }

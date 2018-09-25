@@ -19,11 +19,17 @@ router.put('/:_id',
 router.delete('/:_id',
   controller.delete)
 
-  router.get('/:_id/connect',
+router.get('/:_id/connect',
   controller.connect)
 
-  router.get('/:_id/disconnect',
+router.get('/:_id/disconnect',
   controller.disconnect)
-  
+
+router.get('/:_id/greetingText',
+  controller.getGreetingText)
+
+router.put('/:_id/greetingText',
+  validate({body: validationSchema.updateGreetingText}),
+  controller.setGreetingText)
 
 module.exports = router
