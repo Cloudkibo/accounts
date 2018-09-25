@@ -28,6 +28,9 @@ module.exports = function (app) {
   // Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it.
   app.use(methodOverride())
 
+  // set the view engine to ejs
+  app.set('view engine', 'ejs')
+
   // Parse Cookie header and populate req.cookies with an object keyed by the cookie names.
   app.use(cookieParser())
 
