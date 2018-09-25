@@ -38,7 +38,7 @@ router.get('/logout', (req, res) => {
   logger.serverLog(TAG, `Going to remove token cookie`)
   res.clearCookie('token')
   // We will change it to based on the request of project
-  return res.redirect('/')
+  return res.redirect(req.query.continue)
 })
 
 module.exports = router

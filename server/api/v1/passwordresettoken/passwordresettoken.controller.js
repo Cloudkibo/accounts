@@ -5,7 +5,6 @@ const logger = require('../../../components/logger')
 const utility = require('../../../components/utility')
 // eslint-disable-next-line no-unused-vars
 const TAG = '/api/v1/passwordresettoken/passwordresettoken.controller.js'
-let Passwordresettoken = require('./passwordresettoken.model')
 let userDataLayer = require('./../user/user.datalayer')
 let resetTokenLogicLayer = require('./passwordresettoken.logiclayer')
 let resetTokenDataLayer = require('./passwordresettoken.datalayer')
@@ -69,58 +68,45 @@ exports.forgot = function (req, res) {
 exports.reset = function (req, res) {
   let token = req.body.token
 
-  Passwordresettoken.findOne({token: token}, function (err, doc) {
-    if (err) {
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
-    }
-    logger.serverLog(TAG,
-      `Password Reset Token ${JSON.stringify(doc)}`)
-    if (!doc) {
-      res.sendFile(
-        path.join(config.root, 'client/pages/change_password_failed.html'))
-    }
-    if (doc) {
-      User.findOne({_id: doc.userId}, function (err, user) {
-        if (err) {
-          return res.status(500).json({
-            status: 'failed',
-            description: `Internal Server Error ${JSON.stringify(err)}`
+  resetTokenDataLayer
+    .findResetTokenObjectUsingToken(token)
+    .then(foundObject => {
+      if (!foundObject) {
+        res.sendFile(
+          path.join(config.root, 'client/pages/change_password_failed.html'))
+      } else {
+        userDataLayer
+          .updateUserObject(foundObject.userId, {password: String(req.body.new_password)})
+          .then(result => {
+            resetTokenDataLayer
+              .removeTokenObjectUsingToken(token)
+              .then(result => {
+                res.status(200).json({
+                  status: 'success',
+                  description: 'Password successfully changed. Please login with your new password.'
+                })
+              })
+              .catch(err => {
+                return res.status(500).json({
+                  status: 'failed',
+                  description: `Internal Server Error ${JSON.stringify(err)}`
+                })
+              })
           })
-        }
-        if (!user) {
-          return res.status(404).json({
-            status: 'failed',
-            description: 'User does not exist'
-          })
-        }
-
-        user.password = String(req.body.new_password)
-        user.save(function (err) {
-          if (err) {
+          .catch(err => {
             return res.status(500).json({
               status: 'failed',
               description: `Internal Server Error ${JSON.stringify(err)}`
             })
-          }
-          Passwordresettoken.remove({token: token}, function (err, doc) {
-            if (err) {
-              return res.status(500).json({
-                status: 'failed',
-                description: `Internal Server Error ${JSON.stringify(err)}`
-              })
-            }
-            res.status(200).json({
-              status: 'success',
-              description: 'Password successfully changed. Please login with your new password.'
-            })
           })
-        })
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
       })
-    }
-  })
+    })
 }
 
 exports.verify = function (req, res) {

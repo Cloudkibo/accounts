@@ -14,3 +14,8 @@ exports.findResetTokenObjectUsingToken = (token) => {
   return ResetTokenModel.findOne({token: token})
     .exec()
 }
+
+exports.removeTokenObjectUsingToken = (token) => {
+  return ResetTokenModel.deleteOne({token: token})
+    .exec()
+}

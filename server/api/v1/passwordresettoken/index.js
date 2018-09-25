@@ -18,7 +18,10 @@ router.post('/forgot',
   validate({body: validationSchema.forgotPasswordSchema}),
   controller.forgot)
 
-// router.post('/reset', controller.reset)
+router.post('/reset',
+  validate({body: validationSchema.updatePasswordSchema}),
+  controller.reset)
+
 router.get('/verify/:id', controller.verify)
 
 module.exports = router

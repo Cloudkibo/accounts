@@ -8,6 +8,16 @@ exports.forgotPasswordSchema = {
   }
 }
 
+exports.resetPasswordSchema = {
+  type: 'object',
+  properties: {
+    token: {
+      type: 'string',
+      required: true
+    }
+  }
+}
+
 exports.updatePasswordSchema = {
   type: 'object',
   properties: {
