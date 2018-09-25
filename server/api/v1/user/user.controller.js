@@ -62,11 +62,10 @@ exports.update = function (req, res) {
     : res.status(500).json({status: 'failed', payload: 'ID is not provided'})
 
   let name = req.body.name ? req.body.name : false
-  let password = req.body.password ? req.body.password : false
   let email = req.body.email ? req.body.email : false
   let uiMode = req.body.uiMode ? req.body.uiMode : false
 
-  let payload = logicLayer.prepareUpdateUserPayload(name, password, email, uiMode)
+  let payload = logicLayer.prepareUpdateUserPayload(name, email, uiMode)
   if (Object.keys(payload).length > 0) {
     dataLayer.updateUserObject(id, payload)
       .then(result => {

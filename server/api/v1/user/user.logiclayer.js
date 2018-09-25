@@ -6,11 +6,10 @@ Thus we can use it from other non express callers like cron etc
 const dataLayer = require('./user.datalayer')
 const crypto = require('crypto')
 
-const prepareUpdateUserPayload = (name, password, email, uiMode) => {
+const prepareUpdateUserPayload = (name, email, uiMode) => {
   let flag = true
   let temp = {}
   name ? temp.name = name : flag = false
-  password ? temp.password = password : flag = false
   email ? temp.email = email : flag = false
   uiMode ? temp.uiMode = uiMode : flag = false
 

@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.use('/api/v1/list', require('./api/v1/lists'))
   app.use('/api/v1/menu', require('./api/v1/menu'))
   app.use('/api/v1/subscriber', require('./api/v1/subscribers'))
+  app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))

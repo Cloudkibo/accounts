@@ -41,17 +41,12 @@ exports.updateUserPayload = {
       type: 'string',
       required: false
     },
-    password: {
-      type: 'string',
-      required: false
-    },
     uiMode: {
       type: 'string',
       required: false
     }
   }
 }
-
 
 exports.enableGDPRDelete = {
   type: 'object',

@@ -1,4 +1,5 @@
 const logger = require('./logger')
+const config = require('./../config/environment')
 const TAG = 'components/utility.js'
 
 logger.serverLog(TAG, 'Server UtilityJS Called: ')
@@ -12,4 +13,12 @@ function validateUrl (str) {
   }
 }
 
+function getSendGridObject () {
+  let sendgrid = require('sendgrid')(config.sendgrid.username,
+    config.sendgrid.password)
+
+  return sendgrid
+}
+
 exports.validateUrl = validateUrl
+exports.getSendGridObject = getSendGridObject
