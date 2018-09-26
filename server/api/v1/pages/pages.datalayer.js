@@ -10,17 +10,32 @@ exports.findOnePageObject = (id) => {
     .exec()
 }
 
+exports.findPageObjects = (query) => {
+  return PageModel.find(query)
+    .exec()
+}
+
 exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, accessToken,
   connected, userId, companyId, greetingText, welcomeMessage, isWelcomeMessageEnabled,
   gotPageSubscriptionPermission) => {
-  let payload = { pageId, pageName, pageUserName, pagePic, likes, accessToken,
-  connected, userId, companyId, greetingText, welcomeMessage, isWelcomeMessageEnabled,
-  gotPageSubscriptionPermission }
+  let payload = { pageId,
+    pageName,
+    pageUserName,
+    pagePic,
+    likes,
+    accessToken,
+    connected,
+    userId,
+    companyId,
+    greetingText,
+    welcomeMessage,
+    isWelcomeMessageEnabled,
+    gotPageSubscriptionPermission }
   let obj = new PageModel(payload)
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updatePageObject = (id, payload) => {
   return PageModel.updateOne({_id: id}, payload)

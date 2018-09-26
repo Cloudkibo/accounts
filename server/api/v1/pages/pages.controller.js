@@ -70,7 +70,6 @@ exports.connect = function (req, res) {
     })
 }
 
-
 exports.disconnect = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete page controller index')
 
@@ -84,14 +83,14 @@ exports.disconnect = function (req, res) {
     })
 }
 
-exports.getGreetingText = function(req, res) {
+exports.getGreetingText = function (req, res) {
   dataLayer.findOnePageObject(req.params._id)
-  .then(pageObject => {
-    res.status(200).json({status: 'success', payload: pageObject.greetingText})
-  })
-  .catch(err => {
-    res.status(500).json({status: 'failed', payload: err})
-  })
+    .then(pageObject => {
+      res.status(200).json({status: 'success', payload: pageObject.greetingText})
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
 }
 
 exports.setGreetingText = function (req, res) {
@@ -105,4 +104,21 @@ exports.setGreetingText = function (req, res) {
       logger.serverLog(TAG, `Error at updated greetingText ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
     })
+}
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for page controller')
+
+  dataLayer.findPageObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying page ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for page controller')
 }

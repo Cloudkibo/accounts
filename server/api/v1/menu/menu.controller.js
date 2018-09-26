@@ -53,3 +53,20 @@ exports.delete = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for menu controller')
+
+  dataLayer.findMenuObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying menu ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for menu controller')
+}

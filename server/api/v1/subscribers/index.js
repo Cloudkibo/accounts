@@ -18,6 +18,11 @@ router.put('/:_id',
 
 router.delete('/:_id',
   controller.delete)
-  
+
+router.post('/query',
+  controller.query)
+
+router.post('/aggregate',
+  controller.aggregate)
 
 module.exports = router

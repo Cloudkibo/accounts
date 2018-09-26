@@ -20,8 +20,8 @@ exports.index = function (req, res) {
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create list controller index')
   dataLayer.createListObject(
-    req.body.listName, req.body.userId, req.body.companyId, req.body.content, 
-    req.body.conditions, req.body.initialList, req.body.parentList, 
+    req.body.listName, req.body.userId, req.body.companyId, req.body.content,
+    req.body.conditions, req.body.initialList, req.body.parentList,
     req.body.parentListName
   )
     .then(result => {
@@ -56,4 +56,21 @@ exports.delete = function (req, res) {
       logger.serverLog(TAG, `Error at delete list ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
     })
+}
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for list controller')
+
+  dataLayer.findListObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying list ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for list controller')
 }

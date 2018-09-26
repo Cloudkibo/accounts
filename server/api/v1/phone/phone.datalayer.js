@@ -10,6 +10,11 @@ exports.findOnePhoneObject = (phoneId) => {
     .exec()
 }
 
+exports.findPhoneObjects = (query) => {
+  return PhoneModel.find(query)
+    .exec()
+}
+
 exports.createPhoneObject = (payload) => {
   let obj = new PhoneModel(payload)
   return obj.save()
