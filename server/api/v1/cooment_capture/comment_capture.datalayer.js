@@ -10,6 +10,16 @@ exports.findOnePostObject = (postId) => {
     .exec()
 }
 
+exports.findOnePostObjectUsingQuery = (queryObject) => {
+  return CommentCaptureModel.findOne(queryObject)
+    .exec()
+}
+
+exports.findAllPostObjectsUsingQuery = (queryObject) => {
+  return CommentCaptureModel.find(queryObject)
+    .exec()
+}
+
 exports.createPostObject = (payload) => {
   let obj = new CommentCaptureModel(payload)
   return obj.save()

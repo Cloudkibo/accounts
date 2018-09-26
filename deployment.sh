@@ -3,5 +3,5 @@
 git pull origin master
 npm install
 npm install --only=dev
-npm run start:prod
 npm run stop:prod
+npm run start:prod

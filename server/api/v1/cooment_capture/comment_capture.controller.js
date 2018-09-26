@@ -53,3 +53,31 @@ exports.delete = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.genericFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the genericFetch controller index')
+
+  if (req.body.type === 'one') {
+    dataLayer
+      .findOnePostObjectUsingQuery(req.body.query)
+      .then(result => {
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch(err => {
+        logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+        return res.status(500).json({status: 'failed', payload: err})
+      })
+  } else if (req.body.type === 'many') {
+    dataLayer
+      .findAllPostObjectsUsingQuery(req.body.query)
+      .then(result => {
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch(err => {
+        logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+        return res.status(500).json({status: 'failed', payload: err})
+      })
+  } else {
+    return res.status(400).json({status: 'failed', payload: 'Please Provide type as one or many'})
+  }
+}

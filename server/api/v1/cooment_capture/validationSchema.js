@@ -24,15 +24,22 @@ exports.postPayload = {
       required: true
     },
     payload: {
-      type: 'object'
+      type: 'object',
+      required: true
     },
     includedKeywords: {
-      type: 'string',
-      required: true
+      type: 'array',
+      items: {
+        type: 'string',
+        required: true
+      }
     },
     excludedKeywords: {
-      type: 'string',
-      required: true
+      type: 'array',
+      items: {
+        type: 'string',
+        required: true
+      }
     }
   }
 }
@@ -41,12 +48,67 @@ exports.updatePostPayload = {
   type: 'object',
   properties: {
     includedKeywords: {
-      type: 'string',
-      required: false
+      type: 'array',
+      items: {
+        type: 'string',
+        required: false
+      }
     },
     excludedKeywords: {
-      type: 'string',
-      required: false
+      type: 'array',
+      items: {
+        type: 'string',
+        required: false
+      }
     }
   }
+}
+
+exports.genericQueryPayload = {
+  'type': 'object',
+  'properties': {
+    'type': {
+      'type': 'string'
+    },
+    'query': {
+      'type': 'object',
+      'properties': {
+        'pageId': {
+          'type': 'string'
+        },
+        'companyId': {
+          'type': 'string'
+        },
+        'userId': {
+          'type': 'string'
+        },
+        'reply': {
+          'type': 'string'
+        },
+        'payload': {
+          'type': 'object'
+        },
+        'includedKeywords': {
+          'type': 'array',
+          'items': [
+            {
+              'type': 'string'
+            }
+          ]
+        },
+        'excludedKeywords': {
+          'type': 'array',
+          'items': [
+            {
+              'type': 'string'
+            }
+          ]
+        }
+      }
+    }
+  },
+  'required': [
+    'type',
+    'query'
+  ]
 }

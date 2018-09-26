@@ -19,4 +19,8 @@ router.put('/:id',
 router.delete('/:id',
   controller.delete)
 
+router.post('/query',
+  validate({body: validationSchema.genericQueryPayload}),
+  controller.genericFetch)
+
 module.exports = router
