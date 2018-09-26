@@ -84,28 +84,26 @@ exports.delete = function (req, res) {
 
 exports.genericTeamFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericTeamFetch controller index')
+  dataLayer
+    .findAllTeamObjectsUsingQuery(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
 
-  if (req.body.type === 'one') {
-    dataLayer
-      .findOneTeamObjectUsingQuery(req.body.query)
-      .then(result => {
-        return res.status(200).json({status: 'success', payload: result})
-      })
-      .catch(err => {
-        logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-        return res.status(500).json({status: 'failed', payload: err})
-      })
-  } else if (req.body.type === 'many') {
-    dataLayer
-      .findAllTeamObjectsUsingQuery(req.body.query)
-      .then(result => {
-        return res.status(200).json({status: 'success', payload: result})
-      })
-      .catch(err => {
-        logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-        return res.status(500).json({status: 'failed', payload: err})
-      })
-  } else {
-    return res.status(400).json({status: 'failed', payload: 'Please Provide type as one or many'})
-  }
+exports.aggregateTeamFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the aggregateTeamFetch controller index')
+  dataLayer
+    .findTeamObjectUsingAggregate(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
 }

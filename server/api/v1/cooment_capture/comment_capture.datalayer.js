@@ -20,6 +20,11 @@ exports.findAllPostObjectsUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.findPostObjectUsingAggregate = (aggregateObject) => {
+  return CommentCaptureModel.aggregate(aggregateObject)
+    .then()
+}
+
 exports.createPostObject = (payload) => {
   let obj = new CommentCaptureModel(payload)
   return obj.save()
