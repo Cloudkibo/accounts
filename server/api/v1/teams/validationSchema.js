@@ -40,6 +40,22 @@ exports.teamPayload = {
   }
 }
 
+exports.genericQueryPayload = {
+  'type': 'object',
+  'properties': {
+    'type': {
+      'type': 'string'
+    },
+    'query': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'type',
+    'query'
+  ]
+}
+
 exports.teamUpdatePayload = {
   type: 'object',
   properties: {

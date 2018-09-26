@@ -19,4 +19,7 @@ router.put('/:id',
 router.delete('/:id',
   controller.delete)
 
+router.post('/query', controller.genericFetch)
+router.post('/aggregate', controller.aggregateFetch)
+
 module.exports = router

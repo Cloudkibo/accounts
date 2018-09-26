@@ -27,6 +27,21 @@ exports.findAllTeamObjects = () => {
     .exec()
 }
 
+exports.findOneTeamObjectUsingQuery = (queryObject) => {
+  return TeamModel.findOne(queryObject)
+    .exec()
+}
+
+exports.findAllTeamObjectsUsingQuery = (queryObject) => {
+  return TeamModel.find(queryObject)
+    .exec()
+}
+
+exports.findTeamObjectUsingAggregate = (aggregateObject) => {
+  return TeamModel.aggregate(aggregateObject)
+    .then()
+}
+
 exports.updateTeamObject = (userId, payload) => {
   return TeamModel.updateOne({_id: userId}, payload)
     .exec()
@@ -41,6 +56,21 @@ exports.deleteTeamObject = (teamId) => {
 exports.findAllAgentObjects = () => {
   return TeamAgentsModel.find()
     .exec()
+}
+
+exports.findOneAgentObjectUsingQuery = (queryObject) => {
+  return TeamAgentsModel.findOne(queryObject)
+    .exec()
+}
+
+exports.findAllAgentObjectsUsingQuery = (queryObject) => {
+  return TeamAgentsModel.find(queryObject)
+    .exec()
+}
+
+exports.findAgentObjectUsingAggregate = (aggregateObject) => {
+  return TeamAgentsModel.aggregate(aggregateObject)
+    .then()
 }
 
 exports.saveAgentDocument = (teamId, companyId, agentId) => {
@@ -58,6 +88,21 @@ exports.deleteAgentObject = (teamId, companyId, agentId) => {
 exports.findAllTeamPageObjects = () => {
   return TeamPagesModel.find()
     .exec()
+}
+
+exports.findOneTeamPageObjectUsingQuery = (queryObject) => {
+  return TeamPagesModel.findOne(queryObject)
+    .exec()
+}
+
+exports.findAllTeamPageObjectsUsingQuery = (queryObject) => {
+  return TeamPagesModel.find(queryObject)
+    .exec()
+}
+
+exports.findTeamPageObjectUsingAggregate = (aggregateObject) => {
+  return TeamPagesModel.aggregate(aggregateObject)
+    .then()
 }
 
 exports.saveTeamPageDocument = (teamId, companyId, pageId) => {
