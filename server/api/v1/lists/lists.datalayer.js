@@ -15,6 +15,11 @@ exports.findListObjects = (query) => {
     .exec()
 }
 
+exports.aggregateInfo = (query) => {
+  return ListModel.aggregate(query)
+    .exec()
+}
+
 exports.createListObject = (listName, userId, companyId, content, conditions,
   initialList, parentList, parentListName) => {
   let payload = { listName,

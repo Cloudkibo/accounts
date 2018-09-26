@@ -15,6 +15,11 @@ exports.findPageObjects = (query) => {
     .exec()
 }
 
+exports.aggregateInfo = (query) => {
+  return PageModel.aggregate(query)
+    .exec()
+}
+
 exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, accessToken,
   connected, userId, companyId, greetingText, welcomeMessage, isWelcomeMessageEnabled,
   gotPageSubscriptionPermission) => {

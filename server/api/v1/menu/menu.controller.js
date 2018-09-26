@@ -68,5 +68,14 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for menu controller')
+  logger.serverLog(TAG, 'Hit the aggregate endpoint for menu controller')
+
+  dataLayer.aggregateInfo(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate menu ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
 }

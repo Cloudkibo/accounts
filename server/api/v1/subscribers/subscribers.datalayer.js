@@ -15,6 +15,11 @@ exports.findSubscriberObjects = (query) => {
     .exec()
 }
 
+exports.aggregateInfo = (query) => {
+  return SubscriberModel.aggregate(query)
+    .exec()
+}
+
 exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
   email, gender, senderId, profilePic, coverPhoto, pageId, phoneNumber, unSubscribedBy,
   source, companyId, isSubscribed, isEnabledByPage) => {

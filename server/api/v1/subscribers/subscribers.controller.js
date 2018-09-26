@@ -72,5 +72,14 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for subscriber controller')
+  logger.serverLog(TAG, 'Hit the aggregate endpoint for subscriber controller')
+
+  dataLayer.aggregateInfo(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate subscriber ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
 }

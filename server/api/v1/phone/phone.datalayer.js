@@ -15,6 +15,11 @@ exports.findPhoneObjects = (query) => {
     .exec()
 }
 
+exports.aggregateInfo = (query) => {
+  return PhoneModel.aggregate(query)
+    .exec()
+}
+
 exports.createPhoneObject = (payload) => {
   let obj = new PhoneModel(payload)
   return obj.save()

@@ -15,6 +15,11 @@ exports.findMenuObjects = (query) => {
     .exec()
 }
 
+exports.aggregateInfo = (query) => {
+  return MenuModel.aggregate(query)
+    .exec()
+}
+
 exports.createMenuObject = (payload) => {
   let obj = new MenuModel(payload)
   return obj.save()
