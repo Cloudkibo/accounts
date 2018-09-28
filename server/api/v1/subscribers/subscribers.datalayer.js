@@ -10,19 +10,42 @@ exports.findOneSubscriberObject = (subscriberId) => {
     .exec()
 }
 
+exports.findSubscriberObjects = (query) => {
+  return SubscriberModel.find(query)
+    .exec()
+}
+
+exports.aggregateInfo = (query) => {
+  return SubscriberModel.aggregate(query)
+    .exec()
+}
+
 exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
   email, gender, senderId, profilePic, coverPhoto, pageId, phoneNumber, unSubscribedBy,
   source, companyId, isSubscribed, isEnabledByPage) => {
-
-  let payload = { pageScopedId, firstName, lastName, locale, timezone,
-    email, gender, senderId, profilePic, coverPhoto, pageId, phoneNumber, 
-    unSubscribedBy, source, companyId, isSubscribed, isEnabledByPage }
+  let payload = { pageScopedId,
+    firstName,
+    lastName,
+    locale,
+    timezone,
+    email,
+    gender,
+    senderId,
+    profilePic,
+    coverPhoto,
+    pageId,
+    phoneNumber,
+    unSubscribedBy,
+    source,
+    companyId,
+    isSubscribed,
+    isEnabledByPage }
 
   let obj = new SubscriberModel(payload)
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateSubscriberObject = (subscriberId, payload) => {
   return SubscriberModel.updateOne({_id: subscriberId}, payload)

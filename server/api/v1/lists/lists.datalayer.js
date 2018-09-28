@@ -10,17 +10,32 @@ exports.findOneListObject = (listId) => {
     .exec()
 }
 
+exports.findListObjects = (query) => {
+  return ListModel.find(query)
+    .exec()
+}
+
+exports.aggregateInfo = (query) => {
+  return ListModel.aggregate(query)
+    .exec()
+}
+
 exports.createListObject = (listName, userId, companyId, content, conditions,
   initialList, parentList, parentListName) => {
-
-  let payload = { listName, userId, companyId, content, conditions,
-    initialList, parentList, parentListName }
+  let payload = { listName,
+    userId,
+    companyId,
+    content,
+    conditions,
+    initialList,
+    parentList,
+    parentListName }
 
   let obj = new ListModel(payload)
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateListObject = (listId, payload) => {
   return ListModel.updateOne({_id: listId}, payload)

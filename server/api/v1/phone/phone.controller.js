@@ -53,3 +53,29 @@ exports.delete = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for phone controller')
+
+  dataLayer.findPhoneObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying phone ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the aggregate endpoint for phone controller')
+
+  dataLayer.aggregateInfo(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate phone ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}

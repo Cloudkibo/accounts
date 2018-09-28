@@ -32,4 +32,10 @@ router.put('/:_id/greetingText',
   validate({body: validationSchema.updateGreetingText}),
   controller.setGreetingText)
 
+router.post('/query',
+  controller.query)
+
+router.post('/aggregate',
+  controller.aggregate)
+
 module.exports = router
