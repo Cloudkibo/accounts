@@ -15,6 +15,9 @@ const all = {
   // Server port
   port: process.env.PORT || 3000,
 
+  // Secure Server port
+  secure_port: process.env.SECURE_PORT || 8443,
+
   ip: process.env.IP || undefined,
 
   sendgrid: {
@@ -22,7 +25,7 @@ const all = {
     password: 'cl0udk1b0'
   },
 
-  domain: `${process.env.DOMAIN || 'https://accounts.kibopush.com'}`,
+  domain: `${process.env.DOMAIN || 'https://accounts.cloudkibo.com'}`,
 
   // Mongo Options
   mongo: {
