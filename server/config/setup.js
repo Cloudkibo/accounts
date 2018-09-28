@@ -1,4 +1,5 @@
 const http = require('http')
+const https = require('https')
 const logger = require('./../components/logger')
 const TAG = 'config/setup.js'
 
