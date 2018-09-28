@@ -1,17 +1,46 @@
 const http = require('http')
+const https = require('https')
 const logger = require('./../components/logger')
 const TAG = 'config/setup.js'
 
-module.exports = function (app, config) {
-  const server = http.createServer(app)
-  // TODO: we will enable this while doing socket io
-  // const socket = require('socket.io').listen(server)
+module.exports = function (app, httpapp, config) {
+
+  let options = {
+    ca: '',
+    key: '',
+    cert: ''
+  }
+
+  if (['production', 'staging'].indexOf(config.env) > -1) {
+    try {
+      options = {
+        ca: fs.readFileSync('/root/certs/accounts.ca-bundle'),
+        key: fs.readFileSync('/root/certs/accounts.key'),
+        cert: fs.readFileSync('/root/certs/accounts.crt')
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const server = http.createServer(httpapp)
+  const httpsServer = https.createServer(options, app)
+
+  if (['production', 'staging'].indexOf(config.env) > -1) {
+    httpapp.get('*', (req, res) => {
+      res.redirect(`${config.domain}${req.url}`)
+    })
+  }
+
   server.listen(config.port, () => {
     logger.serverLog(TAG, `CloudKibo Authentication server STARTED on ${
       config.port} in ${config.env} mode`)
   })
 
-  // require('./socketio').setup(socket)
+  httpsServer.listen(config.secure_port, () => {
+    logger.serverLog(TAG, `CloudKibo Authentication server STARTED on ${
+      config.secure_port} in ${config.env} mode`)
+  })
 
   if (config.env === 'production') {
     console.log('CloudKibo Authentication server STARTED on %s in %s mode', config.port, config.env)

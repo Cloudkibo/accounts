@@ -53,3 +53,31 @@ exports.delete = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.genericFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the genericFetch controller index')
+
+  dataLayer
+    .findAllPostObjectsUsingQuery(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregateFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the genericFetch controller index')
+
+  dataLayer
+    .findPostObjectUsingAggregate(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}

@@ -3,5 +3,5 @@
 git pull origin staging
 npm install
 npm install --only=dev
-npm run start:staging
 npm run stop:staging
+npm run start:staging
