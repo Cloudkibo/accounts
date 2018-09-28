@@ -23,7 +23,7 @@ module.exports = function (app, httpapp, config) {
     }
   }
 
-  const server = http.createServer(app)
+  const server = http.createServer(httpapp)
   const httpsServer = https.createServer(options, app)
 
   if (['production', 'staging'].indexOf(config.env) > -1) {
