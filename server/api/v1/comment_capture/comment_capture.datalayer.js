@@ -35,6 +35,11 @@ exports.updatePostObject = (postId, payload) => {
     .exec()
 }
 
+exports.genericUpdatePostObject = (query, updated, options) => {
+  return CommentCaptureModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deletePostObject = (postId) => {
   return CommentCaptureModel.deleteOne({_id: postId})
     .exec()

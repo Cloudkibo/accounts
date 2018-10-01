@@ -19,6 +19,9 @@ router.put('/:id',
 // Generic query endpoint
 router.post('/query', controller.genericTeamFetch)
 router.post('/aggregate', controller.aggregateTeamFetch)
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
 
 router.get('/agents', agentController.index)
 router.post('/agents', validate({body: validationSchema.agentPayload}), agentController.create)
@@ -26,6 +29,9 @@ router.delete('/agents', validate({body: validationSchema.agentPayload}), agentC
 // Generic query endpoint
 router.post('/agents/query', agentController.genericAgentsFetch)
 router.post('/agents/aggregate', agentController.aggregateAgentsFetch)
+router.put('/agents/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  agentController.genericUpdate)
 
 router.get('/pages', pageController.index)
 router.post('/pages', validate({body: validationSchema.pagePayload}), pageController.create)
@@ -33,5 +39,8 @@ router.delete('/pages', validate({body: validationSchema.pagePayload}), pageCont
 // Generic query endpoint
 router.post('/pages/query', pageController.genericPagesFetch)
 router.post('/pages/aggregate', pageController.aggregatePagesFetch)
+router.put('/pages/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  pageController.genericUpdate)
 
 module.exports = router

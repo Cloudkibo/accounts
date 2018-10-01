@@ -47,6 +47,11 @@ exports.updateTeamObject = (userId, payload) => {
     .exec()
 }
 
+exports.genericUpdateTeamObject = (query, updated, options) => {
+  return TeamModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deleteTeamObject = (teamId) => {
   return TeamModel.deleteOne({_id: teamId})
     .exec()
@@ -84,6 +89,11 @@ exports.deleteAgentObject = (teamId, companyId, agentId) => {
     .exec()
 }
 
+exports.genericUpdateAgentObject = (query, updated, options) => {
+  return TeamAgentsModel.update(query, updated, options)
+    .exec()
+}
+
 // Team Pages DB Handlers
 exports.findAllTeamPageObjects = () => {
   return TeamPagesModel.find()
@@ -108,6 +118,11 @@ exports.findTeamPageObjectUsingAggregate = (aggregateObject) => {
 exports.saveTeamPageDocument = (teamId, companyId, pageId) => {
   let payload = { teamId, companyId, pageId }
   return TeamPagesModel.create(payload)
+}
+
+exports.genericUpdatePageObject = (query, updated, options) => {
+  return TeamPagesModel.update(query, updated, options)
+    .exec()
 }
 
 exports.deleteAgentObject = (teamId, companyId, pageId) => {

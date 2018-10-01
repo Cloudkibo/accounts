@@ -43,7 +43,6 @@ exports.create = function (req, res) {
         let payload = logicLayer.prepareUserPayload(req.body, isTeam)
         dataLayer.createUserObject(payload)
           .then(result => {
-
             return res.status(200).json({status: 'success', payload: result})
           })
           .catch(err => {
@@ -123,6 +122,19 @@ exports.cancelDeletion = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdateUserObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
