@@ -52,6 +52,11 @@ exports.updateSubscriberObject = (subscriberId, payload) => {
     .exec()
 }
 
+exports.genericUpdateSubscriberObject = (query, updated, options) => {
+  return SubscriberModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deleteSubscriberObject = (subscriberId) => {
   return SubscriberModel.deleteOne({_id: subscriberId})
     .exec()

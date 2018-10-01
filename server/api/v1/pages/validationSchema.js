@@ -27,7 +27,7 @@ exports.pagePayload = {
       type: 'number',
       required: true
     },
-    accessToken: { 
+    accessToken: {
       type: 'string',
       required: true
     },
@@ -73,7 +73,7 @@ exports.pageUpdatePayload = {
       type: 'number',
       required: false
     },
-    accessToken: { 
+    accessToken: {
       type: 'string',
       required: false
     },
@@ -116,4 +116,25 @@ exports.updateGreetingText = {
       required: true
     }
   }
+}
+
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
 }

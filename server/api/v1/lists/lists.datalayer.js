@@ -42,6 +42,11 @@ exports.updateListObject = (listId, payload) => {
     .exec()
 }
 
+exports.genericUpdateListObject = (query, updated, options) => {
+  return ListModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deleteListObject = (listId) => {
   return ListModel.deleteOne({_id: listId})
     .exec()

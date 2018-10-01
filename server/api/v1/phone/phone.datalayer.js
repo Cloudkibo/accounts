@@ -25,10 +25,15 @@ exports.createPhoneObject = (payload) => {
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updatePhoneObject = (phoneId, payload) => {
   return PhoneModel.updateOne({_id: phoneId}, payload)
+    .exec()
+}
+
+exports.genericUpdatePhoneObject = (query, updated, options) => {
+  return PhoneModel.update(query, updated, options)
     .exec()
 }
 

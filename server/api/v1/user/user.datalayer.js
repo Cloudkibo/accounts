@@ -32,6 +32,11 @@ exports.updateUserObject = (userId, payload) => {
     .exec()
 }
 
+exports.genericUpdateUserObject = (query, updated, options) => {
+  return UserModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deleteUserObject = (userId) => {
   return UserModel.deleteOne({_id: userId})
     .exec()

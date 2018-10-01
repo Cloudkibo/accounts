@@ -22,7 +22,7 @@ exports.menuPayload = {
     jsonStructure: {
       type: 'object',
       required: true
-    },
+    }
   }
 }
 
@@ -44,7 +44,27 @@ exports.updatedMenuPayload = {
     jsonStructure: {
       type: 'object',
       required: false
-    },
+    }
   }
 }
 
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
+}

@@ -63,7 +63,7 @@ exports.subscriberPayload = {
       type: 'string',
       required: false
     },
-    companyId:  {
+    companyId: {
       type: 'string',
       required: true
     },
@@ -74,7 +74,7 @@ exports.subscriberPayload = {
     isEnabledByPage: {
       type: 'boolean',
       required: false
-    },
+    }
   }
 }
 
@@ -137,7 +137,7 @@ exports.updateSubscriberPayload = {
       type: 'string',
       required: false
     },
-    companyId:  {
+    companyId: {
       type: 'string',
       required: false
     },
@@ -148,7 +148,27 @@ exports.updateSubscriberPayload = {
     isEnabledByPage: {
       type: 'boolean',
       required: false
-    },
+    }
   }
 }
 
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
+}

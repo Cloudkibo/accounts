@@ -18,12 +18,16 @@ router.put('/:_id',
 
 router.delete('/:_id',
   controller.delete)
-  
+
 router.post('/:_id/gdpr',
   validate({body: validationSchema.enableGDPRDelete}),
   controller.enableDelete)
 
-router.delete('/:_id/gdpr', 
+router.delete('/:_id/gdpr',
   controller.cancelDeletion)
+
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
 
 module.exports = router
