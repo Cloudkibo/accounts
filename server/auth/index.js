@@ -7,6 +7,7 @@ const router = express.Router()
 const logger = require('../components/logger')
 const config = require('../config/environment')
 const Users = require('./../api/v1/user/user.model')
+const auth = require('./auth.service')
 
 const TAG = 'auth/index.js'
 
@@ -25,6 +26,13 @@ router.get('/scripts/jsonp', (req, res) => {
   let callbackOfClient = req.query.callback
   res.send(`${callbackOfClient}("${token}")`)
 })
+
+// route to verify the token
+router.get('/verify',
+  auth.isAuthenticated(),
+  (req, res) => {
+    res.status(200).json({status: 'success', description: 'Token verified', user: req.user})
+  })
 
 // This function will be used for sign out
 router.get('/logout', (req, res) => {
