@@ -7,15 +7,15 @@
                 <div class="m-stack m-stack--hor m-stack--desktop">
                     <div class="m-stack__item m-stack__item--fluid">
                         <div class="m-login__wrapper">
-                            <%- include('../partials/header', { heading: 'Individual Sign In' }); %> 
-                                <form class="m-login__form m-form" action="">
+                            <%- include('../partials/header', { heading: 'Individual Sign In' }); %>
+                                <form method="POST" class="m-login__form m-form" action="/auth/local?continue=<%= continue %>">
                                     <div class="form-group m-form__group">
                                         <input class="form-control m-input" type="text" placeholder="Email" name="email" autocomplete="off">
                                     </div>
                                     <div class="form-group m-form__group">
                                         <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password">
                                     </div>
-                                    <%- include('../partials/forgot-link', {}); %> 
+                                    <%- include('../partials/forgot-link', {}); %>
                                     <div class="m-login__form-action">
                                         <button id="m_login_signin_submit" class="btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air">
                                             Sign In

@@ -22,8 +22,8 @@ module.exports = function (app) {
      */
 
   app.use(compression())
-  app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
 
   // Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it.
   app.use(methodOverride())
