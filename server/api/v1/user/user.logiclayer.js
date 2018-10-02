@@ -17,6 +17,7 @@ const prepareUpdateUserPayload = (name, email, uiMode) => {
 }
 
 const prepareUserPayload = (body, isTeam) => {
+  let random = getRandomString()
   let payload = {
     name: body.name,
     password: body.password,
@@ -24,10 +25,10 @@ const prepareUserPayload = (body, isTeam) => {
     uiMode: body.uiMode,
     accountType: isTeam ? 'team' : 'individual',
     role: 'buyer',
-    domain: isTeam ? body.domain.toLowerCase() : getRandomString(),
+    domain: isTeam ? body.domain.toLowerCase() : random,
     domainEmail: isTeam
       ? body.domain.toLowerCase() + '' + body.email.toLowerCase()
-      : getRandomString() + body.email.toLowerCase()
+      : random + body.email.toLowerCase()
   }
 
   return payload

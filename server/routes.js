@@ -17,35 +17,35 @@ module.exports = function (app) {
   // index page
   app.get('/', function (req, res) {
     res.render('layouts/index', {
-      buttonOne: { name: 'Login', url: '/login' },
-      buttonTwo: { name: 'Sign Up', url: '/signup' }
+      buttonOne: { name: 'Login', url: `/login?continue=${req.query.continue ? req.query.continue : ''}` },
+      buttonTwo: { name: 'Sign Up', url: `/signup?continue=${req.query.continue ? req.query.continue : ''}` }
     })
   })
 
   // login page
   app.get('/login', function (req, res) {
     res.render('layouts/index', {
-      buttonOne: { name: 'Individual Account', url: '/login/single' },
-      buttonTwo: { name: 'Team Account', url: '/login/team' }
+      buttonOne: { name: 'Individual Account', url: `/login/single?continue=${req.query.continue ? req.query.continue : ''}` },
+      buttonTwo: { name: 'Team Account', url: `/login/team?continue=${req.query.continue ? req.query.continue : ''}` }
     })
   })
 
   // signup page
   app.get('/signup', function (req, res) {
     res.render('layouts/index', {
-      buttonOne: { name: 'Individual Account', url: '/signup/single' },
-      buttonTwo: { name: 'Team Account', url: '/signup/team' }
+      buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
+      buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
     })
   })
 
   // login page
   app.get('/login/single', function (req, res) {
-    res.render('layouts/login', {individual: true})
+    res.render('layouts/login', {individual: true, continue: req.query.continue})
   })
 
   // login page
   app.get('/login/team', function (req, res) {
-    res.render('layouts/login', {individual: false})
+    res.render('layouts/login', {individual: false, continue: req.query.continue})
   })
 
   // signup page
@@ -56,7 +56,8 @@ module.exports = function (app) {
         {name: 'Customer Chat', value: 'chat'},
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
-      ]})
+      ],
+      continue: req.query.continue})
   })
 
   // signup page
@@ -67,7 +68,8 @@ module.exports = function (app) {
         {name: 'Customer Chat', value: 'chat'},
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
-      ]})
+      ],
+      continue: req.query.continue})
   })
 
   // login page

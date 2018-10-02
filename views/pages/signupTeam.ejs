@@ -7,13 +7,13 @@
                 <div class="m-stack m-stack--hor m-stack--desktop">
                     <div class="m-stack__item m-stack__item--fluid">
                         <div class="m-login__wrapper">
-                            <%- include('../partials/header', { heading: 'Team Sign Up' }); %> 
-                            <form class="m-login__form m-form" action="">
+                            <%- include('../partials/header', { heading: 'Team Sign Up' }); %>
+                            <form method="POST" class="m-login__form m-form" action="/api/v1/user?continue<%= continue %>">
                                 <div class="form-group m-form__group">
                                     <input class="form-control m-input" type="text" placeholder="Name" name="name" autocomplete="off">
                                 </div>
                                 <div class="form-group m-form__group">
-                                    <input class="form-control m-input" type="text" placeholder="Workspace name e.g mycompany" name="name" autocomplete="off">
+                                    <input class="form-control m-input" type="text" placeholder="Workspace name e.g mycompany" name="workspace" autocomplete="off">
                                 </div>
                                 <div class="form-group m-form__group">
                                     <input class="form-control m-input" type="text" placeholder="Email" name="email" autocomplete="off">
@@ -34,7 +34,7 @@
                                                 <%= data[i].name %>
                                             </option>
                                         <% } %>
-                                        
+
                                     </select>
                                 </div>
                                 <div class="form-group m-form__group">
