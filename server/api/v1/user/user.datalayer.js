@@ -41,3 +41,8 @@ exports.deleteUserObject = (userId) => {
   return UserModel.deleteOne({_id: userId})
     .exec()
 }
+
+exports.CountUserObjectUsingQuery = (query) => {
+  return UserModel.count(query)
+    .exec()
+}

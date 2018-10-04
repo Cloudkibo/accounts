@@ -1,5 +1,5 @@
 const logger = require('../../../components/logger')
-const config = require('./../../../config/environment')
+const config = require('./../../../config/environment/index')
 const logicLayer = require('./plans.logiclayer')
 const dataLayer = require('./plans.datalayer')
 const CompanyDataLayer = require('./../companyprofile/companyprofile.datalayer')
@@ -262,5 +262,32 @@ exports.populatePlan = function (req, res) {
         status: 'failed',
         description: `Internal Server Error ${JSON.stringify(err)}`
       })
+    })
+}
+
+exports.fetchAll = function (req, res) {
+  logger.serverLog(TAG, 'fetch All Update endpoint')
+
+  dataLayer.findAllPlanObject()
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the genericFetch controller index')
+
+  dataLayer
+    .findAllPlanObjectsUsingQuery(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }

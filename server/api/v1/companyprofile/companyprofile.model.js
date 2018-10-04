@@ -2,6 +2,8 @@
 
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
+var stripeCustomer = require('./stripecustomer')
+var config = require('../../../config/environment/index')
 
 var CompanyprofileSchema = new Schema({
 
@@ -17,7 +19,7 @@ var CompanyprofileSchema = new Schema({
 
 })
 
-// var stripeOptions = config.stripeOptions
-// CompanyprofileSchema.plugin(stripeCustomer, stripeOptions)
+var stripeOptions = config.stripeOptions
+CompanyprofileSchema.plugin(stripeCustomer, stripeOptions)
 
 module.exports = mongoose.model('companyprofile', CompanyprofileSchema)

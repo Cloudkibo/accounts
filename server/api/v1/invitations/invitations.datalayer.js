@@ -20,3 +20,13 @@ exports.deleteInvitationObjectUsingQuery = (query) => {
   return InvitationsModel.deleteMany(query)
     .exec()
 }
+
+exports.CountInvitationObjectUsingQuery = (query) => {
+  return InvitationsModel.count(query)
+    .exec()
+}
+
+exports.createInvitationObject = (payload) => {
+  let obj = new InvitationsModel(payload)
+  return obj.save()
+}

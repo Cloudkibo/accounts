@@ -10,6 +10,11 @@ exports.findOnePlanObject = (planId) => {
     .exec()
 }
 
+exports.findAllPlanObject = () => {
+  return PlansModel.find({})
+    .exec()
+}
+
 exports.findOnePlanObjectUsingQuery = (queryObject) => {
   return PlansModel.findOne(queryObject)
     .exec()

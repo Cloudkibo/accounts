@@ -32,4 +32,9 @@ router.post('/migrateCompanies',
 
 router.post('/populate', controller.populatePlan)
 
+router.get('/',
+  controller.fetchAll)
+
+router.post('/query', controller.genericFetch)
+
 module.exports = router

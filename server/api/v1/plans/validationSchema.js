@@ -10,6 +10,9 @@ exports.createPayload = {
     'name': {
       'type': 'string'
     },
+    'unique_id': {
+      'type': 'string'
+    },
     'interval': {
       'type': 'string'
     },
@@ -35,6 +38,9 @@ exports.updatePayload = {
       'type': 'string'
     },
     'unique_id': {
+      'type': 'string'
+    },
+    'interval': {
       'type': 'string'
     },
     'trial_period': {
