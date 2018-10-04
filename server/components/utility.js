@@ -20,5 +20,15 @@ function getSendGridObject () {
   return sendgrid
 }
 
+function prepareUpdatePayload (dbPayload, clientPayload, exceptProperty) {
+  for (let property in clientPayload) {
+    if (property !== exceptProperty) {
+      dbPayload[property] = clientPayload[property]
+    }
+  }
+  return dbPayload
+}
+
 exports.validateUrl = validateUrl
+exports.prepareUpdatePayload = prepareUpdatePayload
 exports.getSendGridObject = getSendGridObject
