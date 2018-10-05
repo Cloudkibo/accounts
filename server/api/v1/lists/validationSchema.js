@@ -29,7 +29,7 @@ exports.listPayload = {
     },
     initialList: {
       type: 'boolean',
-      required: true
+      required: false
     },
     parentList: {
       type: 'string',

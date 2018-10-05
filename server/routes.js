@@ -5,12 +5,12 @@ module.exports = function (app) {
   app.use('/api/v1/user', require('./api/v1/user'))
   app.use('/api/v1/teams', require('./api/v1/teams'))
   app.use('/api/v1/comment_capture', require('./api/v1/comment_capture'))
-  app.use('/api/v1/page', require('./api/v1/pages'))
-  app.use('/api/v1/list', require('./api/v1/lists'))
+  app.use('/api/v1/pages', require('./api/v1/pages'))
+  app.use('/api/v1/lists', require('./api/v1/lists'))
   app.use('/api/v1/menu', require('./api/v1/menu'))
-  app.use('/api/v1/subscriber', require('./api/v1/subscribers'))
+  app.use('/api/v1/subscribers', require('./api/v1/subscribers'))
   app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
-  app.use('/api/v1/permission', require('./api/v1/permissions'))
+  app.use('/api/v1/permissions', require('./api/v1/permissions'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))

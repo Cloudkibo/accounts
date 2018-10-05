@@ -19,7 +19,7 @@ router.post('/forgot',
   controller.forgot)
 
 router.post('/reset',
-  validate({body: validationSchema.updatePasswordSchema}),
+  validate({body: validationSchema.resetPasswordSchema}),
   controller.reset)
 
 router.get('/verify/:id', controller.verify)

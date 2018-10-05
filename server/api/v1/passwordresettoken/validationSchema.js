@@ -14,6 +14,10 @@ exports.resetPasswordSchema = {
     token: {
       type: 'string',
       required: true
+    },
+    new_password: {
+      type: 'string',
+      required: true
     }
   }
 }
