@@ -73,6 +73,12 @@ exports.findAllAgentObjectsUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.findDistinctAgentObjectsUsingQuery = (queryObject) => {
+  return TeamAgentsModel.find(queryObject)
+    .distinct('agentId')
+    .exec()
+}
+
 exports.findAgentObjectUsingAggregate = (aggregateObject) => {
   return TeamAgentsModel.aggregate(aggregateObject)
     .then()
@@ -107,6 +113,12 @@ exports.findOneTeamPageObjectUsingQuery = (queryObject) => {
 
 exports.findAllTeamPageObjectsUsingQuery = (queryObject) => {
   return TeamPagesModel.find(queryObject)
+    .exec()
+}
+
+exports.findDistinctPageObjectsUsingQuery = (queryObject) => {
+  return TeamPagesModel.find(queryObject)
+    .distinct('pageId')
     .exec()
 }
 
