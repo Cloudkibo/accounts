@@ -10,3 +10,9 @@ exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
   return CompanyUserModel.findOne(queryObject)
     .exec()
 }
+
+exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
+  return CompanyUserModel.findOne(queryObject)
+    .populate('companyId')
+    .exec()
+}

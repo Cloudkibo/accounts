@@ -12,6 +12,9 @@ router.post('/invite',
   validate({body: validationSchema.invitePayload}),
   controller.invite)
 
+router.get('/getAutomatedOptions',
+  controller.getAutomatedOptions)
+
 router.post('/query', controller.genericFetch)
 router.post('/aggregate', controller.aggregateFetch)
 router.put('/update',

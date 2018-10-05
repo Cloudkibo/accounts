@@ -22,7 +22,7 @@ exports.findAllPostObjectsUsingQuery = (queryObject) => {
 
 exports.findPostObjectUsingAggregate = (aggregateObject) => {
   return CompanyProfileModel.aggregate(aggregateObject)
-    .then()
+    .exec()
 }
 
 exports.createPostObject = (payload) => {
@@ -35,7 +35,7 @@ exports.updatePostObject = (postId, payload) => {
     .exec()
 }
 
-exports.genericUpdatePostObject = (query, updated, options) => {
+exports.genericUpdateCompanyProfileObject = (query, updated, options) => {
   return CompanyProfileModel.update(query, updated, options)
     .exec()
 }
