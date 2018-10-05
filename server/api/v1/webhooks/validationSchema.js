@@ -4,79 +4,60 @@ By separating it from controller, we are cleaning the code.
 Now the middleware will automatically send error response if the payload fails
 */
 
-exports.listPayload = {
-  type: 'object',
-  properties: {
-    listName: {
-      type: 'string',
-      required: true
+exports.webhookPayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'webhook_url': {
+      'type': 'string'
     },
-    userId: {
-      type: 'string',
-      required: true
+    'companyId': {
+      'type': 'string'
     },
-    companyId: {
-      type: 'string',
-      required: true
+    'userId': {
+      'type': 'string'
     },
-    content: {
-      type: 'object',
-      required: true
+    'isEnabled': {
+      'type': 'string'
     },
-    conditions: {
-      type: 'object',
-      required: true
+    'optIn': {
+      'type': 'string'
     },
-    initialList: {
-      type: 'boolean',
-      required: true
+    'pageId': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'webhook_url',
+    'companyId',
+    'userId',
+    'isEnabled',
+    'optIn',
+    'pageId'
+  ]
+}
+
+exports.updateWebhookPayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'webhook_url': {
+      'type': 'string'
     },
-    parentList: {
-      type: 'string',
-      required: true
+    'companyId': {
+      'type': 'string'
     },
-    parentListName: {
-      type: 'string',
-      required: true
+    'userId': {
+      'type': 'string'
+    },
+    'isEnabled': {
+      'type': 'string'
+    },
+    'optIn': {
+      'type': 'string'
+    },
+    'pageId': {
+      'type': 'string'
     }
   }
 }
-
-exports.updateListPayload = {
-  type: 'object',
-  properties: {
-    listName: {
-      type: 'string',
-      required: false
-    },
-    userId: {
-      type: 'string',
-      required: false
-    },
-    companyId: {
-      type: 'string',
-      required: false
-    },
-    content: {
-      type: 'object',
-      required: false
-    },
-    conditions: {
-      type: 'object',
-      required: false
-    },
-    initialList: {
-      type: 'boolean',
-      required: false
-    },
-    parentList: {
-      type: 'string',
-      required: false
-    },
-    parentListName: {
-      type: 'string',
-      required: false
-    }
-  }
-}
-
