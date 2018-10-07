@@ -4,8 +4,6 @@ const dataLayer = require('./permissions.datalayer')
 const TAG = '/api/v1/permissions/permissions.controller.js'
 const utility = require('../../../components/utility.js')
 
-// const util = require('util')
-
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the permissions controller index to get role permissions')
 
@@ -37,20 +35,17 @@ exports.update = function (req, res) {
     })
 }
 
-exports.roleAggregate = function (req, res) {
-  dataLayer.roleAggregate(req.body)
+exports.create = function (req, res) {
+  let query = logicLayer.getAddPermissionObject(req.body)
+  dataLayer.roleAggregate([{$addFields: query}, {$out: 'role_permissions'}])
     .then(RolePermissions => {
-      return res.status(200).json({status: 'success', payload: RolePermissions})
-    })
-    .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
-    })
-}
-
-exports.aggregate = function (req, res) {
-  dataLayer.aggregate(req.body)
-    .then(permissions => {
-      return res.status(200).json({status: 'success', payload: permissions})
+      dataLayer.aggregate([{$addFields: query}, {$out: 'permissions'}])
+        .then(permissions => {
+          return res.status(200).json({status: 'success', payload: 'Permission has been added successfully!'})
+        })
+        .catch(err => {
+          return res.status(500).json({status: 'failed', payload: err})
+        })
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: err})
@@ -93,8 +88,7 @@ exports.genericFind = function (req, res) {
 }
 
 exports.updatePermissions = function (req, res) {
-  let object = logicLayer.preparePermissionsPayloadForUpdate(req.body.updated)
-  dataLayer.updateUserPermissionsObject(req.body.query, object)
+  dataLayer.updateUserPermissionsObject({_id: req.params.id}, req.body)
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })

@@ -8,23 +8,22 @@ const controller = require('./permissions.controller')
 router.get('/:role',
   controller.index) // get role permissions
 
+router.put('/:id',
+  validate({body: validationSchema.updateUserPermissionsPayload}),
+  controller.updatePermissions) // update user permissions
+
 router.post('/update',
   validate({body: validationSchema.updateRolePermissionPayload}),
   controller.update) // update role permission
 
-router.post('/rolePermission/aggregate',
-  controller.roleAggregate) // aggregate role permissions
-
-router.post('/aggregate',
-  controller.aggregate) // aggregate user permissions
+router.post('/create',
+  validate({body: validationSchema.createRolePermissionPayload}),
+  controller.create) // update role permission
 
 router.get('/populateRolePermissions',
   controller.populateRolePermissions) // populate role permissions
 
-router.get('/generic',
+router.post('/query',
   controller.genericFind) // generic find
-
-router.get('/updatePermissions',
-  controller.updatePermissions) // update user permissions
 
 module.exports = router
