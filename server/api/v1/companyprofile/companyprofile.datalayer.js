@@ -25,7 +25,7 @@ exports.findPostObjectUsingAggregate = (aggregateObject) => {
     .exec()
 }
 
-exports.createPostObject = (payload) => {
+exports.createProfileObject = (payload) => {
   let obj = new CompanyProfileModel(payload)
   return obj.save()
 }

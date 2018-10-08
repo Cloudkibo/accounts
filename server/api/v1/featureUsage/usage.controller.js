@@ -1,7 +1,7 @@
 const logger = require('../../../components/logger')
-const logicLayer = require('./comment_capture.logiclayer')
-const dataLayer = require('./comment_capture.datalayer')
-const TAG = '/api/v1/comment_capture/comment_capture.controller.js'
+const logicLayer = require('./../comment_capture/comment_capture.logiclayer')
+const dataLayer = require('./../comment_capture/comment_capture.datalayer')
+const TAG = '/api/v1/featureusuage/featureusuage.controller.js'
 
 const util = require('util')
 

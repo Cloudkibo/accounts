@@ -11,6 +11,11 @@ exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.CreateCompanyUserObject = (payload) => {
+  let obj = new CompanyUserModel(payload)
+  return obj.save()
+}
+
 exports.findAllCompanyUserObjectUsingQuery = (queryObject) => {
   return CompanyUserModel.find(queryObject)
     .exec()
@@ -32,7 +37,7 @@ exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
     .exec()
 }
 
-exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) {
+exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) => {
   return CompanyUserModel.updateOne(query, updated, options)
     .exec()
 }
