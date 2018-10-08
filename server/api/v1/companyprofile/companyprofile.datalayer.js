@@ -30,8 +30,8 @@ exports.createPostObject = (payload) => {
   return obj.save()
 }
 
-exports.updatePostObject = (postId, payload) => {
-  return CompanyProfileModel.updateOne({_id: postId}, payload)
+exports.findOneProfileAndUpdate = (query, update, options) => {
+  return CompanyProfileModel.findOneAndUpdate(query, update, options)
     .exec()
 }
 

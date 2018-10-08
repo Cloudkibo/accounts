@@ -51,6 +51,19 @@ exports.removeMember = {
   ]
 }
 
+exports.updateAutomatedOptions = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'automated_options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'automated_options'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {

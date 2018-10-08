@@ -252,6 +252,36 @@ exports.members = function (req, res) {
     })
 }
 
+exports.updateAutomatedOptions = function (req, res) {
+  logger.serverLog(TAG, 'Hit the updatedautomated options controller index')
+
+  CompanyUserDataLayer
+    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .then(companyUser => {
+      if (!companyUser) {
+        return res.status(404).json({
+          status: 'failed',
+          description: 'The user account does not belong to any company. Please contact support'
+        })
+      }
+      let query = {_id: companyUser.companyId}
+      let update = {automated_options: req.body.automated_options}
+      let options = {new: true} // Returns updated doc
+      dataLayer
+        .findOneProfileAndUpdate(query, update, options)
+        .then(updatedProfile => {
+          res.status(200).json({status: 'success', payload: updatedProfile})
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Internal Server Error ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
+      })
+    })
+}
+
 exports.getAutomatedOptions = function (req, res) {
   logger.serverLog(TAG, 'Hit the getAutomatedOptions controller index')
 
