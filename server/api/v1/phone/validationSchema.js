@@ -33,7 +33,7 @@ exports.phonePayload = {
     },
     pageIdFb: {
       type: 'string',
-      required: true
+      required: false
     },
     fileName: {
       type: 'array',

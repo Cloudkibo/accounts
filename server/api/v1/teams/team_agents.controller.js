@@ -63,6 +63,20 @@ exports.genericAgentsFetch = function (req, res) {
     })
 }
 
+exports.distinctAgentsFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the distinctAgentsFetch controller index')
+
+  dataLayer
+    .findAllAgentObjectsUsingQuery(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 exports.aggregateAgentsFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the aggregateAgentsFetch controller index')
   dataLayer

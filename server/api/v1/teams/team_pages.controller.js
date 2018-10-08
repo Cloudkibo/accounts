@@ -63,6 +63,20 @@ exports.genericPagesFetch = function (req, res) {
     })
 }
 
+exports.distinctPagesFetch = function (req, res) {
+  logger.serverLog(TAG, 'Hit the distinctPagesFetch controller index')
+
+  dataLayer
+    .findDistinctPageObjectsUsingQuery(req.body)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 exports.aggregatePagesFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the aggregatePagesFetch controller index')
   dataLayer
