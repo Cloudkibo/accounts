@@ -81,6 +81,23 @@ exports.setCard = {
   ]
 }
 
+exports.updatePlan = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'plan': {
+      'type': 'string'
+    },
+    'stripeToken': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'plan',
+    'stripeToken'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {

@@ -32,6 +32,10 @@ router.post('/setCard',
   validate({body: validationSchema.setCard}),
   controller.setCard)
 
+router.post('/updatePlan',
+  validate({body: validationSchema.updatePlan}),
+  controller.updatePlan)
+
 router.get('/getAutomatedOptions',
   controller.getAutomatedOptions)
 
