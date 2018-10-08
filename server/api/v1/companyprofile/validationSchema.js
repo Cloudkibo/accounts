@@ -21,6 +21,23 @@ exports.invitePayload = {
   ]
 }
 
+exports.updateRole = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'domain_email': {
+      'type': 'string'
+    },
+    'role': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'domain_email',
+    'role'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {

@@ -6,7 +6,9 @@ const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
 const UserDataLayer = require('./../user/user.datalayer')
+const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
+const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
 
 const util = require('util')
@@ -143,6 +145,60 @@ exports.invite = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
+      })
+    })
+}
+
+exports.updateRole = function (req, res) {
+  logger.serverLog(TAG, 'Hit the updateRole controller index')
+
+  if (config.userRoles.indexOf(req.user.role) > 1) {
+    return res.status(401).json(
+      {status: 'failed', description: 'Unauthorised to perform this action.'})
+  }
+
+  if (config.userRoles.indexOf(req.body.role) < 0) {
+    return res.status(404)
+      .json({status: 'failed', description: 'Invalid role.'})
+  }
+
+  let query = {domain_email: req.body.domain_email}
+
+  let promiseCompanyUser = CompanyUserDataLayer
+    .findOneCompanyUserObjectUsingQuery(query)
+  let promiseUser = UserDataLayer
+    .findOneUserObjectUsingQuery(query)
+  Promise.all([promiseUser, promiseCompanyUser])
+    .then(resultArray => {
+      let user = resultArray[0]
+      let companyUser = resultArray[1]
+
+      user.role = req.body.role
+      companyUser.role = req.body.role
+
+      promiseUser = UserDataLayer.saveUserObject(user)
+      promiseCompanyUser = CompanyUserDataLayer.saveCompanyUserObject(companyUser)
+      let permissionPromise = PermissionDataLayer
+        .updatUserPermissionsObjectUsingQuery({userId: user._id}, config.permissions[req.body.role], {multi: true})
+
+      Promise.all([promiseUser, promiseCompanyUser, permissionPromise])
+        .then(result => {
+          return res.status(200)
+            .json({status: 'success', payload: {savedUser: result[0], savedUserCompany: result[1]}})
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error in getting promise all update role ${util.inspect(err)}`)
+          return res.status(500).json({
+            status: 'failed',
+            description: `Internal Server Error ${JSON.stringify(err)}`
+          })
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in getting promise all update role ${util.inspect(err)}`)
       return res.status(500).json({
         status: 'failed',
         description: `Internal Server Error ${JSON.stringify(err)}`

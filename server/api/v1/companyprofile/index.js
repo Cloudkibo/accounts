@@ -5,12 +5,16 @@ const validate = require('express-jsonschema').validate
 const validationSchema = require('./validationSchema')
 const controller = require('./companyprofile.controller')
 
-router.get('/:id',
+router.get('/',
   controller.index)
 
 router.post('/invite',
   validate({body: validationSchema.invitePayload}),
   controller.invite)
+
+router.post('/updateRole',
+  validate({body: validationSchema.updateRole}),
+  controller.updateRole)
 
 router.get('/getAutomatedOptions',
   controller.getAutomatedOptions)

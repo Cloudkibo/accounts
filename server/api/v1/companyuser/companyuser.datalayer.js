@@ -11,8 +11,18 @@ exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.saveCompanyUserObject = (object) => {
+  return object.save()
+}
+
+
 exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
   return CompanyUserModel.findOne(queryObject)
     .populate('companyId')
+    .exec()
+}
+
+exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) {
+  return CompanyUserModel.updateOne(query, updated, options)
     .exec()
 }

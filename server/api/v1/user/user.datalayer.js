@@ -10,6 +10,15 @@ exports.findOneUserObject = (userId) => {
     .exec()
 }
 
+exports.findOneUserObjectUsingQuery = (query) => {
+  return UserModel.findOne(query)
+    .exec()
+}
+
+exports.saveUserObject = (object) => {
+  return object.save()
+}
+
 exports.createUserObject = (payload) => {
   let obj = new UserModel(payload)
   return obj.save()
@@ -29,6 +38,11 @@ exports.findOneUserByDomain = (body) => {
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateUserObject = (userId, payload) => {
   return UserModel.updateOne({_id: userId}, payload)
+    .exec()
+}
+
+exports.updateOneUserObjectUsingQuery = (query, updated, options) => {
+  return UserModel.updateOne(query, updated, options)
     .exec()
 }
 

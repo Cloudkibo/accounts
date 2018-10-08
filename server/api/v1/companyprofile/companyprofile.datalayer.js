@@ -16,7 +16,7 @@ exports.findOneCompanyProfileObjectUsingQuery = (queryObject) => {
 }
 
 exports.findAllPostObjectsUsingQuery = (queryObject) => {
-  return CompanyProfileModel.find(queryObject)
+  return CompanyProfileModel.findOne(queryObject)
     .exec()
 }
 
