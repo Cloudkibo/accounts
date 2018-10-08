@@ -74,6 +74,38 @@ exports.addPlanID = function (req, res) {
     })
 }
 
+exports.setCard = function (req, res) {
+  logger.serverLog(TAG, 'Hit the setCard controller index')
+
+  dataLayer.findOneCompanyProfileObject(req.body.companyId)
+    .then(profile => {
+      if (!profile) { return res.status(404).json({status: 'failed', description: 'Company not found'}) }
+      // Instance Level Method. No Idea if it supports promise. so keeping original callback
+      profile.setCard(req.body.stripeToken, function (err) {
+        if (err) {
+          if (err.code && err.code === 'card_declined') {
+            return res.status(500).json({
+              status: 'failed',
+              description: 'Your card was declined. Please provide a valid card.'
+            })
+          }
+          return res.status(500).json({
+            status: 'failed',
+            description: 'internal server error' + JSON.stringify(err)
+          })
+        }
+        return res.status(200).json({
+          status: 'success',
+          description: 'Card has been attached successfuly!'
+        })
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in set Card ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 exports.invite = function (req, res) {
   logger.serverLog(TAG, 'Hit the invite controller index')
   let companyUserQuery = {domain_email: req.user.domain_email}

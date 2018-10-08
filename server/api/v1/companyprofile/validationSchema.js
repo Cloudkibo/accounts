@@ -64,6 +64,23 @@ exports.updateAutomatedOptions = {
   ]
 }
 
+exports.setCard = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'stripeToken': {
+      'type': 'string'
+    },
+    'companyId': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'stripeToken',
+    'companyId'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {
