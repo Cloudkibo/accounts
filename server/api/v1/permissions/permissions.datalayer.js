@@ -26,7 +26,7 @@ exports.aggregate = (aggregateObject) => {
 }
 
 exports.genericFindUserPermissions = (query) => {
-  return UserPermissionsModel.find(query)
+  return UserPermissionsModel.find(query).populate('userId')
     .exec()
 }
 
