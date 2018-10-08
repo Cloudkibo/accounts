@@ -11,6 +11,11 @@ exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.findAllCompanyUserObjectUsingQuery = (queryObject) => {
+  return CompanyUserModel.find(queryObject)
+    .exec()
+}
+
 exports.removeOneCompanyUserObjectUsingQuery = (queryObject) => {
   return CompanyUserModel.findOneAndRemove(queryObject)
     .exec()

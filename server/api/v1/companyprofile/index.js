@@ -20,6 +20,9 @@ router.post('/removeMember',
   validate({body: validationSchema.removeMember}),
   controller.removeMember)
 
+router.get('/members',
+  controller.members)
+
 router.get('/getAutomatedOptions',
   controller.getAutomatedOptions)
 

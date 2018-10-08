@@ -230,6 +230,28 @@ exports.removeMember = function (req, res) {
     })
 }
 
+exports.members = function (req, res) {
+  logger.serverLog(TAG, 'Hit the members controller index')
+
+  let query = {domain_email: req.user.domain_email}
+  CompanyUserDataLayer
+    .findOneCompanyUserObjectUsingQuery(query)
+    .then(companyUser => {
+      CompanyUserDataLayer
+        .findAllCompanyUserObjectUsingQuery({companyId: companyUser.companyId})
+        .then(members => {
+          res.status(200).json({status: 'success', payload: members})
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in getting company User members ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
+      })
+    })
+}
+
 exports.getAutomatedOptions = function (req, res) {
   logger.serverLog(TAG, 'Hit the getAutomatedOptions controller index')
 
