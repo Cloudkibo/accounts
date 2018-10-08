@@ -7,6 +7,7 @@ const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
 const UserDataLayer = require('./../user/user.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
+const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
 const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
@@ -36,6 +37,40 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.addPlanID = function (req, res) {
+  logger.serverLog(TAG, 'Hit the addPlanID controller index')
+  dataLayer
+    .findAllProfileObjectsUsingQuery({})
+    .then(companies => {
+      companies.forEach((company, index) => {
+        PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: company.stripe.plan})
+          .then(plan => {
+            company.planId = plan._id
+            dataLayer.saveProfileObject(company)
+              .then(result => {
+                if (index === (companies.length - 1)) {
+                  return res.status(200).json({
+                    status: 'success',
+                    description: 'Successfuly added!'
+                  })
+                }
+              })
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Error in plan addplanid ${util.inspect(err)}`)
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
+      })
     })
 }
 

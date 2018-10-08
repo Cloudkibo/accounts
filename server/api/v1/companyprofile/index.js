@@ -27,6 +27,8 @@ router.post('/updateAutomatedOptions',
   validate({body: validationSchema.updateAutomatedOptions}),
   controller.updateAutomatedOptions)
 
+router.get('/addPlanID', controller.addPlanID)
+
 router.get('/getAutomatedOptions',
   controller.getAutomatedOptions)
 

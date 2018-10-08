@@ -15,8 +15,8 @@ exports.findOneCompanyProfileObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
-exports.findAllPostObjectsUsingQuery = (queryObject) => {
-  return CompanyProfileModel.findOne(queryObject)
+exports.findAllProfileObjectsUsingQuery = (queryObject) => {
+  return CompanyProfileModel.find(queryObject)
     .exec()
 }
 
@@ -43,4 +43,8 @@ exports.genericUpdateCompanyProfileObject = (query, updated, options) => {
 exports.deletePostObject = (postId) => {
   return CompanyProfileModel.deleteOne({_id: postId})
     .exec()
+}
+
+exports.saveProfileObject = (object) => {
+  return object.save()
 }
