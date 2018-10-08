@@ -38,6 +38,19 @@ exports.updateRole = {
   ]
 }
 
+exports.removeMember = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'domain_email': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'domain_email'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {

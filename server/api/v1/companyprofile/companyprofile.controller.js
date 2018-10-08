@@ -206,6 +206,30 @@ exports.updateRole = function (req, res) {
     })
 }
 
+exports.removeMember = function (req, res) {
+  logger.serverLog(TAG, 'Hit the removeMember controller index')
+  if (config.userRoles.indexOf(req.user.role) > 1) {
+    return res.status(401).json(
+      {status: 'failed', description: 'Unauthorised to perform this action.'})
+  }
+
+  let query = {domain_email: req.body.domain_email}
+  let companyUserRemove = CompanyUserDataLayer.removeOneCompanyUserObjectUsingQuery(query)
+  let userRemove = UserDataLayer.deleteUserObjectUsingQuery(query)
+
+  Promise.all([companyUserRemove, userRemove])
+    .then(result => {
+      return res.status(200).json({status: 'success', description: 'Account removed.'})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in getting promise all remove member ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: `Internal Server Error ${JSON.stringify(err)}`
+      })
+    })
+}
+
 exports.getAutomatedOptions = function (req, res) {
   logger.serverLog(TAG, 'Hit the getAutomatedOptions controller index')
 

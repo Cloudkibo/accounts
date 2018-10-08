@@ -16,6 +16,10 @@ router.post('/updateRole',
   validate({body: validationSchema.updateRole}),
   controller.updateRole)
 
+router.post('/removeMember',
+  validate({body: validationSchema.removeMember}),
+  controller.removeMember)
+
 router.get('/getAutomatedOptions',
   controller.getAutomatedOptions)
 
