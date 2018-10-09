@@ -20,14 +20,16 @@ exports.verify = function (req, res) {
     .then(verificationtoken => {
       if (!verificationtoken) {
         // Change the path according to requirement
-        return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+        // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+        return res.render('layouts/verification', {verification: false})
       }
 
       UserDataLayer.findOneUserObjectUsingQuery({_id: verificationtoken.userId})
         .then(user => {
           if (!user) {
             // Change the path according to requirement
-            return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+            // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+            return res.render('layouts/verification', {verification: false})
           } else {
             CompanyUsersDataLayer
               .findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
@@ -55,7 +57,8 @@ exports.verify = function (req, res) {
                 UserDataLayer.saveUserObject(user)
                   .then(user => {
                     // Update the UI path
-                    return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
+                    // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
+                    return res.render('layouts/verification', {verification: true})
                   })
               })
           }
