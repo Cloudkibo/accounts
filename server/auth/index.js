@@ -36,12 +36,12 @@ router.get('/verify',
 
 // This function will be used for sign out
 router.get('/logout', (req, res) => {
-  if (!req.user) {
-    return res.status(404).json({
-      status: 'failed',
-      description: 'Something went wrong, please try again.'
-    })
-  }
+  // if (!req.user) {
+  //   return res.status(404).json({
+  //     status: 'failed',
+  //     description: 'Something went wrong, please try again.'
+  //   })
+  // }
   logger.serverLog(TAG, req.cookies)
   logger.serverLog(TAG, `Going to remove token cookie`)
   res.clearCookie('token')

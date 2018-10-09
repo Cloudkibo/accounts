@@ -95,7 +95,7 @@ function setTokenCookie (req, res) {
   logger.serverLog(TAG, `Here is the signed token: ${token}`)
   res.cookie('token', token)
   // We will change it to based on the request of project
-  return res.redirect(req.query.continue)
+  return res.status(200).json({status: 'success', description: 'successfully logged in'})
 }
 
 exports.isAuthenticated = isAuthenticated

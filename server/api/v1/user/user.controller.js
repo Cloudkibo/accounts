@@ -51,10 +51,13 @@ exports.create = function (req, res) {
       } else {
         let domain = logicLayer.getRandomString()
         let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
+        logger.serverLog(TAG, payload)
         dataLayer.createUserObject(payload)
           .then(user => {
+            logger.serverLog(TAG, `User Found: ${user}`)
             PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
               .then(result => {
+                logger.serverLog(TAG, `Plans Found: ${util.inspect(result)}`)
                 // Separate default plans
                 let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
                 let companyprofileData = logicLayer
@@ -64,24 +67,39 @@ exports.create = function (req, res) {
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
+                    logger.serverLog(TAG, `Company created: ${companySaved}`)
                     let companyUsageData = logicLayer.companyUsageData(companySaved._id)
                     FeatureUsageDataLayer.createCompanyUsage(companyUsageData)
                       .then()
-                      .catch(err => { return res.status(500).json({status: 'failed', description: `err: ${err}`}) })
+                      .catch(err => {
+                        logger.serverLog(TAG, `Error at: ${err}`)
+                        return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                      })
                     // Create customer on stripe
                     logicLayer.createCustomerOnStripe(req.body.email, req.body.name, companySaved)
                     let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
                     CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
                       .then(companyUserSaved => {
+                        logger.serverLog(TAG, `Company User created: ${companyUserSaved}`)
                         PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
                           .then(permissionSaved => {
+                            logger.serverLog(TAG, `Permission Saved: ${permissionSaved}`)
                             let token = auth.signToken(user._id)
+                            res.cookie('token', token)
                             res.status(201)
                               .json({status: 'success',
                                 token: token,
                                 userid: user._id,
                                 type: isTeam ? 'company' : 'individual'})
                           })
+                          .catch(err => {
+                            logger.serverLog(TAG, `Error at: ${err}`)
+                            return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                          })
+                      })
+                      .catch(err => {
+                        logger.serverLog(TAG, `Error at: ${err}`)
+                        return res.status(500).json({status: 'failed', description: `err: ${err}`})
                       })
                     let tokenString = logicLayer.getRandomString()
                     VertificationTokenDataLayer
@@ -94,7 +112,7 @@ exports.create = function (req, res) {
                     let sendgrid = utility.getSendGridObject()
                     let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
                     email = logicLayer.setEmailBody(email, tokenString, req.body)
-
+                    logger.serverLog(TAG, util.inspect(email))
                     sendgrid.send(email, function (err, json) {
                       if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
                     })
@@ -108,13 +126,19 @@ exports.create = function (req, res) {
                       })
                     }
                   })
+                  .catch(err => {
+                    logger.serverLog(TAG, `Error at: ${err}`)
+                    return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                  })
               })
               .catch(err => {
-                return res.status(500).json({status: 'failed', payload: err})
+                logger.serverLog(TAG, `Error at: ${err}`)
+                return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
               })
           })
           .catch(err => {
-            return res.status(500).json({status: 'failed', payload: err})
+            logger.serverLog(TAG, `Error at: ${err}`)
+            return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
           })
       }
     })

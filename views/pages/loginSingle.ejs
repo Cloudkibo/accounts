@@ -10,14 +10,17 @@
                             <%- include('../partials/header', { heading: 'Individual Sign In' }); %>
                                 <form method="POST" class="m-login__form m-form" action="/auth/local?continue=<%= Continue %>">
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input" type="text" placeholder="Email" name="email" autocomplete="off">
+                                        <input class="form-control m-input" type="text" placeholder="Email" name="email" id="email" autocomplete="off">
                                     </div>
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password">
+                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password" id="password">
                                     </div>
                                     <%- include('../partials/forgot-link', {}); %>
+                                    <div class="form-group m-form__group">
+                                      <div id='alertMsg' style="color: red;"></div>
+                                    </div>
                                     <div class="m-login__form-action">
-                                        <button id="m_login_signin_submit" class="btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air">
+                                        <button id="m_login_signin_submit" class="btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air loginBtn">
                                             Sign In
                                         </button>
                                     </div>

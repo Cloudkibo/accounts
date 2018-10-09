@@ -246,10 +246,10 @@ exports.migrateCompanies = function (req, res) {
 exports.populatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the populatePlan controller index')
 
-  let promisePlanA = dataLayer.createPlanObject(logicLayer.planAPayload)
-  let promisePlanB = dataLayer.createPlanObject(logicLayer.planBPayload)
-  let promisePlanC = dataLayer.createPlanObject(logicLayer.planCPayload)
-  let promisePlanD = dataLayer.createPlanObject(logicLayer.planDPayload)
+  let promisePlanA = dataLayer.createPlanObject(logicLayer.planAPayload())
+  let promisePlanB = dataLayer.createPlanObject(logicLayer.planBPayload())
+  let promisePlanC = dataLayer.createPlanObject(logicLayer.planCPayload())
+  let promisePlanD = dataLayer.createPlanObject(logicLayer.planDPayload())
 
   Promise.all([promisePlanA, promisePlanB, promisePlanC, promisePlanD])
     .then(result => {

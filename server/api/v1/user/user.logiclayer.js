@@ -9,7 +9,7 @@ const MailChimp = require('mailchimp-api-v3')
 const logger = require('./../../../components/logger')
 const config = require('./../../../config/environment/index')
 
-const TAG = '/api/v1/user/user.controller.js'
+const TAG = '/api/v1/user/user.logiclayer.js'
 
 const prepareUpdateUserPayload = (name, email, uiMode) => {
   let flag = true
@@ -35,7 +35,7 @@ const prepareUserPayload = (body, isTeam, domain) => {
       ? body.domain.toLowerCase() + '' + body.email.toLowerCase()
       : domain + body.email.toLowerCase()
   }
-
+  logger.serverLog(TAG, payload)
   return payload
 }
 
@@ -146,7 +146,7 @@ const inHouseEmailHeader = (body) => {
 }
 
 const setEmailBody = (email, tokenString, body) => {
-  email.setHtml(
+  return email.setHtml(
     '<body style="min-width: 80%;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin: 0;padding: 0;direction: ltr;background: #f6f8f1;width: 80% !important;"><table class="body", style="width:100%"> ' +
     '<tr> <td class="center" align="center" valign="top"> <!-- BEGIN: Header --> <table class="page-header" align="center" style="width: 100%;background: #1f1f1f;"> <tr> <td class="center" align="center"> ' +
     '<!-- BEGIN: Header Container --> <table class="container" align="center"> <tr> <td> <table class="row "> <tr>  </tr> </table> <!-- END: Logo --> </td> <td class="wrapper vertical-middle last" style="padding-top: 0;padding-bottom: 0;vertical-align: middle;"> <!-- BEGIN: Social Icons --> <table class="six columns"> ' +
