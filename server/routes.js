@@ -41,12 +41,14 @@ module.exports = function (app) {
 
   // login page
   app.get('/login/single', function (req, res) {
-    res.render('layouts/login', {individual: true, continue: req.query.continue})
+    let Continue = req.query.continue
+    console.log(Continue)
+    res.render('layouts/login', {individual: true, Continue: req.query.continue ? req.query.continue : ''})
   })
 
   // login page
   app.get('/login/team', function (req, res) {
-    res.render('layouts/login', {individual: false, continue: req.query.continue})
+    res.render('layouts/login', {individual: false, Continue: req.query.continue ? req.query.continue : ''})
   })
 
   // signup page
@@ -58,7 +60,7 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      continue: req.query.continue})
+      Continue: req.query.continue})
   })
 
   // signup page
@@ -70,7 +72,7 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      continue: req.query.continue})
+      Continue: req.query.continue})
   })
 
   // login page
