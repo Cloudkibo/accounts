@@ -1,5 +1,5 @@
 const PlanUsageModel = require('./planUsage.model')
-const logicLayer = require('./usage.logicLayer')
+const logicLayer = require('./usage.controller')
 const CompanyUsageModel = require('./companyUsage.model')
 const Plans = require('./../plans/plans.model')
 const CompanyProfile = require('./../companyprofile/companyprofile.model')
@@ -11,13 +11,15 @@ exports.findOnePostObject = (usageId) => {
 exports.createPlanUsage = (aggregateObject) => {
   return PlanUsageModel.aggregate(aggregateObject).then()
 }
-exports.createCompanyUsage = (aggregateObject) => {
-  return CompanyUsageModel.aggregate(aggregateObject).then()
+exports.createCompanyUsage = (payload) => {
+  let obj = new CompanyUsageModel(payload)
+  return obj.save()
 }
 exports.updateUsage = (usageId, body) => {
   return PlanUsageModel.updateOne({_id: usageId}, body)
     .exec()
 }
+
 exports.populatePlan = () => {
   return new Promise((resolve, reject) => {
     Plans.find({}, (err, plans) => {

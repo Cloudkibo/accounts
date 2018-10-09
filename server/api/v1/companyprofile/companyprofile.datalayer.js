@@ -15,7 +15,7 @@ exports.findOneCompanyProfileObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
-exports.findAllPostObjectsUsingQuery = (queryObject) => {
+exports.findAllProfileObjectsUsingQuery = (queryObject) => {
   return CompanyProfileModel.find(queryObject)
     .exec()
 }
@@ -25,13 +25,13 @@ exports.findPostObjectUsingAggregate = (aggregateObject) => {
     .exec()
 }
 
-exports.createPostObject = (payload) => {
+exports.createProfileObject = (payload) => {
   let obj = new CompanyProfileModel(payload)
   return obj.save()
 }
 
-exports.updatePostObject = (postId, payload) => {
-  return CompanyProfileModel.updateOne({_id: postId}, payload)
+exports.findOneProfileAndUpdate = (query, update, options) => {
+  return CompanyProfileModel.findOneAndUpdate(query, update, options)
     .exec()
 }
 
@@ -43,4 +43,8 @@ exports.genericUpdateCompanyProfileObject = (query, updated, options) => {
 exports.deletePostObject = (postId) => {
   return CompanyProfileModel.deleteOne({_id: postId})
     .exec()
+}
+
+exports.saveProfileObject = (object) => {
+  return object.save()
 }

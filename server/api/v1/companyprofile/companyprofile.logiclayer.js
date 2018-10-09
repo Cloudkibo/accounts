@@ -26,6 +26,48 @@ exports.getEmailParameters = (email) => {
   }
 }
 
+exports.setCard = (profile, stripeToken) => {
+  profile.setCard(stripeToken, function (err) {
+    if (err) {
+      if (err.code && err.code === 'card_declined') {
+        return {
+          status: 'failed',
+          description: 'Your card was declined. Please provide a valid card.'
+        }
+      }
+      return {
+        status: 'failed',
+        description: 'internal server error' + JSON.stringify(err)
+      }
+    }
+    return {
+      status: 'success',
+      description: 'Card has been attached successfuly!'
+    }
+  })
+}
+
+exports.setPlan = (company, stripeToken, plan) => {
+  company.setPlan(plan, stripeToken, function (err) {
+    if (err) {
+      if (err.code && err.code === 'card_declined') {
+        return {
+          status: 'failed',
+          description: 'Your card was declined. Please provide a valid card.'
+        }
+      }
+      return {
+        status: 'failed',
+        description: 'internal server error' + JSON.stringify(err)
+      }
+    }
+    return {
+      status: 'success',
+      description: 'Plan has been updated successfuly!'
+    }
+  })
+}
+
 exports.setEmailBody = (emailObj, user, companyUser, uniqueTokenId) => {
   emailObj.setHtml(
     '<body style="min-width: 80%;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin: 0;padding: 0;direction: ltr;background: #f6f8f1;width: 80% !important;"><table class="body", style="width:100%"> ' +

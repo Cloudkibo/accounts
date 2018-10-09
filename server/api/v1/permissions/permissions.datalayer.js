@@ -11,6 +11,16 @@ exports.findOneRolePermissionObject = (role) => {
     .exec()
 }
 
+exports.createUserPermission = (payload) => {
+  let obj = new UserPermissionsModel(payload)
+  return obj.save()
+}
+
+exports.updatUserPermissionsObjectUsingQuery = (query, update, options) => {
+  return UserPermissionsModel.update(query, update, options)
+    .exec()
+}
+
 exports.savePermissionObject = (object) => {
   return object.save()
 }

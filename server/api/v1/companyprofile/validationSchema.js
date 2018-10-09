@@ -21,6 +21,83 @@ exports.invitePayload = {
   ]
 }
 
+exports.updateRole = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'domain_email': {
+      'type': 'string'
+    },
+    'role': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'domain_email',
+    'role'
+  ]
+}
+
+exports.removeMember = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'domain_email': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'domain_email'
+  ]
+}
+
+exports.updateAutomatedOptions = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'automated_options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'automated_options'
+  ]
+}
+
+exports.setCard = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'stripeToken': {
+      'type': 'string'
+    },
+    'companyId': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'stripeToken',
+    'companyId'
+  ]
+}
+
+exports.updatePlan = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'plan': {
+      'type': 'string'
+    },
+    'stripeToken': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'plan',
+    'stripeToken'
+  ]
+}
+
 exports.genericQueryPayload = {
   'type': 'object',
   'properties': {

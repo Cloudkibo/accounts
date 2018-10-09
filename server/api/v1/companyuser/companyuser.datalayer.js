@@ -11,8 +11,33 @@ exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.CreateCompanyUserObject = (payload) => {
+  let obj = new CompanyUserModel(payload)
+  return obj.save()
+}
+
+exports.findAllCompanyUserObjectUsingQuery = (queryObject) => {
+  return CompanyUserModel.find(queryObject)
+    .exec()
+}
+
+exports.removeOneCompanyUserObjectUsingQuery = (queryObject) => {
+  return CompanyUserModel.findOneAndRemove(queryObject)
+    .exec()
+}
+
+exports.saveCompanyUserObject = (object) => {
+  return object.save()
+}
+
+
 exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
   return CompanyUserModel.findOne(queryObject)
     .populate('companyId')
+    .exec()
+}
+
+exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) => {
+  return CompanyUserModel.updateOne(query, updated, options)
     .exec()
 }

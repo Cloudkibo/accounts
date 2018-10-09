@@ -10,6 +10,15 @@ exports.findOneUserObject = (userId) => {
     .exec()
 }
 
+exports.findOneUserObjectUsingQuery = (query) => {
+  return UserModel.findOne(query)
+    .exec()
+}
+
+exports.saveUserObject = (object) => {
+  return object.save()
+}
+
 exports.createUserObject = (payload) => {
   let obj = new UserModel(payload)
   return obj.save()
@@ -32,6 +41,11 @@ exports.updateUserObject = (userId, payload) => {
     .exec()
 }
 
+exports.updateOneUserObjectUsingQuery = (query, updated, options) => {
+  return UserModel.updateOne(query, updated, options)
+    .exec()
+}
+
 exports.genericUpdateUserObject = (query, updated, options) => {
   return UserModel.update(query, updated, options)
     .exec()
@@ -39,6 +53,11 @@ exports.genericUpdateUserObject = (query, updated, options) => {
 
 exports.deleteUserObject = (userId) => {
   return UserModel.deleteOne({_id: userId})
+    .exec()
+}
+
+exports.deleteUserObjectUsingQuery = (query) => {
+  return UserModel.findOneAndRemove(query)
     .exec()
 }
 
