@@ -80,7 +80,7 @@ module.exports = function (app) {
     res.render('layouts/forgotPassword')
   })
   app.get('/invitation', function (req, res) {
-    res.render('layouts/invitation')
+    res.render('layouts/invitation', {expireLink: false})
   })
 
   app.route('/:url(api|auth)/*').get((req, res) => {
