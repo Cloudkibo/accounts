@@ -9,8 +9,12 @@ router.get('/:_id', controller.index)
 router.post('/updateChecks', controller.updateChecks)
 router.get('/updateSkipConnect', controller.updateSkipConnect)
 
+router.post('/updateMode',
+  validate({body: validationSchema.updateMode}),
+  controller.updateMode)
+
 router.post('/joinCompany',
-  validate({body: validationSchema.userPayload}),
+  validate({body: validationSchema.joinCompany}),
   controller.joinCompany)
 
 router.post('/',

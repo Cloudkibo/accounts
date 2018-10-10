@@ -30,6 +30,23 @@ exports.userPayload = {
   }
 }
 
+exports.updateMode = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    '_id': {
+      'type': 'string'
+    },
+    'advancedMode': {
+      'type': 'boolean'
+    }
+  },
+  'required': [
+    '_id',
+    'advancedMode'
+  ]
+}
+
 exports.joinCompany = {
   '$schema': 'http://json-schema.org/draft-04/schema#',
   'type': 'object',

@@ -70,6 +70,59 @@ exports.index = function (req, res) {
     })
 }
 
+exports.updateMode = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateMode')
+  // Never delete following variables. They are used in Promise chaining
+  let user
+  let companyUser
+  let permissions
+  let company
+  let userPromise = dataLayer.findOneUserObject(req.user._id)
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.body._id})
+  let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.body._id})
+
+  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+    .then(result => {
+      user = result[0]
+      companyUser = result[1]
+      permissions = result[2]
+      if (!user || !companyUser || !permissions) {
+        let resp = logicLayer.getResponse(user, companyUser, permissions)
+        return res.status(404).json(resp)
+      }
+      user.advancedMode = req.body.advancedMode
+      return dataLayer.saveUserObject(user)
+    })
+    .then(savedUser => {
+      return CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+    })
+    .then(foundCompany => {
+      company = foundCompany
+      return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+    })
+    .then(plan => {
+      if (!plan) {
+        return res.status(404).json({
+          status: 'failed',
+          description: 'Fatal Error, plan not set for this user. Please contact support'
+        })
+      }
+      user = user.toObject()
+      user.companyId = companyUser.companyId
+      user.permissions = permissions
+      user.currentPlan = company.planId
+      user.last4 = company.stripe.last4
+      user.plan = plan
+      user.uiMode = config.uiModes[user.uiMode]
+
+      res.status(200).json({status: 'success', payload: user})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
 exports.updateSkipConnect = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller updateSkipConnect')
 
