@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.use('/api/v1/pages', require('./api/v1/pages'))
   app.use('/api/v1/lists', require('./api/v1/lists'))
   app.use('/api/v1/menu', require('./api/v1/menu'))
+  app.use('/api/v1/plans', require('./api/v1/plans'))
   app.use('/api/v1/subscribers', require('./api/v1/subscribers'))
   app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
   app.use('/api/v1/permissions', require('./api/v1/permissions'))
