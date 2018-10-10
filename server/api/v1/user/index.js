@@ -5,8 +5,23 @@ const validate = require('express-jsonschema').validate
 const validationSchema = require('./validationSchema')
 const controller = require('./user.controller')
 
-router.get('/:_id',
-  controller.index)
+router.get('/:_id', controller.index)
+router.post('/updateChecks', controller.updateChecks)
+router.get('/updateSkipConnect', controller.updateSkipConnect)
+router.get('/fbAppId', controller.fbAppId)
+router.get('/addAccountType', controller.addAccountType)
+
+router.post('/authenticatePassword',
+  validate({body: validationSchema.authenticatePassword}),
+  controller.authenticatePassword)
+
+router.post('/updateMode',
+  validate({body: validationSchema.updateMode}),
+  controller.updateMode)
+
+router.post('/joinCompany',
+  validate({body: validationSchema.joinCompany}),
+  controller.joinCompany)
 
 router.post('/',
   validate({body: validationSchema.userPayload}),

@@ -16,6 +16,11 @@ exports.deleteInvitationTokenObjectUsingQuery = (query) => {
     .exec()
 }
 
+exports.deleteOneInvitationTokenObjectUsingQuery = (query) => {
+  return InviteAgentTokenModel.deleteOne(query)
+    .exec()
+}
+
 exports.createInvitationTokenObject = (payload) => {
   let obj = new InviteAgentTokenModel(payload)
   return obj.save()

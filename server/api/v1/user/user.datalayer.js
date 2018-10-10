@@ -10,6 +10,11 @@ exports.findOneUserObject = (userId) => {
     .exec()
 }
 
+exports.findAllUserObjects = () => {
+  return UserModel.find()
+    .exec()
+}
+
 exports.findOneUserObjectUsingQuery = (query) => {
   return UserModel.findOne(query)
     .exec()
@@ -43,6 +48,11 @@ exports.updateUserObject = (userId, payload) => {
 
 exports.updateOneUserObjectUsingQuery = (query, updated, options) => {
   return UserModel.updateOne(query, updated, options)
+    .exec()
+}
+
+exports.findOneAndUpdateUsingQuery = (query, updated, options) => {
+  return UserModel.findOneAndUpdate(query, updated, options)
     .exec()
 }
 

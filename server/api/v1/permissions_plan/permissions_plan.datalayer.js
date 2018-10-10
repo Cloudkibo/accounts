@@ -10,8 +10,13 @@ exports.findOnePermissionsPlanObject = (permissionsPlanId) => {
     .exec()
 }
 
-exports.findPermissionsPlanObjects = (query) => {
+exports.findallPermissionsPlanObjects = (query) => {
   return PermissionsPlan.find(query)
+    .exec()
+}
+
+exports.findOnePermissionObjectUsingQuery = (query) => {
+  return PermissionsPlan.findOne(query)
     .exec()
 }
 

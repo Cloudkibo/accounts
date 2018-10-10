@@ -8,26 +8,173 @@ const CompanyProfileDataLayer = require('./../companyprofile/companyprofile.data
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const FeatureUsageDataLayer = require('./../featureUsage/usage.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
+const PermissionPlanDataLayer = require('./../permissions_plan/permissions_plan.datalayer')
 const VertificationTokenDataLayer = require('./../verificationtoken/verificationtoken.datalayer')
+const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
+const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const auth = require('./../../../auth/auth.service')
 const TAG = '/api/v1/user/user.controller.js'
 
 const util = require('util')
+const _ = require('lodash')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
 
-  let id
-  req.params._id
-    ? id = req.params._id
-    : res.status(500).json({status: 'failed', payload: 'ID is not provided'})
+  let userPromise = dataLayer.findOneUserObject(req.user._id)
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+  let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
 
-  dataLayer.findOneUserObject(id)
-    .then(userObject => {
-      return res.status(200).json({status: 'success', payload: userObject})
+  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+    .then(result => {
+      let user = result[0]
+      let companyUser = result[1]
+      let permissions = result[2]
+      let company
+
+      if (!user || !companyUser || !permissions) {
+        let resp = logicLayer.getResponse(user, companyUser, permissions)
+        return res.status(404).json(resp)
+      }
+
+      CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+        .then(foundCompany => {
+          company = foundCompany
+          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+        })
+        .then(plan => {
+          if (!plan) {
+            return res.status(404).json({
+              status: 'failed',
+              description: 'Fatal Error, plan not set for this user. Please contact support'
+            })
+          }
+          user = user.toObject()
+          user.companyId = companyUser.companyId
+          user.permissions = permissions
+          user.currentPlan = company.planId
+          user.last4 = company.stripe.last4
+          user.plan = plan
+          user.uiMode = config.uiModes[user.uiMode]
+
+          res.status(200).json({status: 'success', payload: user})
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
+exports.updateMode = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateMode')
+  // Never delete following variables. They are used in Promise chaining
+  let user
+  let companyUser
+  let permissions
+  let company
+  let userPromise = dataLayer.findOneUserObject(req.user._id)
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.body._id})
+  let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.body._id})
+
+  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+    .then(result => {
+      user = result[0]
+      companyUser = result[1]
+      permissions = result[2]
+      if (!user || !companyUser || !permissions) {
+        let resp = logicLayer.getResponse(user, companyUser, permissions)
+        return res.status(404).json(resp)
+      }
+      user.advancedMode = req.body.advancedMode
+      return dataLayer.saveUserObject(user)
+    })
+    .then(savedUser => {
+      return CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+    })
+    .then(foundCompany => {
+      company = foundCompany
+      return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+    })
+    .then(plan => {
+      if (!plan) {
+        return res.status(404).json({
+          status: 'failed',
+          description: 'Fatal Error, plan not set for this user. Please contact support'
+        })
+      }
+      user = user.toObject()
+      user.companyId = companyUser.companyId
+      user.permissions = permissions
+      user.currentPlan = company.planId
+      user.last4 = company.stripe.last4
+      user.plan = plan
+      user.uiMode = config.uiModes[user.uiMode]
+
+      res.status(200).json({status: 'success', payload: user})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
+exports.updateSkipConnect = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateSkipConnect')
+
+  dataLayer.findOneAndUpdateUsingQuery({_id: req.user._id}, {skippedFacebookConnect: true}, {new: true})
+    .then(user => {
+      logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
+      return res.status(200).json({status: 'success', payload: user})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at update skip connect: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
+exports.fbAppId = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller fbAppId')
+  res.status(200).json({status: 'success', payload: config.facebook.clientID})
+}
+
+exports.updateChecks = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateChecks')
+
+  dataLayer.findOneUserObject(req.user._id)
+    .then(user => {
+      // return if user not found
+      if (!user) return res.status(404).json({status: 'failed', description: 'User not found'})
+
+      if (req.body.getStartedSeen) user.getStartedSeen = req.body.getStartedSeen
+      if (req.body.dashboardTourSeen) user.dashboardTourSeen = req.body.dashboardTourSeen
+      if (req.body.surveyTourSeen) user.surveyTourSeen = req.body.surveyTourSeen
+      if (req.body.convoTourSeen) user.convoTourSeen = req.body.convoTourSeen
+      if (req.body.pollTourSeen) user.pollTourSeen = req.body.pollTourSeen
+      if (req.body.growthToolsTourSeen) user.growthToolsTourSeen = req.body.growthToolsTourSeen
+      if (req.body.subscriberTourSeen) user.subscriberTourSeen = req.body.subscriberTourSeen
+      if (req.body.liveChatTourSeen) user.liveChatTourSeen = req.body.liveChatTourSeen
+      if (req.body.autoPostingTourSeen) user.autoPostingTourSeen = req.body.autoPostingTourSeen
+      if (req.body.mainMenuTourSeen) user.mainMenuTourSeen = req.body.mainMenuTourSeen
+      if (req.body.subscribeToMessengerTourSeen) user.subscribeToMessengerTourSeen = req.body.subscribeToMessengerTourSeen
+      if (req.body.pagesTourSeen) user.pagesTourSeen = req.body.pagesTourSeen
+      if (req.body.wizardSeen) user.wizardSeen = req.body.wizardSeen
+
+      dataLayer.saveUserObject(user).then(result => {
+        logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
+        return res.status(200).json({status: 'success', payload: user})
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at User find: ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: 'internal server error' + JSON.stringify(err)
+      })
     })
 }
 
@@ -144,6 +291,120 @@ exports.create = function (req, res) {
     })
 }
 
+exports.joinCompany = function (req, res) {
+  logger.serverLog(TAG, 'Hit the create user controller joinCompany')
+  // Never delete following variables. They are used in Promise chaining
+  let invitationToken
+  let companyUser
+  let user
+  let companyUserSaved
+  let permissionSaved
+  let tokenString
+
+  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
+    .then(token => {
+      invitationToken = token
+      if (!invitationToken) {
+        return res.status(404).json({
+          status: 'failed',
+          description: 'Invitation token invalid or expired. Please contact admin to invite you again.'
+        })
+      }
+      return CompanyUserDataLayer
+        .findOneCompanyUserObjectUsingQuery({companyId: invitationToken.companyId, role: 'buyer'})
+    })
+    .then(compUser => {
+      logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
+      companyUser = compUser
+      return dataLayer.findOneUserObject(compUser.userId)
+    })
+    .then(foundUser => {
+      if (!companyUser || !foundUser) {
+        return res.status(404).json({status: 'failed', description: 'user or company user not found'})
+      } else {
+        logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
+        let accountData = {
+          name: req.body.name,
+          email: req.body.email,
+          domain: invitationToken.domain,
+          password: req.body.password,
+          domain_email: invitationToken.domain + '' + req.body.email,
+          accountType: 'team',
+          role: invitationToken.role,
+          uiMode: foundUser.uiMode
+        }
+        return dataLayer.createUserObject(accountData)
+      }
+    })
+    .then(createdUser => {
+      user = createdUser
+      logger.serverLog(TAG, `Created User : ${util.inspect(createdUser)}`)
+      let companyUserData = {
+        companyId: invitationToken.companyId,
+        userId: createdUser._id,
+        domain_email: createdUser.domain_email,
+        role: invitationToken.role
+      }
+      return CompanyUserDataLayer.CreateCompanyUserObject(companyUserData)
+    })
+    .then(createdCompanyUser => {
+      companyUserSaved = createdCompanyUser
+      logger.serverLog(TAG, `Created Company User : ${util.inspect(createdCompanyUser)}`)
+      let permissionsPayload = { companyId: invitationToken.companyId, userId: user._id }
+
+      permissionsPayload = _.merge(permissionsPayload, config.permissions[invitationToken.role] || {})
+      return PermissionDataLayer.createUserPermission(permissionsPayload)
+    })
+    .then(createdPermissions => {
+      permissionSaved = createdPermissions
+      logger.serverLog(TAG, `Created Permissions: ${util.inspect(createdPermissions)}`)
+
+      let token = auth.signToken(user._id)
+      res.clearCookie('email')
+      res.clearCookie('companyId')
+      res.clearCookie('companyName')
+      res.clearCookie('domain')
+      res.clearCookie('name')
+      res.cookie('token', token)
+      res.cookie('userid', user._id)
+      res.status(201).json({status: 'success', token: token})
+
+      tokenString = logicLayer.getRandomString()
+      let tokenPromise = VertificationTokenDataLayer.createVerificationToken({userId: user._id, token: tokenString})
+      let inviRemPromise = InvitationDataLayer
+        .deleteOneInvitationObjectUsingQuery({email: req.body.email, companyId: invitationToken.companyId})
+      let inviAgentTokenRemove = InviteAgentTokenDataLayer
+        .deleteOneInvitationTokenObjectUsingQuery({token: req.body.token})
+
+      return Promise.all([tokenPromise, inviRemPromise, inviAgentTokenRemove])
+    })
+    .then(resultAll => {
+      logger.serverLog(TAG, `Result All: ${util.inspect(resultAll)}`)
+
+      // Sending email via sendgrid
+      let sendgrid = utility.getSendGridObject()
+      let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
+      email = logicLayer.setEmailBody(email, tokenString, req.body)
+      logger.serverLog(TAG, util.inspect(email))
+      sendgrid.send(email, function (err, json) {
+        if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
+      })
+      // Sending email to sojharo and sir
+      let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
+      inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
+
+      if (config.env === 'production') {
+        sendgrid.send(inHouseEmail, function (err, json) {
+          if (err) { logger.serverLog(TAG, `Internal Server Error on sending email : ${err}`) }
+        })
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
 exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
 
@@ -186,6 +447,62 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.authenticatePassword = function (req, res) {
+  logger.serverLog(TAG, 'Hit the delete user controller authenticatePassword')
+
+  dataLayer.findOneUserByEmail(req.body.email)
+    .then(user => {
+      if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
+      if (!user.authenticate(req.body.password)) {
+        return res.status(200).json({status: 'failed', description: 'Incorrect password'})
+      } else {
+        return res.status(200).json({status: 'success', description: 'Authenticated'})
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at authenticatePassword user ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.addAccountType = function (req, res) {
+  logger.serverLog(TAG, 'Hit the delete user controller addAccountType')
+
+  dataLayer.findAllUserObjects()
+    .then(users => {
+      users.forEach((user, index) => {
+        CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
+          .then(companyUser => {
+            logger.serverLog(TAG, `Found Company User: ${companyUser}`)
+            return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
+          })
+          .then(cp => {
+            logger.serverLog(TAG, `Found Company Profile: ${cp}`)
+            if (cp.planId.unique_ID === 'plan_A' || cp.planId.unique_ID === 'plan_B') {
+              user.accountType = 'individual'
+            } else if (cp.planId.unique_ID === 'plan_C' || cp.planId.unique_ID === 'plan_D') {
+              user.accountType = 'team'
+            }
+            return dataLayer.saveUserObject(user)
+          })
+          .then(savedUser => {
+            logger.serverLog(TAG, `saved User: ${savedUser}`)
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Error at company addAccountType: ${util.inspect(err)}`)
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+        if (index === (users.length - 1)) {
+          return res.status(200).json({ status: 'success', description: 'Successfuly added!' })
+        }
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at addAccountType: ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
     })
 }

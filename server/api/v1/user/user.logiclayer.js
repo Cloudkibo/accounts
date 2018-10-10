@@ -8,6 +8,7 @@ const crypto = require('crypto')
 const MailChimp = require('mailchimp-api-v3')
 const logger = require('./../../../components/logger')
 const config = require('./../../../config/environment/index')
+const utility = require('./../../../components/utility')
 
 const TAG = '/api/v1/user/user.logiclayer.js'
 
@@ -21,6 +22,22 @@ const prepareUpdateUserPayload = (name, email, uiMode) => {
   return temp
 }
 
+const getResponse = (user, companyUser, permission) => {
+  if (!user) {
+    return {status: 'failed', description: 'User not found'}
+  } else if (!companyUser) {
+    return {
+      status: 'failed',
+      description: 'The user account does not belong to any company. Please contact support'
+    }
+  } else if (!permission) {
+    return {
+      status: 'failed',
+      description: 'Permissions not set for this user. Please contact support'
+    }
+  }
+}
+
 const prepareUserPayload = (body, isTeam, domain) => {
   let random = getRandomString()
   let payload = {
@@ -31,7 +48,7 @@ const prepareUserPayload = (body, isTeam, domain) => {
     accountType: isTeam ? 'team' : 'individual',
     role: 'buyer',
     domain: isTeam ? body.domain.toLowerCase() : random,
-    domainEmail: isTeam
+    domain_email: isTeam
       ? body.domain.toLowerCase() + '' + body.email.toLowerCase()
       : domain + body.email.toLowerCase()
   }
@@ -233,3 +250,4 @@ exports.emailHeader = emailHeader
 exports.inHouseEmailHeader = inHouseEmailHeader
 exports.setEmailBody = setEmailBody
 exports.setInHouseEmailBody = setInHouseEmailBody
+exports.getResponse = getResponse
