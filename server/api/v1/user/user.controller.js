@@ -451,6 +451,24 @@ exports.delete = function (req, res) {
     })
 }
 
+exports.authenticatePassword = function (req, res) {
+  logger.serverLog(TAG, 'Hit the delete user controller authenticatePassword')
+
+  dataLayer.findOneUserByEmail(req.body.email)
+    .then(user => {
+      if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
+      if (!user.authenticate(req.body.password)) {
+        return res.status(200).json({status: 'failed', description: 'Incorrect password'})
+      } else {
+        return res.status(200).json({status: 'success', description: 'Authenticated'})
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at authenticatePassword user ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 exports.enableDelete = function (req, res) {
   logger.serverLog(TAG, 'Enabling GDPR Delete')
 

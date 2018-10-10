@@ -10,6 +10,10 @@ router.post('/updateChecks', controller.updateChecks)
 router.get('/updateSkipConnect', controller.updateSkipConnect)
 router.get('/fbAppId', controller.fbAppId)
 
+router.post('/authenticatePassword',
+  validate({body: validationSchema.authenticatePassword}),
+  controller.authenticatePassword)
+
 router.post('/updateMode',
   validate({body: validationSchema.updateMode}),
   controller.updateMode)

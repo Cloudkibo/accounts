@@ -72,6 +72,23 @@ exports.joinCompany = {
   ]
 }
 
+exports.authenticatePassword = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'email': {
+      'type': 'string'
+    },
+    'password': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'email',
+    'password'
+  ]
+}
+
 exports.updateUserPayload = {
   type: 'object',
   properties: {
