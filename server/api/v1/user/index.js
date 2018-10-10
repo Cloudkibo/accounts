@@ -8,6 +8,9 @@ const controller = require('./user.controller')
 router.get('/:_id',
   controller.index)
 
+router.post('/updateChecks',
+  controller.updateChecks)
+
 router.post('/',
   validate({body: validationSchema.userPayload}),
   controller.create)

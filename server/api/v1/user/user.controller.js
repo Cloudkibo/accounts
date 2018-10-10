@@ -67,6 +67,42 @@ exports.index = function (req, res) {
     })
 }
 
+exports.updateChecks = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateChecks')
+
+  dataLayer.findOneUserObject(req.user._id)
+    .then(user => {
+      // return if user not found
+      if (!user) return res.status(404).json({status: 'failed', description: 'User not found'})
+
+      if (req.body.getStartedSeen) user.getStartedSeen = req.body.getStartedSeen
+      if (req.body.dashboardTourSeen) user.dashboardTourSeen = req.body.dashboardTourSeen
+      if (req.body.surveyTourSeen) user.surveyTourSeen = req.body.surveyTourSeen
+      if (req.body.convoTourSeen) user.convoTourSeen = req.body.convoTourSeen
+      if (req.body.pollTourSeen) user.pollTourSeen = req.body.pollTourSeen
+      if (req.body.growthToolsTourSeen) user.growthToolsTourSeen = req.body.growthToolsTourSeen
+      if (req.body.subscriberTourSeen) user.subscriberTourSeen = req.body.subscriberTourSeen
+      if (req.body.liveChatTourSeen) user.liveChatTourSeen = req.body.liveChatTourSeen
+      if (req.body.autoPostingTourSeen) user.autoPostingTourSeen = req.body.autoPostingTourSeen
+      if (req.body.mainMenuTourSeen) user.mainMenuTourSeen = req.body.mainMenuTourSeen
+      if (req.body.subscribeToMessengerTourSeen) user.subscribeToMessengerTourSeen = req.body.subscribeToMessengerTourSeen
+      if (req.body.pagesTourSeen) user.pagesTourSeen = req.body.pagesTourSeen
+      if (req.body.wizardSeen) user.wizardSeen = req.body.wizardSeen
+
+      dataLayer.saveUserObject(user).then(result => {
+        logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
+        return res.status(200).json({status: 'success', payload: user})
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at User find: ${util.inspect(err)}`)
+      return res.status(500).json({
+        status: 'failed',
+        description: 'internal server error' + JSON.stringify(err)
+      })
+    })
+}
+
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
   let isTeam = logicLayer.isTeamAccount(req.body)
