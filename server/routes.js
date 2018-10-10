@@ -17,7 +17,7 @@ module.exports = function (app) {
 
   // index page
   app.get('/', function (req, res) {
-    res.render('layouts/index', {
+    res.render('layouts/invitation', {
       buttonOne: { name: 'Login', url: `/login?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Sign Up', url: `/signup?continue=${req.query.continue ? req.query.continue : ''}` }
     })
@@ -78,6 +78,9 @@ module.exports = function (app) {
   // login page
   app.get('/forgotPassword', function (req, res) {
     res.render('layouts/forgotPassword')
+  })
+  app.get('/invitation', function (req, res) {
+    res.render('layouts/invitation')
   })
 
   app.route('/:url(api|auth)/*').get((req, res) => {
