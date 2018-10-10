@@ -40,6 +40,11 @@ exports.genericFindUserPermissions = (query) => {
     .exec()
 }
 
+exports.findOneUserPermissionsUsingQUery = (query) => {
+  return UserPermissionsModel.findOne(query)
+    .exec()
+}
+
 exports.updateUserPermissionsObject = (query, object) => {
   return UserPermissionsModel.updateOne(query, object)
     .exec()

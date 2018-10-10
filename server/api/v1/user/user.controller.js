@@ -8,6 +8,7 @@ const CompanyProfileDataLayer = require('./../companyprofile/companyprofile.data
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const FeatureUsageDataLayer = require('./../featureUsage/usage.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
+const PermissionPlanDataLayer = require('./../permissions_plan/permissions_plan.datalayer')
 const VertificationTokenDataLayer = require('./../verificationtoken/verificationtoken.datalayer')
 const auth = require('./../../../auth/auth.service')
 const TAG = '/api/v1/user/user.controller.js'
@@ -17,17 +18,52 @@ const util = require('util')
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
 
-  let id
-  req.params._id
-    ? id = req.params._id
-    : res.status(500).json({status: 'failed', payload: 'ID is not provided'})
+  let userPromise = dataLayer.findOneUserObject(req.user._id)
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+  let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
 
-  dataLayer.findOneUserObject(id)
-    .then(userObject => {
-      return res.status(200).json({status: 'success', payload: userObject})
+  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+    .then(result => {
+      let user = result[0]
+      let companyUser = result[1]
+      let permissions = result[2]
+      let company
+
+      if (!user || !companyUser || !permissions) {
+        let resp = logicLayer.getResponse(user, companyUser, permissions)
+        return res.status(404).json(resp)
+      }
+
+      CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+        .then(foundCompany => {
+          company = foundCompany
+          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+        })
+        .then(plan => {
+          if (!plan) {
+            return res.status(404).json({
+              status: 'failed',
+              description: 'Fatal Error, plan not set for this user. Please contact support'
+            })
+          }
+          user = user.toObject()
+          user.companyId = companyUser.companyId
+          user.permissions = permissions
+          user.currentPlan = company.planId
+          user.last4 = company.stripe.last4
+          user.plan = plan
+          user.uiMode = config.uiModes[user.uiMode]
+
+          res.status(200).json({status: 'success', payload: user})
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
 

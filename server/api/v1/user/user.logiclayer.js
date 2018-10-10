@@ -21,6 +21,22 @@ const prepareUpdateUserPayload = (name, email, uiMode) => {
   return temp
 }
 
+const getResponse = (user, companyUser, permission) => {
+  if (!user) {
+    return {status: 'failed', description: 'User not found'}
+  } else if (!companyUser) {
+    return {
+      status: 'failed',
+      description: 'The user account does not belong to any company. Please contact support'
+    }
+  } else if (!permission) {
+    return {
+      status: 'failed',
+      description: 'Permissions not set for this user. Please contact support'
+    }
+  }
+}
+
 const prepareUserPayload = (body, isTeam, domain) => {
   let random = getRandomString()
   let payload = {
@@ -233,3 +249,4 @@ exports.emailHeader = emailHeader
 exports.inHouseEmailHeader = inHouseEmailHeader
 exports.setEmailBody = setEmailBody
 exports.setInHouseEmailBody = setInHouseEmailBody
+exports.getResponse = getResponse
