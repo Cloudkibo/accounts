@@ -280,12 +280,12 @@ exports.create = function (req, res) {
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at: ${err}`)
-                return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+                return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
               })
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${err}`)
-            return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+            return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
           })
       }
     })
