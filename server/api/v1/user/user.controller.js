@@ -137,6 +137,11 @@ exports.updateSkipConnect = function (req, res) {
     })
 }
 
+exports.fbAppId = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller fbAppId')
+  res.status(200).json({status: 'success', payload: config.facebook.clientID})
+}
+
 exports.updateChecks = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller updateChecks')
 

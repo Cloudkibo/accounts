@@ -8,6 +8,7 @@ const controller = require('./user.controller')
 router.get('/:_id', controller.index)
 router.post('/updateChecks', controller.updateChecks)
 router.get('/updateSkipConnect', controller.updateSkipConnect)
+router.get('/fbAppId', controller.fbAppId)
 
 router.post('/updateMode',
   validate({body: validationSchema.updateMode}),
