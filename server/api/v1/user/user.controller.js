@@ -469,6 +469,44 @@ exports.authenticatePassword = function (req, res) {
     })
 }
 
+exports.addAccountType = function (req, res) {
+  logger.serverLog(TAG, 'Hit the delete user controller addAccountType')
+
+  dataLayer.findAllUserObjects()
+    .then(users => {
+      users.forEach((user, index) => {
+        CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
+          .then(companyUser => {
+            logger.serverLog(TAG, `Found Company User: ${companyUser}`)
+            return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
+          })
+          .then(cp => {
+            logger.serverLog(TAG, `Found Company Profile: ${cp}`)
+            if (cp.planId.unique_ID === 'plan_A' || cp.planId.unique_ID === 'plan_B') {
+              user.accountType = 'individual'
+            } else if (cp.planId.unique_ID === 'plan_C' || cp.planId.unique_ID === 'plan_D') {
+              user.accountType = 'team'
+            }
+            return dataLayer.saveUserObject(user)
+          })
+          .then(savedUser => {
+            logger.serverLog(TAG, `saved User: ${savedUser}`)
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Error at company addAccountType: ${util.inspect(err)}`)
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+        if (index === (users.length - 1)) {
+          return res.status(200).json({ status: 'success', description: 'Successfuly added!' })
+        }
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at addAccountType: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 exports.enableDelete = function (req, res) {
   logger.serverLog(TAG, 'Enabling GDPR Delete')
 

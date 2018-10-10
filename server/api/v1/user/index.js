@@ -9,6 +9,7 @@ router.get('/:_id', controller.index)
 router.post('/updateChecks', controller.updateChecks)
 router.get('/updateSkipConnect', controller.updateSkipConnect)
 router.get('/fbAppId', controller.fbAppId)
+router.get('/addAccountType', controller.addAccountType)
 
 router.post('/authenticatePassword',
   validate({body: validationSchema.authenticatePassword}),

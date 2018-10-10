@@ -15,6 +15,12 @@ exports.findOneCompanyProfileObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
+exports.findOneCPWithPlanPop = (query) => {
+  return CompanyProfileModel.findOne(query)
+    .populate('planId')
+    .exec()
+}
+
 exports.findAllProfileObjectsUsingQuery = (queryObject) => {
   return CompanyProfileModel.find(queryObject)
     .exec()

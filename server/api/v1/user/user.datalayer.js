@@ -10,6 +10,11 @@ exports.findOneUserObject = (userId) => {
     .exec()
 }
 
+exports.findAllUserObjects = () => {
+  return UserModel.find()
+    .exec()
+}
+
 exports.findOneUserObjectUsingQuery = (query) => {
   return UserModel.findOne(query)
     .exec()
