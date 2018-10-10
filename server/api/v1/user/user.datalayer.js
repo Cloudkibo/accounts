@@ -46,6 +46,11 @@ exports.updateOneUserObjectUsingQuery = (query, updated, options) => {
     .exec()
 }
 
+exports.findOneAndUpdateUsingQuery = (query, updated, options) => {
+  return UserModel.findOneAndUpdate(query, updated, options)
+    .exec()
+}
+
 exports.genericUpdateUserObject = (query, updated, options) => {
   return UserModel.update(query, updated, options)
     .exec()

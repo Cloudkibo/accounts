@@ -67,6 +67,20 @@ exports.index = function (req, res) {
     })
 }
 
+exports.updateSkipConnect = function (req, res) {
+  logger.serverLog(TAG, 'Hit the find user controller updateSkipConnect')
+
+  dataLayer.findOneAndUpdateUsingQuery({_id: req.user._id}, {skippedFacebookConnect: true}, {new: true})
+    .then(user => {
+      logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
+      return res.status(200).json({status: 'success', payload: user})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at update skip connect: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+
 exports.updateChecks = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller updateChecks')
 
