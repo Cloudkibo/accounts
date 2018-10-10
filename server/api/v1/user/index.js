@@ -9,6 +9,10 @@ router.get('/:_id', controller.index)
 router.post('/updateChecks', controller.updateChecks)
 router.get('/updateSkipConnect', controller.updateSkipConnect)
 
+router.post('/joinCompany',
+  validate({body: validationSchema.userPayload}),
+  controller.joinCompany)
+
 router.post('/',
   validate({body: validationSchema.userPayload}),
   controller.create)

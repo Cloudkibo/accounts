@@ -10,10 +10,13 @@ const FeatureUsageDataLayer = require('./../featureUsage/usage.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const PermissionPlanDataLayer = require('./../permissions_plan/permissions_plan.datalayer')
 const VertificationTokenDataLayer = require('./../verificationtoken/verificationtoken.datalayer')
+const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
+const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const auth = require('./../../../auth/auth.service')
 const TAG = '/api/v1/user/user.controller.js'
 
 const util = require('util')
+const _ = require('lodash')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
@@ -227,6 +230,120 @@ exports.create = function (req, res) {
             return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
           })
       }
+    })
+}
+
+exports.joinCompany = function (req, res) {
+  logger.serverLog(TAG, 'Hit the create user controller joinCompany')
+  // Never delete following variables. They are used in Promise chaining
+  let invitationToken
+  let companyUser
+  let user
+  let companyUserSaved
+  let permissionSaved
+  let tokenString
+
+  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
+    .then(token => {
+      invitationToken = token
+      if (!invitationToken) {
+        return res.status(404).json({
+          status: 'failed',
+          description: 'Invitation token invalid or expired. Please contact admin to invite you again.'
+        })
+      }
+      return CompanyUserDataLayer
+        .findOneCompanyUserObjectUsingQuery({companyId: invitationToken.companyId, role: 'buyer'})
+    })
+    .then(compUser => {
+      logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
+      companyUser = compUser
+      return dataLayer.findOneUserObject(compUser.userId)
+    })
+    .then(foundUser => {
+      if (!companyUser || !foundUser) {
+        return res.status(404).json({status: 'failed', description: 'user or company user not found'})
+      } else {
+        logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
+        let accountData = {
+          name: req.body.name,
+          email: req.body.email,
+          domain: invitationToken.domain,
+          password: req.body.password,
+          domain_email: invitationToken.domain + '' + req.body.email,
+          accountType: 'team',
+          role: invitationToken.role,
+          uiMode: foundUser.uiMode
+        }
+        return dataLayer.createUserObject(accountData)
+      }
+    })
+    .then(createdUser => {
+      user = createdUser
+      logger.serverLog(TAG, `Created User : ${util.inspect(createdUser)}`)
+      let companyUserData = {
+        companyId: invitationToken.companyId,
+        userId: createdUser._id,
+        domain_email: createdUser.domain_email,
+        role: invitationToken.role
+      }
+      return CompanyUserDataLayer.CreateCompanyUserObject(companyUserData)
+    })
+    .then(createdCompanyUser => {
+      companyUserSaved = createdCompanyUser
+      logger.serverLog(TAG, `Created Company User : ${util.inspect(createdCompanyUser)}`)
+      let permissionsPayload = { companyId: invitationToken.companyId, userId: user._id }
+
+      permissionsPayload = _.merge(permissionsPayload, config.permissions[invitationToken.role] || {})
+      return PermissionDataLayer.createUserPermission(permissionsPayload)
+    })
+    .then(createdPermissions => {
+      permissionSaved = createdPermissions
+      logger.serverLog(TAG, `Created Permissions: ${util.inspect(createdPermissions)}`)
+
+      let token = auth.signToken(user._id)
+      res.clearCookie('email')
+      res.clearCookie('companyId')
+      res.clearCookie('companyName')
+      res.clearCookie('domain')
+      res.clearCookie('name')
+      res.cookie('token', token)
+      res.cookie('userid', user._id)
+      res.status(201).json({status: 'success', token: token})
+
+      tokenString = logicLayer.getRandomString()
+      let tokenPromise = VertificationTokenDataLayer.createVerificationToken({userId: user._id, token: tokenString})
+      let inviRemPromise = InvitationDataLayer
+        .deleteOneInvitationObjectUsingQuery({email: req.body.email, companyId: invitationToken.companyId})
+      let inviAgentTokenRemove = InviteAgentTokenDataLayer
+        .deleteOneInvitationTokenObjectUsingQuery({token: req.body.token})
+
+      return Promise.all([tokenPromise, inviRemPromise, inviAgentTokenRemove])
+    })
+    .then(resultAll => {
+      logger.serverLog(TAG, `Result All: ${util.inspect(resultAll)}`)
+
+      // Sending email via sendgrid
+      let sendgrid = utility.getSendGridObject()
+      let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
+      email = logicLayer.setEmailBody(email, tokenString, req.body)
+      logger.serverLog(TAG, util.inspect(email))
+      sendgrid.send(email, function (err, json) {
+        if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
+      })
+      // Sending email to sojharo and sir
+      let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
+      inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
+
+      if (config.env === 'production') {
+        sendgrid.send(inHouseEmail, function (err, json) {
+          if (err) { logger.serverLog(TAG, `Internal Server Error on sending email : ${err}`) }
+        })
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
 

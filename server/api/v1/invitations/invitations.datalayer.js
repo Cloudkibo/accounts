@@ -21,6 +21,11 @@ exports.deleteInvitationObjectUsingQuery = (query) => {
     .exec()
 }
 
+exports.deleteOneInvitationObjectUsingQuery = (query) => {
+  return InvitationsModel.deleteOne(query)
+    .exec()
+}
+
 exports.CountInvitationObjectUsingQuery = (query) => {
   return InvitationsModel.count(query)
     .exec()

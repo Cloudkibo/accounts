@@ -8,6 +8,7 @@ const crypto = require('crypto')
 const MailChimp = require('mailchimp-api-v3')
 const logger = require('./../../../components/logger')
 const config = require('./../../../config/environment/index')
+const utility = require('./../../../components/utility')
 
 const TAG = '/api/v1/user/user.logiclayer.js'
 
@@ -47,7 +48,7 @@ const prepareUserPayload = (body, isTeam, domain) => {
     accountType: isTeam ? 'team' : 'individual',
     role: 'buyer',
     domain: isTeam ? body.domain.toLowerCase() : random,
-    domainEmail: isTeam
+    domain_email: isTeam
       ? body.domain.toLowerCase() + '' + body.email.toLowerCase()
       : domain + body.email.toLowerCase()
   }
