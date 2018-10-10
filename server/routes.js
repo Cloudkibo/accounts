@@ -17,7 +17,7 @@ module.exports = function (app) {
 
   // index page
   app.get('/', function (req, res) {
-    res.render('layouts/invitation', {
+    res.render('layouts/index', {
       buttonOne: { name: 'Login', url: `/login?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Sign Up', url: `/signup?continue=${req.query.continue ? req.query.continue : ''}` }
     })
