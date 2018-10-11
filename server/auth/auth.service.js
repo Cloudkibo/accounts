@@ -16,6 +16,7 @@ const TAG = 'auth/auth.service.js'
  * Otherwise returns 403
  */
 function isAuthenticated () {
+  logger.serverLog(TAG, `inside isauthenticated`)
   return compose()
   // Validate jwt or api keys
     .use((req, res, next) => {
@@ -28,6 +29,7 @@ function isAuthenticated () {
     })
     // Attach user to request
     .use((req, res, next) => {
+      logger.serverLog(TAG, `inside users`)
       Users.findOne({_id: req.user._id}, (err, user) => {
         if (err) {
           logger.serverLog(TAG, `error in user fetching`)

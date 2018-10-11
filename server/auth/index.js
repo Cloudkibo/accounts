@@ -29,9 +29,9 @@ router.get('/scripts/jsonp', (req, res) => {
 
 // route to verify the token
 router.get('/verify',
-  () => { logger.serverLog(TAG, `before authenticated`) },
+  (req, res, next) => { logger.serverLog(TAG, `before authenticated`); next() },
   auth.isAuthenticated(),
-  () => { logger.serverLog(TAG, `AFTER authenticated`) },
+  (req, res, next) => { logger.serverLog(TAG, `AFTER authenticated`); next() },
   (req, res) => {
     logger.serverLog(TAG, `Going to send user object: ${req.user}`)
     res.status(200).json({status: 'success', description: 'Token verified', user: req.user})
