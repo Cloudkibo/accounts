@@ -558,7 +558,7 @@ exports.cancelDeletion = function (req, res) {
   logger.serverLog(TAG, 'Disabling GDPR Delete')
 
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
-  dataLayer.updateUserObject(req.params._id, {deleteInformation}, {new: true})
+  dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
       let sendgrid = utility.getSendGridObject()
       let email = new sendgrid.Email({

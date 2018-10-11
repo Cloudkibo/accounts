@@ -35,12 +35,13 @@ router.put('/:_id',
 router.delete('/:_id',
   controller.delete)
 
-router.post('/:_id/gdpr',
+router.post('/gdpr',
   validate({body: validationSchema.enableGDPRDelete}),
   auth.isAuthenticated(),
   controller.enableDelete)
 
-router.delete('/:_id/gdpr',
+router.get('/gdpr',
+  auth.isAuthenticated(),
   controller.cancelDeletion)
 
 router.put('/update',
