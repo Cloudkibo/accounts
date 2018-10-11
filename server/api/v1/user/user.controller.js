@@ -17,6 +17,7 @@ const TAG = '/api/v1/user/user.controller.js'
 
 const util = require('util')
 const _ = require('lodash')
+const moment = require('moment')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
@@ -511,9 +512,41 @@ exports.enableDelete = function (req, res) {
   logger.serverLog(TAG, 'Enabling GDPR Delete')
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
-  dataLayer.updateUserObject(req.params._id, {deleteInformation})
-    .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+  dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
+    .then(updatedUser => {
+      let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
+      let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
+      let sendgrid = utility.getSendGridObject()
+      let email = new sendgrid.Email({
+        to: req.user.email,
+        from: 'support@cloudkibo.com',
+        subject: 'KiboPush: Delete Confirmation',
+        text: ' Delete Confirmation'
+      })
+      email = logicLayer.setEnableDeleteEmailBody(email, emailText)
+      sendgrid.send(email, function (err, json) {
+        if (err) {
+          return logger.serverLog(TAG,
+            `Internal Server Error on sending email : ${JSON.stringify(
+              err)}`)
+        }
+      })
+      let emailAdmin = new sendgrid.Email({
+        to: 'sojharo@cloudkibo.com',
+        from: 'support@cloudkibo.com',
+        subject: 'KiboPush: Delete User Information',
+        text: 'Delete User Information',
+        cc: 'jekram@cloudkibo.com'
+      })
+      sendgrid.send(emailAdmin, function (err, json) {
+        if (err) {
+          return logger.serverLog(TAG,
+            `Internal Server Error on sending email to Admin : ${JSON.stringify(
+              err)}`)
+        }
+      })
+      emailAdmin = logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
+      return res.status(200).json({status: 'success', payload: updatedUser})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
@@ -525,9 +558,40 @@ exports.cancelDeletion = function (req, res) {
   logger.serverLog(TAG, 'Disabling GDPR Delete')
 
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
-  dataLayer.updateUserObject(req.params._id, {deleteInformation})
-    .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+  dataLayer.updateUserObject(req.params._id, {deleteInformation}, {new: true})
+    .then(updatedUser => {
+      let sendgrid = utility.getSendGridObject()
+      let email = new sendgrid.Email({
+        to: req.user.email,
+        from: 'support@cloudkibo.com',
+        subject: 'KiboPush: Delete Confirmation',
+        text: ' Delete Confirmation'
+      })
+      let emailText = '<p> You have requested to cancel the deletion process. Request has been sent to admin.</p>'
+      email = logicLayer.setEnableDeleteEmailBody(email, emailText)
+      sendgrid.send(email, function (err, json) {
+        if (err) {
+          return logger.serverLog(TAG,
+            `Internal Server Error on sending email : ${JSON.stringify(
+              err)}`)
+        }
+      })
+      let emailAdmin = new sendgrid.Email({
+        to: 'sojharo@cloudkibo.com',
+        from: 'support@cloudkibo.com',
+        subject: 'KiboPush: Cancel Deletion Process',
+        text: 'Cancel Deletion Process',
+        cc: 'jekram@cloudkibo.com'
+      })
+      emailAdmin = logicLayer.setInhouseCancelDeleteEmailBody(emailAdmin, req.user)
+      sendgrid.send(emailAdmin, function (err, json) {
+        if (err) {
+          return logger.serverLog(TAG,
+            `Internal Server Error on sending email to Admin : ${JSON.stringify(
+              err)}`)
+        }
+      })
+      return res.status(200).json({status: 'success', payload: updatedUser})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)

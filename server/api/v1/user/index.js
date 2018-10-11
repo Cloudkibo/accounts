@@ -4,6 +4,7 @@ const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
 const controller = require('./user.controller')
+const auth = require('./../../../auth/auth.service')
 
 router.get('/:_id', controller.index)
 router.post('/updateChecks', controller.updateChecks)
@@ -36,6 +37,7 @@ router.delete('/:_id',
 
 router.post('/:_id/gdpr',
   validate({body: validationSchema.enableGDPRDelete}),
+  auth.isAuthenticated(),
   controller.enableDelete)
 
 router.delete('/:_id/gdpr',
