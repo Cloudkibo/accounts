@@ -45,7 +45,7 @@ module.exports = function (app) {
     app.use(helmet())
   }
 
-  if (env === 'development' || env === 'test') {
+  if (env === 'development' || env === 'staging') {
     /**
          * HTTP request logger
          */
