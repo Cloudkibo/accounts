@@ -7,6 +7,6 @@ let router = express.Router()
 const auth = require('../../../auth/auth.service')
 
 router.get('/verify/:id', controller.verify)
-router.get('/resend', controller.resend)
+router.get('/resend', auth.isAuthenticated(), controller.resend)
 
 module.exports = router

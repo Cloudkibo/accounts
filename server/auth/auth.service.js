@@ -4,8 +4,14 @@ const config = require('../config/environment')
 const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
 const compose = require('composable-middleware')
-const Users = require('../api/v1/user/user.model')
+const UserLogicLayer = require('./../api/v1/user/user.logiclayer')
+const UserDataLayer = require('./../api/v1/user/user.datalayer')
+const CompanyUserDataLayer = require('./../api/v1/companyuser/companyuser.datalayer')
+const PermissionDataLayer = require('./../api/v1/permissions/permissions.datalayer')
+const CompanyProfileDataLayer = require('./../api/v1/companyprofile/companyprofile.datalayer')
+const PermissionPlanDataLayer = require('./../api/v1/permissions_plan/permissions_plan.datalayer')
 const validateJwt = expressJwt({secret: config.secrets.session})
+const util = require('util')
 
 const logger = require('../components/logger')
 
@@ -30,21 +36,55 @@ function isAuthenticated () {
     // Attach user to request
     .use((req, res, next) => {
       logger.serverLog(TAG, `inside users`)
-      Users.findOne({_id: req.user._id}, (err, user) => {
-        if (err) {
-          logger.serverLog(TAG, `error in user fetching`)
-          return res.status(500)
-            .json({status: 'failed', description: 'Internal Server Error'})
-        }
-        if (!user) {
-          logger.serverLog(TAG, `user not found`)
-          return res.status(401)
-            .json({status: 'failed', description: 'Unauthorized'})
-        }
-        logger.serverLog(TAG, `going to append user: ${user}`)
-        req.user = user
-        next()
-      })
+      logger.serverLog(TAG, `going to append user: ${req.user._id}`)
+      let userPromise = UserDataLayer.findOneUserObject(req.user._id)
+      let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+      let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
+
+      Promise.all([userPromise, companyUserPromise, permissionsPromise])
+        .then(result => {
+          let user = result[0]
+          let companyUser = result[1]
+          let permissions = result[2]
+          let company
+
+          if (!user || !companyUser || !permissions) {
+            let resp = UserLogicLayer.getResponse(user, companyUser, permissions)
+            return res.status(404).json(resp)
+          }
+
+          CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+            .then(foundCompany => {
+              company = foundCompany
+              return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+            })
+            .then(plan => {
+              if (!plan) {
+                return res.status(404).json({
+                  status: 'failed',
+                  description: 'Fatal Error, plan not set for this user. Please contact support'
+                })
+              }
+              user = user.toObject()
+              user.companyId = companyUser.companyId
+              user.permissions = permissions
+              user.currentPlan = company.planId
+              user.last4 = company.stripe.last4
+              user.plan = plan
+              user.uiMode = config.uiModes[user.uiMode]
+
+              req.user = user
+              next()
+            })
+            .catch(err => {
+              logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+              return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+            })
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
     })
 }
 

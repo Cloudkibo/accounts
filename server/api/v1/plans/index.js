@@ -33,8 +33,9 @@ router.post('/migrateCompanies',
 router.post('/populate', controller.populatePlan)
 
 router.get('/',
+  auth.isAuthorizedSuperUser(),
   controller.fetchAll)
 
-router.post('/query', controller.genericFetch)
+router.post('/query', auth.isAuthorizedSuperUser(), controller.genericFetch)
 
 module.exports = router
