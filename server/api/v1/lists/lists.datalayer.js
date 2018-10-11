@@ -7,11 +7,13 @@ const ListModel = require('./Lists.model')
 
 exports.findOneListObject = (listId) => {
   return ListModel.findOne({_id: listId})
+    .populate('userId')
     .exec()
 }
 
 exports.findListObjects = (query) => {
   return ListModel.find(query)
+    .populate('userId')
     .exec()
 }
 

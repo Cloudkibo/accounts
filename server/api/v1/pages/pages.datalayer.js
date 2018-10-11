@@ -7,11 +7,13 @@ const PageModel = require('./Pages.model')
 
 exports.findOnePageObject = (id) => {
   return PageModel.findOne({_id: id})
+    .populate('userId')
     .exec()
 }
 
 exports.findPageObjects = (query) => {
   return PageModel.find(query)
+    .populate('userId')
     .exec()
 }
 

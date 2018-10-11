@@ -23,6 +23,7 @@ exports.findOneCPWithPlanPop = (query) => {
 
 exports.findAllProfileObjectsUsingQuery = (queryObject) => {
   return CompanyProfileModel.find(queryObject)
+    .populate('planId')
     .exec()
 }
 

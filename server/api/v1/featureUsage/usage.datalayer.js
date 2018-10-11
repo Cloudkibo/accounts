@@ -6,6 +6,7 @@ const CompanyProfile = require('./../companyprofile/companyprofile.model')
 
 exports.findOnePostObject = (usageId) => {
   return PlanUsageModel.findOne({_id: usageId})
+    .populate('planId')
     .exec()
 }
 exports.createPlanUsage = (aggregateObject) => {

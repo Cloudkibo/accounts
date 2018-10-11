@@ -7,16 +7,19 @@ const PermissionsPlan = require('./Permissions_Plan.model')
 
 exports.findOnePermissionsPlanObject = (permissionsPlanId) => {
   return PermissionsPlan.findOne({_id: permissionsPlanId})
+    .populate('plan_id')
     .exec()
 }
 
 exports.findallPermissionsPlanObjects = (query) => {
   return PermissionsPlan.find(query)
+    .populate('plan_id')
     .exec()
 }
 
 exports.findOnePermissionObjectUsingQuery = (query) => {
   return PermissionsPlan.findOne(query)
+    .populate('plan_id')
     .exec()
 }
 

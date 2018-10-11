@@ -7,11 +7,13 @@ const PhoneModel = require('./Phone.model')
 
 exports.findOnePhoneObject = (phoneId) => {
   return PhoneModel.findOne({_id: phoneId})
+    .populate('pageId userId')
     .exec()
 }
 
 exports.findPhoneObjects = (query) => {
   return PhoneModel.find(query)
+    .populate('pageId userId')
     .exec()
 }
 

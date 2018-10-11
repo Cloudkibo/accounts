@@ -7,11 +7,13 @@ const SubscriberModel = require('./Subscribers.model')
 
 exports.findOneSubscriberObject = (subscriberId) => {
   return SubscriberModel.findOne({_id: subscriberId})
+    .populate('pageId')
     .exec()
 }
 
 exports.findSubscriberObjects = (query) => {
   return SubscriberModel.find(query)
+    .populate('pageId')
     .exec()
 }
 

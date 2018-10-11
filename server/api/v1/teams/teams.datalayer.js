@@ -60,16 +60,19 @@ exports.deleteTeamObject = (teamId) => {
 // Agent DB Handlers
 exports.findAllAgentObjects = () => {
   return TeamAgentsModel.find()
+    .populate('teamId agentId')
     .exec()
 }
 
 exports.findOneAgentObjectUsingQuery = (queryObject) => {
   return TeamAgentsModel.findOne(queryObject)
+    .populate('teamId agentId')
     .exec()
 }
 
 exports.findAllAgentObjectsUsingQuery = (queryObject) => {
   return TeamAgentsModel.find(queryObject)
+    .populate('teamId agentId')
     .exec()
 }
 
@@ -103,16 +106,19 @@ exports.genericUpdateAgentObject = (query, updated, options) => {
 // Team Pages DB Handlers
 exports.findAllTeamPageObjects = () => {
   return TeamPagesModel.find()
+    .populate('pageId teamId')
     .exec()
 }
 
 exports.findOneTeamPageObjectUsingQuery = (queryObject) => {
   return TeamPagesModel.findOne(queryObject)
+    .populate('pageId teamId')
     .exec()
 }
 
 exports.findAllTeamPageObjectsUsingQuery = (queryObject) => {
   return TeamPagesModel.find(queryObject)
+    .populate('pageId teamId')
     .exec()
 }
 
