@@ -60,6 +60,7 @@
     "request-promise": "^4.2.2",
     "sendgrid": "^1.0.1",
     "stripe": "^6.1.1",
+    "stripe-webhook-middleware": "^0.2.0",
     "winston": "^3.0.0"
   },
   "devDependencies": {

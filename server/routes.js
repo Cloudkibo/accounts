@@ -12,6 +12,17 @@ module.exports = function (app) {
   app.use('/api/v1/subscribers', require('./api/v1/subscribers'))
   app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
   app.use('/api/v1/permissions', require('./api/v1/permissions'))
+  app.use('/api/v1/companyprofile', require('./api/v1/companyprofile'))
+  app.use('/api/v1/companyuser', require('./api/v1/companyuser'))
+  app.use('/api/v1/featureusage', require('./api/v1/featureUsage'))
+  app.use('/api/v1/invitations', require('./api/v1/invitations'))
+  app.use('/api/v1/inviteagenttoken', require('./api/v1/inviteagenttoken'))
+  app.use('/api/v1/passwordresettoken', require('./api/v1/passwordresettoken'))
+  app.use('/api/v1/companyprofile', require('./api/v1/companyprofile'))
+  app.use('/api/v1/permissions_plan', require('./api/v1/permissions_plan'))
+  app.use('/api/v1/phone', require('./api/v1/phone'))
+  app.use('/api/v1/verificationtoken', require('./api/v1/verificationtoken'))
+  app.use('/api/v1/webhooks', require('./api/v1/webhooks'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))

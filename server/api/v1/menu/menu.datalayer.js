@@ -7,11 +7,13 @@ const MenuModel = require('./Menu.model')
 
 exports.findOneMenuObject = (menuId) => {
   return MenuModel.findOne({_id: menuId})
+    .populate('pageId userId companyId')
     .exec()
 }
 
 exports.findMenuObjects = (query) => {
   return MenuModel.find(query)
+    .populate('pageId userId companyId')
     .exec()
 }
 

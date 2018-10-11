@@ -19,6 +19,7 @@ function isAuthenticated () {
   return compose()
   // Validate jwt or api keys
     .use((req, res, next) => {
+      logger.serverLog(TAG, `going to validate token`)
       // allow access_token to be passed through query parameter as well
       if (req.query && req.query.hasOwnProperty('access_token')) {
         req.headers.authorization = `Bearer ${req.query.access_token}`
@@ -29,14 +30,16 @@ function isAuthenticated () {
     .use((req, res, next) => {
       Users.findOne({_id: req.user._id}, (err, user) => {
         if (err) {
+          logger.serverLog(TAG, `error in user fetching`)
           return res.status(500)
             .json({status: 'failed', description: 'Internal Server Error'})
         }
         if (!user) {
+          logger.serverLog(TAG, `user not found`)
           return res.status(401)
             .json({status: 'failed', description: 'Unauthorized'})
         }
-
+        logger.serverLog(TAG, `going to append user: ${user}`)
         req.user = user
         next()
       })
