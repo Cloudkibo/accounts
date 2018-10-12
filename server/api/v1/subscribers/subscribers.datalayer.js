@@ -19,7 +19,6 @@ exports.findSubscriberObjects = (query) => {
 
 exports.aggregateInfo = (query) => {
   return SubscriberModel.aggregate(query)
-    .exec()
 }
 
 exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
