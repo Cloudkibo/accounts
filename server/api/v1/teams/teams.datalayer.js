@@ -34,6 +34,7 @@ exports.findOneTeamObjectUsingQuery = (queryObject) => {
 
 exports.findAllTeamObjectsUsingQuery = (queryObject) => {
   return TeamModel.find(queryObject)
+    .populate('created_by')
     .exec()
 }
 
