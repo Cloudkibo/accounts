@@ -73,8 +73,9 @@ exports.query = function (req, res) {
 
 exports.aggregate = function (req, res) {
   logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
+  let query = logicLayer.validateAndConvert(req.body)
 
-  dataLayer.aggregateInfo(req.body)
+  dataLayer.aggregateInfo(query)
     .then(result => {
       logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
       res.status(200).json({status: 'success', payload: result})

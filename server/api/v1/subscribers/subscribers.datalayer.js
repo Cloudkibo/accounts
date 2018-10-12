@@ -21,13 +21,8 @@ exports.findSubscriberObjects = (query) => {
 }
 
 exports.aggregateInfo = (query) => {
-  let obj = SubscriberModel.aggregate(query)
-
-  logger.serverLog('In Sub DAL', util.inspect(obj))
-  logger.serverLog('In Sub DAL', util.inspect(obj.exec()))
-  logger.serverLog('In Sub DAL', util.inspect(obj.then()))
-
-  return obj
+  return SubscriberModel.aggregate(query)
+    .exec()
 }
 
 exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
