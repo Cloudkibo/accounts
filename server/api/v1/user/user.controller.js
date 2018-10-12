@@ -611,3 +611,16 @@ exports.genericUpdate = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.fetchGeneral = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.findAllUserObjectsUsingQuery(req.body)
+    .then(users => {
+      return res.status(200).json({status: 'success', payload: users})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}

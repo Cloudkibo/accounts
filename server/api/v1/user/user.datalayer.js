@@ -15,6 +15,11 @@ exports.findAllUserObjects = () => {
     .exec()
 }
 
+exports.findAllUserObjectsUsingQuery = (query) => {
+  return UserModel.find(query)
+    .exec()
+}
+
 exports.findOneUserObjectUsingQuery = (query) => {
   return UserModel.findOne(query)
     .exec()

@@ -53,4 +53,8 @@ router.put('/update',
   auth.isAuthenticated(),
   controller.genericUpdate)
 
+router.post('/query',
+  auth.isAuthenticated(),
+  controller.fetchGeneral)
+
 module.exports = router
