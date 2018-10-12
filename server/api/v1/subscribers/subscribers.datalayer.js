@@ -4,6 +4,9 @@ By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
 const SubscriberModel = require('./Subscribers.model')
+const logger = require('./../../../components/logger')
+
+const util = require('util')
 
 exports.findOneSubscriberObject = (subscriberId) => {
   return SubscriberModel.findOne({_id: subscriberId})
@@ -18,7 +21,13 @@ exports.findSubscriberObjects = (query) => {
 }
 
 exports.aggregateInfo = (query) => {
-  return SubscriberModel.aggregate(query)
+  let obj = SubscriberModel.aggregate(query)
+
+  logger.serverLog('In Sub DAL', util.inspect(obj))
+  logger.serverLog('In Sub DAL', util.inspect(obj.exec()))
+  logger.serverLog('In Sub DAL', util.inspect(obj.then()))
+
+  return obj
 }
 
 exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
