@@ -72,10 +72,11 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the aggregate endpoint for subscriber controller')
+  logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${req.body}`)
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
+      logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${result}`)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
