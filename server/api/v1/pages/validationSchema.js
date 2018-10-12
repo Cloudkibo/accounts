@@ -17,7 +17,7 @@ exports.pagePayload = {
     },
     pageUserName: {
       type: 'string',
-      required: true
+      required: false
     },
     pagePic: {
       type: 'string',
