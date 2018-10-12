@@ -34,7 +34,6 @@ router.get('/verify',
   auth.isAuthenticated(),
   (req, res, next) => { logger.serverLog(TAG, `AFTER authenticated`); next() },
   (req, res) => {
-    logger.serverLog(TAG, `Going to send user object: ${util.inspect(req.user)}`)
     res.status(200).json({status: 'success', description: 'Token verified', user: req.user})
   })
 
