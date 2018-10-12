@@ -38,7 +38,7 @@ exports.index = function (req, res) {
         return res.status(404).json(resp)
       }
 
-      CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+      CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(foundCompany => {
           company = foundCompany
           return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
