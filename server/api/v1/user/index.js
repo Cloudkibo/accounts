@@ -6,7 +6,7 @@ const validationSchema = require('./validationSchema')
 const controller = require('./user.controller')
 const auth = require('./../../../auth/auth.service')
 
-router.get('/', auth.isAuthenticated(), controller.index)
+router.get('/', controller.index)
 router.post('/updateChecks', auth.isAuthenticated(), controller.updateChecks)
 router.get('/updateSkipConnect', auth.isAuthenticated(), controller.updateSkipConnect)
 router.get('/fbAppId', auth.isAuthenticated(), controller.fbAppId)
