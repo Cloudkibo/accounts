@@ -8,6 +8,7 @@ const logger = require('../components/logger')
 const config = require('../config/environment')
 const Users = require('./../api/v1/user/user.model')
 const auth = require('./auth.service')
+const util = require('util')
 
 const TAG = 'auth/index.js'
 
@@ -33,7 +34,7 @@ router.get('/verify',
   auth.isAuthenticated(),
   (req, res, next) => { logger.serverLog(TAG, `AFTER authenticated`); next() },
   (req, res) => {
-    logger.serverLog(TAG, `Going to send user object: ${req.user}`)
+    logger.serverLog(TAG, `Going to send user object: ${util.inspect(req.user)}`)
     res.status(200).json({status: 'success', description: 'Token verified', user: req.user})
   })
 

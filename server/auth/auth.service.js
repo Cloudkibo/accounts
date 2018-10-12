@@ -36,7 +36,7 @@ function isAuthenticated () {
     // Attach user to request
     .use((req, res, next) => {
       logger.serverLog(TAG, `inside users`)
-      logger.serverLog(TAG, `going to append user: ${req.user._id}`)
+      logger.serverLog(TAG, `going to append user: ${util.inspect(req.user._id)}`)
       let userPromise = UserDataLayer.findOneUserObject(req.user._id)
       let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
       let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
