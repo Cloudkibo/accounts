@@ -8,6 +8,8 @@ const controller = require('./companyprofile.controller')
 const StripeWebhook = require('stripe-webhook-middleware')
 const stripeEvents = require('./stripeEvents')
 
+const auth = require('./../../../auth/auth.service')
+
 var stripeWebhook = new StripeWebhook({
   stripeApiKey: config.stripeOptions.apiKey,
   respond: true
@@ -29,6 +31,7 @@ router.post('/removeMember',
   controller.removeMember)
 
 router.get('/members',
+  auth.isAuthenticated(),
   controller.members)
 
 router.post('/updateAutomatedOptions',
