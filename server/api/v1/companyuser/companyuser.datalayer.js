@@ -18,6 +18,7 @@ exports.CreateCompanyUserObject = (payload) => {
 
 exports.findAllCompanyUserObjectUsingQuery = (queryObject) => {
   return CompanyUserModel.find(queryObject)
+    .populate('userId')
     .exec()
 }
 
