@@ -18,10 +18,10 @@ exports.prepareUpdateUserPayload = (name, password, email, uiMode) => {
 
 exports.validateAndConvert = (body) => {
   let obj = body
-  if (body.$match && body.$skip && body.$limit) {
-    console.log(typeof body.$match.isEnabledByPage)
-    console.log(typeof body.$skip)
-    console.log(typeof body.$limit)
+  if (body[0].$match && body[0].$skip && body[0].$limit) {
+    console.log(typeof body[0].$match.isEnabledByPage)
+    console.log(typeof body[0].$skip)
+    console.log(typeof body[0].$limit)
   }
   if (body[0] && body[0].$match && body[0].$match.companyId) {
     obj[0].$match.companyId = mongoose.Types.ObjectId(body[0].$match.companyId)
