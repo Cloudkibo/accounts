@@ -98,7 +98,7 @@ exports.getGreetingText = function (req, res) {
 exports.setGreetingText = function (req, res) {
   logger.serverLog(TAG, 'Hit the setGreetingText page controller index')
 
-  CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery(req.user.domain_email)
+  CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
     .then(companyUser => {
       let query = {pageId: req.params._id, companyId: companyUser.companyId}
       let updated = req.body
