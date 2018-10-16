@@ -85,7 +85,7 @@ exports.fetchGeneralCompanyUsage = function (req, res) {
     })
 }
 
-exports.genericUpdate = function (req, res) {
+exports.genericUpdateCompany = function (req, res) {
   logger.serverLog(TAG, 'generic company update endpoint')
 
   dataLayer.genericUpdateCUsageObject(req.body.query, req.body.newPayload, req.body.options)
