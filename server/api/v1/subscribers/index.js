@@ -15,7 +15,7 @@ router.post('/',
   auth.isAuthenticated(),
   controller.create)
 
-router.put('/:_id',
+router.post('/:_id',
   validate({body: validationSchema.updateSubscriberPayload}),
   auth.isAuthenticated(),
   controller.update)
