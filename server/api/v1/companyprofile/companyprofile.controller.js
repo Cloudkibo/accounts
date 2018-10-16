@@ -407,7 +407,7 @@ exports.genericFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
   dataLayer
-    .findAllPostObjectsUsingQuery(req.body)
+    .findOneCPWithPlanPop(req.body)
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })

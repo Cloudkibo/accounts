@@ -11,10 +11,6 @@ exports.forgotPasswordSchema = {
 exports.resetPasswordSchema = {
   type: 'object',
   properties: {
-    token: {
-      type: 'string',
-      required: true
-    },
     new_password: {
       type: 'string',
       required: true

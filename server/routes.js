@@ -89,7 +89,7 @@ module.exports = function (app) {
 
   // login page
   app.get('/forgotPassword', function (req, res) {
-    res.render('layouts/forgotPassword')
+    res.render('layouts/forgotPassword', {Continue: req.query.Continue ? req.query.Continue : ''})
   })
 
   app.route('/:url(api|auth)/*').get((req, res) => {
