@@ -80,7 +80,7 @@ exports.resend = function (req, res) {
     .then(tokenString => {
       let sendgrid = utility.getSendGridObject()
       let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
-      email = logiclayer.getResendEmailBody()
+      email = logiclayer.getResendEmailBody(email, tokenString)
       sendgrid.send(email, function (err) {
         if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
         logger.serverLog(TAG, `verification email resent: ${JSON.stringify(email)}`)
