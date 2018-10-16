@@ -16,7 +16,7 @@ let util = require('util')
 exports.forgot = function (req, res) {
   logger.serverLog(TAG, `fetchedUser not found ${util.inspect(req.body)}`)
   userDataLayer
-    .findOneUserByEmail(req.body.email)
+    .findOneUserByEmail(req.body)
     .then(fetchedUser => {
       if (!fetchedUser) {
         logger.serverLog(TAG, `fetchedUser not found ${util.inspect(fetchedUser)}`)
