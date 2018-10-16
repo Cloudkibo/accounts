@@ -90,6 +90,7 @@ exports.genericUpdateCompany = function (req, res) {
 
   dataLayer.genericUpdateCUsageObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(result)}`)
       return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
