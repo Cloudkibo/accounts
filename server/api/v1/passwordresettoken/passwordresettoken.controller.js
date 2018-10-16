@@ -79,12 +79,15 @@ exports.reset = function (req, res) {
         res.sendFile(
           path.join(config.root, 'views/pages/change_password_failed.html'))
       } else {
+        logger.serverLog(TAG, `userId ${foundObject.userId} : password ${req.body.new_password}`)
         userDataLayer
           .updateUserObject(foundObject.userId, {password: String(req.body.new_password)})
-          .then(result => {
+          .then(updatedUser => {
+            logger.serverLog(TAG, `updated user object ${updatedUser}`)
             resetTokenDataLayer
               .removeTokenObjectUsingToken(token)
               .then(result => {
+                logger.serverLog(TAG, `delete token object ${result}`)
                 res.status(200).json({
                   status: 'success',
                   description: 'Password successfully changed. Please login with your new password.'
