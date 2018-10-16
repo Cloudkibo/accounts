@@ -9,6 +9,22 @@ exports.findOnePostObject = (usageId) => {
     .populate('planId')
     .exec()
 }
+
+exports.findAllPlanUsageObjects = (query) => {
+  return PlanUsageModel.find(query)
+    .exec()
+}
+
+exports.findAllCompanyUsageObjects = (query) => {
+  return PlanUsageModel.find(query)
+    .exec()
+}
+
+exports.genericUpdateCUsageObject = (query, updated, options) => {
+  return CompanyUsageModel.update(query, updated, options)
+    .exec()
+}
+
 exports.createPlanUsage = (aggregateObject) => {
   return PlanUsageModel.aggregate(aggregateObject).then()
 }
