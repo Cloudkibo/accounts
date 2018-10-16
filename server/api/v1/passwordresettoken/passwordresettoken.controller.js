@@ -77,7 +77,7 @@ exports.reset = function (req, res) {
     .then(foundObject => {
       if (!foundObject) {
         res.sendFile(
-          path.join(config.root, 'client/pages/change_password_failed.html'))
+          path.join(config.root, 'views/pages/change_password_failed.html'))
       } else {
         userDataLayer
           .updateUserObject(foundObject.userId, {password: String(req.body.new_password)})
@@ -120,9 +120,9 @@ exports.verify = function (req, res) {
       // Following will be updated with change password views
       result
         ? res.sendFile(
-          path.join(config.root, 'client/pages/change_password_failed.html'))
+          path.join(config.root, 'views/pages/change_password_failed.html'))
         : res.sendFile(
-          path.join(config.root, 'client/pages/change_password.html'))
+          path.join(config.root, 'views/pages/change_password.html'))
     })
     .catch(err => {
       return res.status(500).json({
