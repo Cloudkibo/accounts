@@ -17,7 +17,6 @@ module.exports = function (app) {
   app.use('/api/v1/featureUsage', require('./api/v1/featureUsage'))
   app.use('/api/v1/invitations', require('./api/v1/invitations'))
   app.use('/api/v1/inviteagenttoken', require('./api/v1/inviteagenttoken'))
-  app.use('/api/v1/passwordresettoken', require('./api/v1/passwordresettoken'))
   app.use('/api/v1/companyprofile', require('./api/v1/companyprofile'))
   app.use('/api/v1/permissions_plan', require('./api/v1/permissions_plan'))
   app.use('/api/v1/phone', require('./api/v1/phone'))

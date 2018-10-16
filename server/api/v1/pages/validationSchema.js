@@ -98,11 +98,11 @@ exports.pageUpdatePayload = {
       required: false
     },
     isWelcomeMessageEnabled: {
-      type: 'string',
+      type: 'boolean',
       required: false
     },
     gotPageSubscriptionPermission: {
-      type: 'string',
+      type: 'boolean',
       required: false
     }
   }
