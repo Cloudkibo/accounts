@@ -12,10 +12,6 @@ router.post('/',
   validate({body: validationSchema.postPayload}),
   controller.create)
 
-router.put('/:id',
-  validate({body: validationSchema.updatePostPayload}),
-  controller.update)
-
 router.delete('/:id',
   controller.delete)
 
