@@ -80,6 +80,7 @@ exports.reset = function (req, res) {
           path.join(config.root, 'views/pages/change_password_failed.html'))
       } else {
         logger.serverLog(TAG, `userId ${foundObject.userId} : password ${req.body.new_password}`)
+        logger.serverLog(TAG, `password with string : ${String(req.body.new_password)}`)
         userDataLayer
           .findOneAndUpdateUsingQuery({_id: foundObject.userId}, {password: String(req.body.new_password)}, {new: true})
           .then(updatedUser => {
