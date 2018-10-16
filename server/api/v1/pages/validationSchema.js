@@ -78,7 +78,7 @@ exports.pageUpdatePayload = {
       required: false
     },
     connected: {
-      type: 'string',
+      type: 'boolean',
       required: false
     },
     userId: {
@@ -94,7 +94,7 @@ exports.pageUpdatePayload = {
       required: false
     },
     welcomeMessage: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     isWelcomeMessageEnabled: {
