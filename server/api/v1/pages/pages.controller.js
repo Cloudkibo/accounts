@@ -1,5 +1,6 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./pages.datalayer')
+const logicLayer = require('./pages.logiclayer')
 const TAG = '/api/v1/pages/pages.controller.js'
 
 const util = require('util')
@@ -121,8 +122,9 @@ exports.query = function (req, res) {
 
 exports.aggregate = function (req, res) {
   logger.serverLog(TAG, 'Hit the aggregate endpoint for page controller')
+  let query = logicLayer.validateAndConvert(req.body)
 
-  dataLayer.aggregateInfo(req.body)
+  dataLayer.aggregateInfo(query)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
