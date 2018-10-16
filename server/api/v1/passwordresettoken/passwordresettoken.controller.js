@@ -11,11 +11,15 @@ let resetTokenDataLayer = require('./passwordresettoken.datalayer')
 const config = require('./../../../config/environment')
 let path = require('path')
 
+let util = require('util')
+
 exports.forgot = function (req, res) {
+  logger.serverLog(TAG, `fetchedUser not found ${util.inspect(req.body)}`)
   userDataLayer
     .findOneUserByEmail(req.body.email)
     .then(fetchedUser => {
       if (!fetchedUser) {
+        logger.serverLog(TAG, `fetchedUser not found ${util.inspect(fetchedUser)}`)
         return res.status(404).json({
           status: 'failed',
           description: 'Sorry! No such account or company exists in our database.'

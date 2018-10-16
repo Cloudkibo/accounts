@@ -54,6 +54,10 @@ exports.genericUpdatePageObject = (query, updated, options) => {
     .exec()
 }
 
+exports.updatePageObjectUsingQuery = (query, payload, options) => {
+  return PageModel.update(query, payload, options)
+}
+
 exports.deletePageObject = (id) => {
   return PageModel.deleteOne({_id: id})
     .exec()

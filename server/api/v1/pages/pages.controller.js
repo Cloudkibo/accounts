@@ -1,6 +1,7 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./pages.datalayer')
 const logicLayer = require('./pages.logiclayer')
+const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
 
 const util = require('util')
@@ -97,7 +98,12 @@ exports.getGreetingText = function (req, res) {
 exports.setGreetingText = function (req, res) {
   logger.serverLog(TAG, 'Hit the setGreetingText page controller index')
 
-  dataLayer.updatePageObject(req.params._id, req.body)
+  CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery(req.user.domain_email)
+    .then(companyUser => {
+      let query = {pageId: req.params._id, companyId: companyUser.companyId}
+      let updated = req.body
+      return dataLayer.updatePageObjectUsingQuery(query, updated, {multi: true})
+    })
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
