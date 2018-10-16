@@ -118,11 +118,12 @@ exports.verify = function (req, res) {
     .findResetTokenObjectUsingToken(req.params.id)
     .then(result => {
       // Following will be updated with change password views
+      logger.serverLog(TAG, ``)
       result
         ? res.sendFile(
-          path.join(config.root, 'views/pages/change_password_failed.html'))
-        : res.sendFile(
           path.join(config.root, 'views/pages/change_password.html'))
+        : res.sendFile(
+          path.join(config.root, 'views/pages/change_password_failed.html'))
     })
     .catch(err => {
       return res.status(500).json({
