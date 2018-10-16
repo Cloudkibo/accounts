@@ -18,10 +18,6 @@ router.post('/createPlanUsage',
 router.post('/createCompanyUsage',
   controller.createCompanyUsage)
 
-router.put('/:id',
-  validate({body: validationSchema.updatePostPayload}),
-  controller.update)
-
 router.post('/planQuery',
   auth.isAuthenticated(),
   controller.fetchGeneralPlanUsage)
