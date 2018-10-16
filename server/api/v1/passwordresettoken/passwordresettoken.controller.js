@@ -93,11 +93,11 @@ exports.reset = function (req, res) {
       } else {
         logger.serverLog(TAG, `found user : ${String(foundUser)}`)
         foundUser.password = String(req.body.new_password)
-        return userDataLayer.saveUserObject()
+        return userDataLayer.saveUserObject(foundUser)
       }
     })
     .then(result => {
-      logger.serverLog(TAG, `updated user : ${String(user)}`)
+      logger.serverLog(TAG, `updated user : ${String(result)}`)
       return resetTokenDataLayer.removeTokenObjectUsingToken(token)
     })
     .then(result => {

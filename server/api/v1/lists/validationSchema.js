@@ -58,11 +58,11 @@ exports.updateListPayload = {
       required: false
     },
     content: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     conditions: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     initialList: {
