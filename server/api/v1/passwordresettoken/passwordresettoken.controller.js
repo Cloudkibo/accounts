@@ -79,35 +79,33 @@ exports.reset = function (req, res) {
         res.sendFile(
           path.join(config.root, 'views/pages/change_password_failed.html'))
       } else {
-        logger.serverLog(TAG, `userId ${foundObject.userId} : password ${req.body.new_password}`)
         logger.serverLog(TAG, `password with string : ${String(req.body.new_password)}`)
-        userDataLayer
-          .findOneAndUpdateUsingQuery({_id: foundObject.userId}, {password: String(req.body.new_password)}, {new: true})
-          .then(updatedUser => {
-            logger.serverLog(TAG, `updated user object ${updatedUser}`)
-            resetTokenDataLayer
-              .removeTokenObjectUsingToken(token)
-              .then(result => {
-                logger.serverLog(TAG, `delete token object ${result}`)
-                res.status(200).json({
-                  status: 'success',
-                  description: 'Password successfully changed. Please login with your new password.'
-                })
-              })
-              .catch(err => {
-                return res.status(500).json({
-                  status: 'failed',
-                  description: `Internal Server Error ${JSON.stringify(err)}`
-                })
-              })
-          })
-          .catch(err => {
-            return res.status(500).json({
-              status: 'failed',
-              description: `Internal Server Error ${JSON.stringify(err)}`
-            })
-          })
+        return userDataLayer.findOneUserObject({_id: foundObject.userId})
       }
+    })
+    .then(foundUser => {
+      if (foundUser.authenticate(req.body.new_password)) {
+        logger.serverLog(TAG, `existing password : ${String(req.body.new_password)}`)
+        return res.status(404).json({
+          status: 'failed',
+          description: 'New password cannot be same as old password'
+        })
+      } else {
+        logger.serverLog(TAG, `found user : ${String(foundUser)}`)
+        foundUser.password = String(req.body.new_password)
+        return userDataLayer.saveUserObject()
+      }
+    })
+    .then(result => {
+      logger.serverLog(TAG, `updated user : ${String(user)}`)
+      return resetTokenDataLayer.removeTokenObjectUsingToken(token)
+    })
+    .then(result => {
+      logger.serverLog(TAG, `delete token object ${result}`)
+      res.status(200).json({
+        status: 'success',
+        description: 'Password successfully changed. Please login with your new password.'
+      })
     })
     .catch(err => {
       return res.status(500).json({

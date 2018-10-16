@@ -20,11 +20,11 @@ exports.listPayload = {
       required: true
     },
     content: {
-      type: 'object',
+      type: 'array',
       required: true
     },
     conditions: {
-      type: 'object',
+      type: 'array',
       required: true
     },
     initialList: {
@@ -33,11 +33,11 @@ exports.listPayload = {
     },
     parentList: {
       type: 'string',
-      required: true
+      required: false
     },
     parentListName: {
       type: 'string',
-      required: true
+      required: false
     }
   }
 }
