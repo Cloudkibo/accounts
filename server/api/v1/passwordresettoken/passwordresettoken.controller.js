@@ -81,7 +81,7 @@ exports.reset = function (req, res) {
       } else {
         logger.serverLog(TAG, `userId ${foundObject.userId} : password ${req.body.new_password}`)
         userDataLayer
-          .updateUserObject(foundObject.userId, {password: String(req.body.new_password)})
+          .findOneAndUpdateUsingQuery({_id: foundObject.userId}, {password: String(req.body.new_password)}, {new: true})
           .then(updatedUser => {
             logger.serverLog(TAG, `updated user object ${updatedUser}`)
             resetTokenDataLayer
