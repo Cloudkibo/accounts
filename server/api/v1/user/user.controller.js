@@ -58,6 +58,7 @@ exports.index = function (req, res) {
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
 
+          logger.serverLog(TAG, `find index controller user ${util.inspect(user)}`)
           res.status(200).json({status: 'success', payload: user})
         })
         .catch(err => {

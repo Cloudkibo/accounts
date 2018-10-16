@@ -63,6 +63,7 @@ exports.query = function (req, res) {
 
   dataLayer.findSubscriberObjects(req.body)
     .then(result => {
+      logger.serverLog(TAG, `query endpoint for subscriber found result ${util.inspect(result)}`)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {

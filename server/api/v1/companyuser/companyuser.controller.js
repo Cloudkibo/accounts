@@ -11,6 +11,7 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findOneCompanyUserObjectUsingQuery(req.body)
     .then(result => {
+      logger.serverLog(TAG, `query endpoint for c_user ${util.inspect(result)}`)
       return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
