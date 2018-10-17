@@ -42,7 +42,7 @@ exports.verify = function (req, res) {
               })
               .then(company => {
                 logger.serverLog(TAG, `Company Profile found ${company}`)
-                user['emailVerified'] = 'Yes'
+                user.emailVerified = true
                 let sendgrid = utility.getSendGridObject()
                 let email = new sendgrid.Email(logiclayer.getEmailHeader(user))
                 if (company.planId.unique_ID === 'plan_C' || company.planId.unique_ID === 'plan_D') {
