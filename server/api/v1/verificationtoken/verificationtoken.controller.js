@@ -21,6 +21,7 @@ exports.verify = function (req, res) {
       if (!verificationtoken) {
         // Change the path according to requirement
         // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+        logger.serverLog(TAG, `Verification token not found`)
         return res.render('layouts/verification', {verification: false})
       }
 
@@ -29,15 +30,18 @@ exports.verify = function (req, res) {
           if (!user) {
             // Change the path according to requirement
             // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
+            logger.serverLog(TAG, `User Object not found`)
             return res.render('layouts/verification', {verification: false})
           } else {
             CompanyUsersDataLayer
               .findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
               .then(companyuser => {
+                logger.serverLog(TAG, `Company User found ${companyuser}`)
                 return CompanyProfileDataLayer
-                  .findOneCompanyProfileObjectUsingQuery({_id: companyuser.companyId})
+                  .findOneCPWithPlanPop({_id: companyuser.companyId})
               })
               .then(company => {
+                logger.serverLog(TAG, `Company Profile found ${company}`)
                 user['emailVerified'] = 'Yes'
                 let sendgrid = utility.getSendGridObject()
                 let email = new sendgrid.Email(logiclayer.getEmailHeader(user))
@@ -54,10 +58,12 @@ exports.verify = function (req, res) {
                 sendgrid.send(email, function (err, json) {
                   if (err) logger.serverLog(TAG, {status: 'failed', description: 'Internal Server Error'})
                 })
+                logger.serverLog(TAG, `Going to save user object ${user}`)
                 UserDataLayer.saveUserObject(user)
-                  .then(user => {
+                  .then(updatedUser => {
                     // Update the UI path
                     // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
+                    logger.serverLog(TAG, `Updated User: ${user}`)
                     return res.render('layouts/verification', {verification: true})
                   })
               })
