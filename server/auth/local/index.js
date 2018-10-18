@@ -4,8 +4,8 @@ var express = require('express')
 var passport = require('passport')
 var auth = require('../auth.service')
 let User = require('./../../api/v1/user/user.model')
-let CompanyUsers = require('./../../api/v1/companyuser')
-let CompanyProfile = require('./../../api/v1/companyprofile')
+let CompanyUsers = require('./../../api/v1/companyuser/companyuser.model')
+let CompanyProfile = require('./../../api/v1/companyprofile/companyprofile.model')
 let logger = require('./../../../server/components/logger')
 
 let TAG = '/server/auth/local/index.js'
