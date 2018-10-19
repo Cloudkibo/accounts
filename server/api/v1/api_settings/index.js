@@ -28,4 +28,8 @@ router.post('/reset',
   auth.isAuthenticated(),
   controller.reset)
 
+router.post('/query',
+  auth.isAuthenticated(),
+  controller.genericFetch)
+
 module.exports = router
