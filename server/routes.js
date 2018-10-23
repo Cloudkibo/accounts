@@ -111,7 +111,7 @@ module.exports = function (app) {
       logger.serverLog(TAG, err.message)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
-        return res.redirect('/')
+        return res.status(401).json({status: 'Unauthorized', payload: 'jwt expired'})
       }
       res.status(500).send('Something broke! Please go to home page')
       /**
