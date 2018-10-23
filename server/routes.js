@@ -91,6 +91,9 @@ module.exports = function (app) {
   app.get('/forgotPassword', function (req, res) {
     res.render('layouts/forgotPassword', {Continue: req.query.Continue ? req.query.Continue : ''})
   })
+  app.get('/invitation', function (req, res) {
+    res.render('layouts/invitation', {expireLink: false})
+  })
 
   app.route('/:url(api|auth)/*').get((req, res) => {
     res.status(404).send({url: `${req.originalUrl} not found`})

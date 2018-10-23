@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+</head>
+<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark
+                m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
+<% if (expireLink) { %>
+<%- include('../pages/inviteExpire.ejs'); %>
+<% } else { %>
+    <%- include('../pages/inviteAgent.ejs'); %>
+    <% } %>
+
+</body>
+</html>
