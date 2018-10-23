@@ -26,12 +26,17 @@ function isAuthenticated () {
   return compose()
   // Validate jwt or api keys
     .use((req, res, next) => {
-      logger.serverLog(TAG, `going to validate token`)
-      // allow access_token to be passed through query parameter as well
-      if (req.query && req.query.hasOwnProperty('access_token')) {
-        req.headers.authorization = `Bearer ${req.query.access_token}`
+      if (req.headers.hasOwnProperty('is_kibo_product')) {
+        logger.serverLog(TAG, `going to validate ip`)
+        isAuthorizedWebHookTrigger(req, res, next)
+      } else {
+        logger.serverLog(TAG, `going to validate token`)
+        // allow access_token to be passed through query parameter as well
+        if (req.query && req.query.hasOwnProperty('access_token')) {
+          req.headers.authorization = `Bearer ${req.query.access_token}`
+        }
+        validateJwt(req, res, next)
       }
-      validateJwt(req, res, next)
     })
     // Attach user to request
     .use((req, res, next) => {
@@ -88,18 +93,16 @@ function isAuthenticated () {
 }
 
 // eslint-disable-next-line no-unused-vars
-function isAuthorizedWebHookTrigger () {
-  return compose().use((req, res, next) => {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
-      req.socket.remoteAddress || req.connection.socket.remoteAddress
-    logger.serverLog(TAG, req.ip)
-    logger.serverLog(TAG, ip)
-    logger.serverLog(TAG, 'This is middleware')
-    logger.serverLog(TAG, req.body)
-    // We need to change it to based on the requestee app
-    if (ip === '165.227.130.222') next()
-    else res.send(403)
-  })
+function isAuthorizedWebHookTrigger (req, res, next) {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
+    req.socket.remoteAddress || req.connection.socket.remoteAddress
+  logger.serverLog(TAG, req.ip)
+  logger.serverLog(TAG, ip)
+  logger.serverLog(TAG, 'This is middleware')
+  logger.serverLog(TAG, req.body)
+  // We need to change it to based on the requestee app
+  if (config.allowedIps.indexOf(ip) > -1) next()
+  else res.send(403)
 }
 
 /**
