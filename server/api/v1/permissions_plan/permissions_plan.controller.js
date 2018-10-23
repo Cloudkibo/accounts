@@ -57,7 +57,7 @@ exports.delete = function (req, res) {
 exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for permissionPlan controller')
 
-  dataLayer.findPermissionsPlanObjects(req.body)
+  dataLayer.findallPermissionsPlanObjects(req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
