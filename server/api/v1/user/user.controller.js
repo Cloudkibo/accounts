@@ -322,7 +322,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
-        return res.status(404).json({status: 'failed', description: 'user or company user not found'})
+        res.status(404).json({status: 'failed', description: 'user or company user not found'})
       } else {
         logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
         let accountData = {
