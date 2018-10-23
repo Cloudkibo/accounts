@@ -1,3 +1,6 @@
+const config = require('./config/environment/index')
+const logger = require('./../server/components/logger')
+const TAG = '/server/routes.js'
 
 module.exports = function (app) {
   // API middlewares go here
@@ -100,4 +103,21 @@ module.exports = function (app) {
   }).post((req, res) => {
     res.status(404).send({url: `${req.originalUrl} not found`})
   })
+
+  if (config.env === 'production' || config.env === 'staging') {
+    app.use(function (err, req, res, next) {
+      console.error(err.stack)
+      logger.serverLog(TAG, err.stack)
+      logger.serverLog(TAG, err.message)
+      if (err.message === 'jwt expired') {
+        res.clearCookie('token')
+        return res.redirect('/')
+      }
+      res.status(500).send('Something broke! Please go to home page')
+      /**
+       * Further logic for error handling.
+       * You may integrate with Crash reporting tool like Raven.
+       */
+    })
+  }
 }
