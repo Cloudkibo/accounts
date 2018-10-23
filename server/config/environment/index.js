@@ -20,6 +20,7 @@ const all = {
 
   ip: process.env.IP || undefined,
 
+  allowedIps: ['::ffff:165.227.178.70', '::ffff:167.99.56.161'],
   sendgrid: {
     username: 'cloudkibo',
     password: 'cl0udk1b0'
