@@ -13,7 +13,7 @@ exports.verify = function (req, res) {
     .then(verificationToken => {
       if (!verificationToken) {
         // This path needs to be updated
-        return res.sendFile(path.join(__dirname, './../../../../views/path'))
+        return res.render('layouts/invitationExpire', {expireLink: true})
       } else {
         InvitationDataLayer
           .findOneInvitationsObjectUsingQuery({
@@ -22,7 +22,7 @@ exports.verify = function (req, res) {
           .then(invitation => {
             if (!invitation) {
               // This path needs to be updated
-              return res.sendFile(path.join(__dirname, './../../../../views/path'))
+              return res.render('layouts/invitationExpire', {expireLink: true})
             }
             res.cookie('email', verificationToken.email,
               {expires: new Date(Date.now() + 900000)})
@@ -34,7 +34,7 @@ exports.verify = function (req, res) {
               {expires: new Date(Date.now() + 900000)})
             res.cookie('domain', verificationToken.domain,
               {expires: new Date(Date.now() + 900000)})
-            return res.sendFile(path.join(__dirname, './../../../../views/path'))
+            return res.render('layouts/invitationExpire', {expireLink: false})
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
