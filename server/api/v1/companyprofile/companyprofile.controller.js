@@ -206,7 +206,7 @@ exports.invite = function (req, res) {
             Promise.all([invitetokenPromise, inviteTempDataPro])
               .then(result => {
                 let sendgrid = utility.getSendGridObject()
-                let email = new sendgrid.Email(logicLayer.getEmailParameters())
+                let email = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
                 email = logicLayer.setEmailBody(email, req.user, companyUser, uniqueTokenId)
                 sendgrid.send(email, (err, json) => {
                   logger.serverLog(TAG, `response from sendgrid send: ${json}`)
