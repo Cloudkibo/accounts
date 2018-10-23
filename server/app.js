@@ -16,5 +16,5 @@ require('./config/setup')(app, httpApp, config)
 require('./routes')(appObj)
 
 process.on('uncaughtException', function (exception) {
-  console.log(exception)
+  console.log('asad catch:', exception)
 })
