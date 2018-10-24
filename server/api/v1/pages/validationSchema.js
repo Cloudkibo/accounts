@@ -32,7 +32,7 @@ exports.pagePayload = {
       required: true
     },
     connected: {
-      type: 'string',
+      type: 'boolean',
       required: true
     },
     userId: {
@@ -48,7 +48,7 @@ exports.pagePayload = {
       required: false
     },
     welcomeMessage: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     isWelcomeMessageEnabled: {
