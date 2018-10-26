@@ -10,7 +10,7 @@ exports.index = function (req, res) {
   datalayer.findAllTagObjectUsingQuery({})
     .then(tags => {
       logger.serverLog(TAG, `Found tags: ${util.inspect(tags)}`)
-      res.status(200).json({status: 'success', description: tags})
+      res.status(200).json({status: 'success', payload: tags})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at index endpoint: ${util.inspect(err)}`)
@@ -25,7 +25,7 @@ exports.findOne = function (req, res) {
     .then(tag => {
       // tag sub will be null if the given id is not found
       logger.serverLog(TAG, `Found tag: ${util.inspect(tag)}`)
-      res.status(200).json({status: 'success', description: tag})
+      res.status(200).json({status: 'success', payload: tag})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at findOne endpoint: ${util.inspect(err)}`)
@@ -39,7 +39,7 @@ exports.create = function (req, res) {
   datalayer.createTagObject(payload)
     .then(tag => {
       logger.serverLog(TAG, `created tag: ${util.inspect(tag)}`)
-      res.status(200).json({status: 'success', description: tag})
+      res.status(200).json({status: 'success', payload: tag})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at create endpoint: ${util.inspect(err)}`)
@@ -53,7 +53,7 @@ exports.delete = function (req, res) {
   datalayer.deleteOneTagObjectUsingQuery(query)
     .then(tag => {
       logger.serverLog(TAG, `deleted tag: ${util.inspect(tag)}`)
-      res.status(200).json({status: 'success', description: tag})
+      res.status(200).json({status: 'success', payload: tag})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete endpoint: ${util.inspect(err)}`)
@@ -67,7 +67,7 @@ exports.deleteMany = function (req, res) {
   datalayer.deleteTagObjectUsingQuery(query)
     .then(tag => {
       logger.serverLog(TAG, `deleted tags: ${util.inspect(tag)}`)
-      res.status(200).json({status: 'success', description: tag})
+      res.status(200).json({status: 'success', payload: tag})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete many endpoint: ${util.inspect(err)}`)
