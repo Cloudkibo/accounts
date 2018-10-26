@@ -10,7 +10,7 @@ exports.index = function (req, res) {
   datalayer.findAllTagSubObjectUsingQuery({})
     .then(tagsubs => {
       logger.serverLog(TAG, `Found tagsubs: ${util.inspect(tagsubs)}`)
-      res.status(200).json({status: 'success', description: tagsubs})
+      res.status(200).json({status: 'success', payload: tagsubs})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at index endpoint: ${util.inspect(err)}`)
@@ -25,7 +25,7 @@ exports.findOne = function (req, res) {
     .then(tagsub => {
       // tag sub will be null if the given id is not found
       logger.serverLog(TAG, `Found tagsub: ${util.inspect(tagsub)}`)
-      res.status(200).json({status: 'success', description: tagsub})
+      res.status(200).json({status: 'success', payload: tagsub})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at findOne endpoint: ${util.inspect(err)}`)
@@ -39,7 +39,7 @@ exports.create = function (req, res) {
   datalayer.createTagSubObject(payload)
     .then(tagsub => {
       logger.serverLog(TAG, `created tagsub: ${util.inspect(tagsub)}`)
-      res.status(200).json({status: 'success', description: tagsub})
+      res.status(200).json({status: 'success', payload: tagsub})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at create endpoint: ${util.inspect(err)}`)
@@ -53,10 +53,24 @@ exports.delete = function (req, res) {
   datalayer.deleteOneTagSubObjectUsingQuery(query)
     .then(tagsub => {
       logger.serverLog(TAG, `deleted tagsub: ${util.inspect(tagsub)}`)
-      res.status(200).json({status: 'success', description: tagsub})
+      res.status(200).json({status: 'success', payload: tagsub})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete endpoint: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', description: 'Internal Server Error'})
+    })
+}
+
+exports.deleteMany = function (req, res) {
+  logger.serverLog(TAG, 'Hit the deleteMany point')
+  let query = req.body ? req.body : ''
+  datalayer.deleteTagSubObjectUsingQuery(query)
+    .then(tagsub => {
+      logger.serverLog(TAG, `deleted tagsub: ${util.inspect(tagsub)}`)
+      res.status(200).json({status: 'success', payload: tagsub})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at delete many endpoint: ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', description: 'Internal Server Error'})
     })
 }

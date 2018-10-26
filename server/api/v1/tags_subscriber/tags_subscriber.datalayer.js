@@ -8,13 +8,13 @@ const TagsSubscriberModel = require('./tags_subscriber.model')
 
 exports.findOneTagSubObjectUsingQuery = (queryObject) => {
   return TagsSubscriberModel.findOne(queryObject)
-    .populate('subscriberId companyId')
+    .populate('subscriberId companyId tagId')
     .exec()
 }
 
 exports.findAllTagSubObjectUsingQuery = (queryObject) => {
   return TagsSubscriberModel.find(queryObject)
-    .populate('subscriberId companyId')
+    .populate('subscriberId companyId tagId')
     .exec()
 }
 

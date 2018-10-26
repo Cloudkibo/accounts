@@ -16,7 +16,7 @@ exports.findAllPlanUsageObjects = (query) => {
 }
 
 exports.findAllCompanyUsageObjects = (query) => {
-  return PlanUsageModel.find(query)
+  return CompanyUsageModel.find(query)
     .exec()
 }
 
