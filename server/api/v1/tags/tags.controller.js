@@ -61,6 +61,20 @@ exports.delete = function (req, res) {
     })
 }
 
+exports.deleteMany = function (req, res) {
+  logger.serverLog(TAG, 'Hit the deleteMany point')
+  let query = req.body ? req.body : ''
+  datalayer.deleteTagObjectUsingQuery(query)
+    .then(tag => {
+      logger.serverLog(TAG, `deleted tags: ${util.inspect(tag)}`)
+      res.status(200).json({status: 'success', description: tag})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at delete many endpoint: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', description: 'Internal Server Error'})
+    })
+}
+
 exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
