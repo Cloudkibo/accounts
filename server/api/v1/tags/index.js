@@ -38,4 +38,8 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
+router.post('/deleteMany',
+  // auth.isAuthenticated(),
+  controller.deleteMany)
+
 module.exports = router
