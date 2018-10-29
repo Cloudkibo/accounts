@@ -10,7 +10,7 @@ router.get('/:_id',
   auth.isAuthenticated(),
   controller.index)
 
-router.post('/',
+router.post('/create',
   validate({body: validationSchema.subscriberPayload}),
   auth.isAuthenticated(),
   controller.create)
