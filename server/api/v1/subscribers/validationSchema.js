@@ -24,7 +24,7 @@ exports.subscriberPayload = {
       required: true
     },
     timezone: {
-      type: 'string',
+      type: 'number',
       required: true
     },
     email: {
@@ -98,7 +98,7 @@ exports.updateSubscriberPayload = {
       required: false
     },
     timezone: {
-      type: 'string',
+      type: 'number',
       required: false
     },
     email: {
