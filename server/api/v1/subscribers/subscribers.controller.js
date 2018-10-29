@@ -18,12 +18,8 @@ exports.index = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create subscriber controller index')
-  dataLayer.createSubscriberObject(
-    req.body.pageScopedId, req.body.firstName, req.body.lastName, req.body.locale, req.body.timezone,
-    req.body.email, req.body.gender, req.body.senderId, req.body.profilePic, req.body.coverPhoto, req.body.pageId, req.body.phoneNumber,
-    req.body.unSubscribedBy, req.body.source, req.body.companyId, req.body.isSubscribed, req.body.isEnabledByPage
-  )
+  logger.serverLog(TAG, 'Hit the create subscriber controller index', req.body)
+  dataLayer.createSubscriberObject(req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
