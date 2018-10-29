@@ -19,6 +19,7 @@ exports.index = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create subscriber controller index', req.body)
+  console.log('Hit the create subscriber controller index', JSON.stringify(req.body))
   dataLayer.createSubscriberObject(req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
