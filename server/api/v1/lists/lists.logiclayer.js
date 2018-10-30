@@ -15,9 +15,3 @@ exports.validateAndConvert = (body) => {
   })
   return newBody
 }
-exports.createPayload = (body, userId, companyId) => {
-  let newBody = body
-  newBody.userId = userId
-  newBody.companyId = companyId
-  return newBody
-}
