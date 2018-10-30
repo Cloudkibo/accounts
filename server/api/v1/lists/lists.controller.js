@@ -91,6 +91,7 @@ exports.genericUpdate = function (req, res) {
   CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
     .then(companyUser => {
       let body = logicLayer.createPayload(req.body, req.user._id, companyUser.companyId)
+      console.log('body in genericUpdate', body)
       dataLayer.genericUpdateListObject(req.body.query, body, req.body.options)
         .then(result => {
           return res.status(200).json({status: 'success', payload: result})
