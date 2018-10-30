@@ -8,10 +8,16 @@ let mongoose = require('mongoose')
 exports.validateAndConvert = (body) => {
   let newBody = body
 
-  body.forEach((obj,  index) => {
+  body.forEach((obj, index) => {
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
   })
+  return newBody
+}
+exports.createPayload = (body, userId, companyId) => {
+  let newBody = body
+  newBody.userId = userId
+  newBody.companyId = companyId
   return newBody
 }
