@@ -2,6 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./lists.logiclayer')
 const dataLayer = require('./lists.datalayer')
 const TAG = '/api/v1/lists/lists.controller.js'
+const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 
 const util = require('util')
 
@@ -87,13 +88,20 @@ exports.aggregate = function (req, res) {
 
 exports.genericUpdate = function (req, res) {
   logger.serverLog(TAG, 'generic update endpoint')
-
-  dataLayer.genericUpdateListObject(req.body.query, req.body.newPayload, req.body.options)
-    .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+  CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+    .then(companyUser => {
+      let body = logicLayer.createPayload(req.body, req.user._id, companyUser.companyId)
+      dataLayer.genericUpdateListObject(req.body.query, body, req.body.options)
+        .then(result => {
+          return res.status(200).json({status: 'success', payload: result})
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: err})
+        })
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      logger.serverLog(TAG, `Error at company user fetch ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
     })
 }
