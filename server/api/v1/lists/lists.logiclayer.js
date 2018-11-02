@@ -21,6 +21,9 @@ exports.validateAndConvert = (body) => {
         if (object._id && object._id.$gt) {
           newBody[index].$match.$and[i]._id.$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[i]._id.$gt)
         }
+        if (object._id && object._id.$lt) {
+          newBody[index].$match.$and[i]._id.$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[i]._id.$lt)
+        }
       })
     }
   })
