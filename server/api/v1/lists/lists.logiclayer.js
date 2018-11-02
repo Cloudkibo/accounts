@@ -13,18 +13,18 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
+    if (obj.$match && obj.$match.$and) {
+      let temp = obj.$match.$and
+      temp.forEach((object, i) => {
+        if (object.companyId) {
+          newBody[index].$match.$and[i].companyId = mongoose.Types.ObjectId(newBody[index].$match.$and[i].companyId)
+        }
+        if (object._id && object._id.$gt) {
+          newBody[index].$match.$and[i]._id.$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[i]._id.$gt)
+        }
+      })
+    }
   })
-  if (body.$match && body.$match.$and) {
-    let temp = body.$match.$and
-    temp.forEach((obj, index) => {
-      if (obj.companyId) {
-        newBody.$match.$and[index].companyId = mongoose.Types.ObjectId(newBody.$match.$and[index].companyId)
-      }
-      if (obj._id && obj._id.$gt) {
-        newBody.$match.$and[index]._id.$gt = mongoose.Types.ObjectId(newBody.$match.$and[index]._id.$gt)
-      }
-    })
-  }
   console.log('newBody', JSON.stringify(newBody))
   return newBody
 }
