@@ -6,7 +6,7 @@ Thus we can use it from other non express callers like cron etc
 let mongoose = require('mongoose')
 
 exports.validateAndConvert = (body) => {
-  console.log('body in validateAndConvert', body)
+  console.log('body in validateAndConvert', JSON.stringify(body))
   let newBody = body
 
   body.forEach((obj, index) => {
@@ -25,6 +25,6 @@ exports.validateAndConvert = (body) => {
       }
     })
   }
-  console.log('newBody', newBody)
+  console.log('newBody', JSON.stringify(newBody))
   return newBody
 }
