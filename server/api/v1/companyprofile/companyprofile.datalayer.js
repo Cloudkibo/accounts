@@ -55,3 +55,8 @@ exports.deletePostObject = (postId) => {
 exports.saveProfileObject = (object) => {
   return object.save()
 }
+
+exports.genericUpdatePostObject = (query, updated, options) => {
+  return CompanyProfileModel.update(query, updated, options)
+    .exec()
+}
