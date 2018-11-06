@@ -21,6 +21,5 @@ exports.UpdateOneApiObject = (query, updated, options) => {
 }
 exports.findAllUsingQuery = (queryObject) => {
   return ApiSettingsModel.find(queryObject)
-    .populate('pageId userId companyId')
     .exec()
 }

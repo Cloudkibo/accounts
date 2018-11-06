@@ -110,8 +110,9 @@ exports.genericFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
   dataLayer
-    .findAllUsingQuery(req.body)
+    .findOneApiObject(req.body)
     .then(result => {
+      console.log('Settings Result', result)
       return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
