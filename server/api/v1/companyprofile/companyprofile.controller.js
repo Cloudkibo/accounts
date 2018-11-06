@@ -111,7 +111,7 @@ exports.updatePlan = function (req, res) {
       let update = {planId: plan._id, 'stripe.plan': req.body.plan}
       dataLayer.genericUpdateCompanyProfileObject(query, update, {})
         .then(result => { logger.serverLog(TAG, `update: ${result}`) })
-        .catch(err => { logger.serverLog(TAG, err) })F
+        .catch(err => { logger.serverLog(TAG, err) })
 
       dataLayer.findOneCompanyProfileObject(req.body.companyId)
         .then(company => {
