@@ -167,13 +167,14 @@ exports.invite = function (req, res) {
           let gotCountAgent = results[2] ? results[2] : null
           let sendgrid = utility.getSendGridObject()
           let email = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
+          let uniqueTokenId = UserLogicLayer.getRandomString()
           email = logicLayer.setEmailBody(email, req.user, companyUser, uniqueTokenId)
           sendgrid.send(email, (err, json) => {
             logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
             err
               ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
               : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
-
+          })
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
             res.status(200).json({
