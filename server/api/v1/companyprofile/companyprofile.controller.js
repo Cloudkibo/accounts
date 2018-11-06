@@ -161,26 +161,27 @@ exports.invite = function (req, res) {
       Promise.all([InvitationCountPromise, UserEmailCountPromise, UserDomainCountPromise])
         .then(results => {
           // Resolved Results
+          logger.serverLog(TAG, `${results} is already invited.`)
           let gotCount = results[0] ? results[0] : null
           let gotCountAgentWithEmail = results[1] ? results[1] : null
           let gotCountAgent = results[2] ? results[2] : null
 
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
-            return res.status(200).json({
-              status: 'failed',
+            res.status(200).json({
+              status: 'success',
               payload: `${req.body.name} is already invited.`
             })
           } else if (gotCountAgentWithEmail > 0) {
             logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
-            return res.status(200).json({
-              status: 'failed',
+            res.status(200).json({
+              status: 'success',
               payload: `${req.body.name} is already on KiboPush.`
             })
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
-            return res.status(200).json({
-              status: 'failed',
+            res.status(200).json({
+              status: 'success',
               payload: `${req.body.name} is already a member.`
             })
           } else {
