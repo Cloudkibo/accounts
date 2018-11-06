@@ -618,6 +618,7 @@ exports.fetchGeneral = function (req, res) {
 
   dataLayer.findAllUserObjectsUsingQuery(req.body)
     .then(users => {
+      console.log('USers', users)
       return res.status(200).json({status: 'success', payload: users})
     })
     .catch(err => {

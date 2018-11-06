@@ -111,7 +111,7 @@ exports.updatePlan = function (req, res) {
       let update = {planId: plan._id, 'stripe.plan': req.body.plan}
       dataLayer.genericUpdateCompanyProfileObject(query, update, {})
         .then(result => { logger.serverLog(TAG, `update: ${result}`) })
-        .catch(err => { logger.serverLog(TAG, err) })
+        .catch(err => { logger.serverLog(TAG, err) })F
 
       dataLayer.findOneCompanyProfileObject(req.body.companyId)
         .then(company => {
@@ -143,7 +143,7 @@ exports.invite = function (req, res) {
         ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
         : res.status(404).json({
           status: 'failed',
-          description: 'The user account logged in does not belong to any company. Please contact support'
+          payload: 'The user account logged in does not belong to any company. Please contact support'
         })
 
       // Query Objects
@@ -169,19 +169,19 @@ exports.invite = function (req, res) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
             return res.status(200).json({
               status: 'failed',
-              description: `${req.body.name} is already invited.`
+              payload: `${req.body.name} is already invited.`
             })
           } else if (gotCountAgentWithEmail > 0) {
             logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
             return res.status(200).json({
               status: 'failed',
-              description: `${req.body.name} is already on KiboPush.`
+              payload: `${req.body.name} is already on KiboPush.`
             })
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
             return res.status(200).json({
               status: 'failed',
-              description: `${req.body.name} is already a member.`
+              payload: `${req.body.name} is already a member.`
             })
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
@@ -216,10 +216,10 @@ exports.invite = function (req, res) {
 
                   json
                     ? res.status(200).json(
-                      {status: 'success', description: 'Email has been sent'})
+                      {status: 'success', payload: 'Email has been sent'})
                     : res.status(500).json({
                       status: 'failed',
-                      description: `Internal Server Error ${JSON.stringify(err)}`
+                      payload: `Internal Server Error ${JSON.stringify(err)}`
                     })
                 })
               })
@@ -232,7 +232,7 @@ exports.invite = function (req, res) {
           logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
           return res.status(500).json({
             status: 'failed',
-            description: `Internal Server Error ${JSON.stringify(err)}`
+            payload: `Internal Server Error ${JSON.stringify(err)}`
           })
         })
     })
@@ -240,7 +240,7 @@ exports.invite = function (req, res) {
       logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
       return res.status(500).json({
         status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
+        payload: `Internal Server Error ${JSON.stringify(err)}`
       })
     })
 }
