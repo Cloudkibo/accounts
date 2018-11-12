@@ -34,7 +34,6 @@ exports.create = function (req, res) {
 
 exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update list controller index')
-
   dataLayer.updateListObject(req.params._id, req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})

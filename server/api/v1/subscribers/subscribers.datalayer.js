@@ -25,27 +25,7 @@ exports.aggregateInfo = (query) => {
     .exec()
 }
 
-exports.createSubscriberObject = (pageScopedId, firstName, lastName, locale, timezone,
-  email, gender, senderId, profilePic, coverPhoto, pageId, phoneNumber, unSubscribedBy,
-  source, companyId, isSubscribed, isEnabledByPage) => {
-  let payload = { pageScopedId,
-    firstName,
-    lastName,
-    locale,
-    timezone,
-    email,
-    gender,
-    senderId,
-    profilePic,
-    coverPhoto,
-    pageId,
-    phoneNumber,
-    unSubscribedBy,
-    source,
-    companyId,
-    isSubscribed,
-    isEnabledByPage }
-
+exports.createSubscriberObject = (payload) => {
   let obj = new SubscriberModel(payload)
   return obj.save()
 }

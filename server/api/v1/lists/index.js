@@ -25,7 +25,7 @@ router.post('/query',
 router.post('/aggregate',
   controller.aggregate)
 
-router.put('/update',
+router.post('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 

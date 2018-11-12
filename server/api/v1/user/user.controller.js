@@ -322,7 +322,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
-        return res.status(404).json({status: 'failed', description: 'user or company user not found'})
+        res.status(404).json({status: 'failed', description: 'user or company user not found'})
       } else {
         logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
         let accountData = {
@@ -618,6 +618,7 @@ exports.fetchGeneral = function (req, res) {
 
   dataLayer.findAllUserObjectsUsingQuery(req.body)
     .then(users => {
+      console.log('USers', users)
       return res.status(200).json({status: 'success', payload: users})
     })
     .catch(err => {

@@ -143,7 +143,7 @@ exports.invite = function (req, res) {
         ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
         : res.status(404).json({
           status: 'failed',
-          description: 'The user account logged in does not belong to any company. Please contact support'
+          payload: 'The user account logged in does not belong to any company. Please contact support'
         })
 
       // Query Objects
@@ -161,27 +161,27 @@ exports.invite = function (req, res) {
       Promise.all([InvitationCountPromise, UserEmailCountPromise, UserDomainCountPromise])
         .then(results => {
           // Resolved Results
+          logger.serverLog(TAG, `${results} is already invited.`)
           let gotCount = results[0] ? results[0] : null
           let gotCountAgentWithEmail = results[1] ? results[1] : null
           let gotCountAgent = results[2] ? results[2] : null
-
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
-            return res.status(200).json({
+            res.status(400).json({
               status: 'failed',
-              description: `${req.body.name} is already invited.`
+              payload: `${req.body.name} is already invited.`
             })
           } else if (gotCountAgentWithEmail > 0) {
             logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
-            return res.status(200).json({
+            res.status(400).json({
               status: 'failed',
-              description: `${req.body.name} is already on KiboPush.`
+              payload: `${req.body.name} is already on KiboPush.`
             })
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
-            return res.status(200).json({
+            res.status(400).json({
               status: 'failed',
-              description: `${req.body.name} is already a member.`
+              payload: `${req.body.name} is already a member.`
             })
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
@@ -206,20 +206,20 @@ exports.invite = function (req, res) {
             Promise.all([invitetokenPromise, inviteTempDataPro])
               .then(result => {
                 let sendgrid = utility.getSendGridObject()
-                let email = new sendgrid.Email(logicLayer.getEmailParameters())
+                let email = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
                 email = logicLayer.setEmailBody(email, req.user, companyUser, uniqueTokenId)
                 sendgrid.send(email, (err, json) => {
-                  logger.serverLog(TAG, `response from sendgrid send: ${json}`)
+                  logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
-                    ? logger.serverLog(TAG, `error at sendgrid send ${err}`)
-                    : logger.serverLog(TAG, `response from sendgrid send: ${json}`)
+                    ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
+                    : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
 
                   json
                     ? res.status(200).json(
-                      {status: 'success', description: 'Email has been sent'})
+                      {status: 'success', payload: 'Email has been sent'})
                     : res.status(500).json({
                       status: 'failed',
-                      description: `Internal Server Error ${JSON.stringify(err)}`
+                      payload: `Internal Server Error ${JSON.stringify(err)}`
                     })
                 })
               })
@@ -232,7 +232,7 @@ exports.invite = function (req, res) {
           logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
           return res.status(500).json({
             status: 'failed',
-            description: `Internal Server Error ${JSON.stringify(err)}`
+            payload: `Internal Server Error ${JSON.stringify(err)}`
           })
         })
     })
@@ -240,7 +240,7 @@ exports.invite = function (req, res) {
       logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
       return res.status(500).json({
         status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
+        payload: `Internal Server Error ${JSON.stringify(err)}`
       })
     })
 }
