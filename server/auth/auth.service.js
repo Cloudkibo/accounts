@@ -168,7 +168,7 @@ function fetchPages (url, user, req, token) {
       return
     }
     logger.serverLog(TAG, 'resp from graph api to get pages list data: ')
-    logger.serverLogF(TAG, JSON.stringify(resp.body))
+    logger.serverLog(TAG, JSON.stringify(resp.body))
     const data = resp.body.data
     const cursor = resp.body.paging
     if (data) {
