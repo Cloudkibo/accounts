@@ -42,6 +42,26 @@ exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, acce
   return obj.save()
 }
 
+exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, accessToken,
+  connected, userId, companyId, greetingText, welcomeMessage, isWelcomeMessageEnabled,
+  gotPageSubscriptionPermission) => {
+  let payload = { pageId,
+    pageName,
+    pageUserName,
+    pagePic,
+    likes,
+    accessToken,
+    connected,
+    userId,
+    companyId,
+    greetingText,
+    welcomeMessage,
+    isWelcomeMessageEnabled,
+    gotPageSubscriptionPermission }
+  let obj = new PageModel(payload)
+  return obj.save()
+}
+
 // DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updatePageObject = (id, payload) => {
@@ -61,4 +81,8 @@ exports.updatePageObjectUsingQuery = (query, payload, options) => {
 exports.deletePageObject = (id) => {
   return PageModel.deleteOne({_id: id})
     .exec()
+}
+exports.savePageObject = (payload) => {
+  let obj = new PageModel(payload)
+  return obj.save()
 }
