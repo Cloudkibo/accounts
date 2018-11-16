@@ -96,6 +96,9 @@ module.exports = function (app) {
   app.get('/forgotPassword', function (req, res) {
     res.render('layouts/forgotPassword', {Continue: req.query.Continue ? req.query.Continue : ''})
   })
+  app.get('/forgotWorkspaceName', function (req, res) {
+    res.render('layouts/forgotWorkspaceName', {Continue: req.query.Continue ? req.query.Continue : ''})
+  })
   app.get('/invitation', function (req, res) {
     res.render('layouts/invitationExpire', {expireLink: true})
   })
