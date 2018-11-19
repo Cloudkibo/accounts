@@ -168,13 +168,11 @@ exports.change = function (req, res) {
 }
 
 exports.forgotWorkspaceName = function (req, res) {
-  console.log('req.body--', JSON.stringify(req.body))
   userDataLayer
   .findOneUserByEmail(req.body)
   .then(user => {
-    console.log('user', user)
     if (!user) {
-      logger.serverLog(TAG, `fetchedUser not found ${util.inspect(fetchedUser)}`)
+      logger.serverLog(TAG, `fetchedUser not found ${util.inspect(user)}`)
       return res.status(404).json({
         status: 'failed',
         description: 'Sorry! No such account or company exists in our database.'
@@ -207,7 +205,7 @@ exports.forgotWorkspaceName = function (req, res) {
     if (err) {
       return res.status(500).json({
         status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
+        description: `sending Server Error ${JSON.stringify(err)}`
       })
     }
 
