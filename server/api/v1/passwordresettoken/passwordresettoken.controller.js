@@ -172,6 +172,7 @@ exports.forgotWorkspaceName = function (req, res) {
   userDataLayer
   .findOneUserByEmail(req.body)
   .then(user => {
+    console.log('user', user)
     if (!user) {
       logger.serverLog(TAG, `fetchedUser not found ${util.inspect(fetchedUser)}`)
       return res.status(404).json({
