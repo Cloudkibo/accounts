@@ -10,7 +10,7 @@ const listSchema = new Schema({
   datetime: { type: Date, default: Date.now },
   content: {type: Schema.Types.Mixed},
   conditions: {type: Schema.Types.Mixed},
-  initialList: { type: Boolean, default: false },
+  initialList: Boolean,
   parentList: { type: Schema.ObjectId },
   parentListName: { type: String }
 })
