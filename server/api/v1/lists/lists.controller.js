@@ -18,6 +18,7 @@ exports.index = function (req, res) {
 }
 
 exports.create = function (req, res) {
+  console.log('req.body', req.body)
   logger.serverLog(TAG, 'Hit the create list controller index')
   dataLayer.createListObject(
     req.body.listName, req.body.userId, req.body.companyId, req.body.content,
