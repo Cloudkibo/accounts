@@ -58,8 +58,6 @@ module.exports = function (app) {
 
   // login page
   app.get('/login/single', function (req, res) {
-    let Continue = req.query.continue
-    console.log(Continue)
     res.render('layouts/login', {individual: true, Continue: req.query.continue ? req.query.continue : ''})
   })
 
