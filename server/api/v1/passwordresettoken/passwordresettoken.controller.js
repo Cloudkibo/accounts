@@ -139,6 +139,10 @@ exports.change = function (req, res) {
   let userId = req.user._id
   let oldPass = String(req.body.old_password)
   let newPass = String(req.body.new_password)
+console.log('userId',userId)
+console.log('oldPass',oldPass)
+console.log('newPass',newPass)
+
 
   userDataLayer
     .findOneUserObject(userId)
@@ -146,6 +150,7 @@ exports.change = function (req, res) {
       if (user.authenticate(oldPass)) {
         user.password = newPass
         user.save().then(err => {
+          console.log('err',err)
           err
             ? res.status(500).json({
               status: 'failed',
