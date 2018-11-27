@@ -150,15 +150,16 @@ console.log('newPass',newPass)
       if (user.authenticate(oldPass)) {
         user.password = newPass
         user.save().then(err => {
-          console.log('err',err)
-          err
-            ? res.status(500).json({
-              status: 'failed',
-              description: `Internal Server Error ${JSON.stringify(err)}`
-            })
-            : res.status(200).json(
+          res.status(200).json(
               {status: 'success', description: 'Password changed successfully.'})
         })
+        .catch((err) => {
+          res.status(500).json({
+            status: 'failed',
+            description: `Internal Server Error ${JSON.stringify(err)}`
+        })
+      })
+        
       } else {
         res.status(403)
           .json({status: 'failed', description: 'Wrong current password.'})
