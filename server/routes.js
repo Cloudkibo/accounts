@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.use('/api/v1/user', require('./api/v1/user'))
   app.use('/api/v1/teams', require('./api/v1/teams'))
   app.use('/api/v1/comment_capture', require('./api/v1/comment_capture'))
+  app.use('/api/v1/messenger_code', require('./api/v1/messenger_code'))
   app.use('/api/v1/pages', require('./api/v1/pages'))
   app.use('/api/v1/lists', require('./api/v1/lists'))
   app.use('/api/v1/menu', require('./api/v1/menu'))

@@ -11,6 +11,12 @@ exports.findOnePageObject = (id) => {
     .exec()
 }
 
+exports.findOnePageObjectUsingQuery = (query) => {
+  return PageModel.findOne(query)
+    .populate('userId')
+    .exec()
+}
+
 exports.findPageObjects = (query) => {
   return PageModel.find(query)
     .populate('userId')
