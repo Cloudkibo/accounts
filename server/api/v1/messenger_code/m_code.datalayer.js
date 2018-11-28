@@ -39,3 +39,7 @@ exports.delete = (query) => {
   return CodeAnalyticsModel.deleteMany(query)
     .exec()
 }
+
+exports.saveObject = (object) => {
+  return object.save()
+}
