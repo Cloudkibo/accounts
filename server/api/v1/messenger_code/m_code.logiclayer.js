@@ -31,3 +31,16 @@ exports.findCompanyFromUser = (user) => {
       })
   })
 }
+
+exports.prepareAnalyticsPayload = (page, user, company, ref = null) => {
+  let payload = {
+    userId: user._id,
+    pageId: page.pageId,
+    companyId: company._id,
+    subscriberIds: []
+  }
+
+  if (ref) payload.ref = ref
+
+  return payload
+}

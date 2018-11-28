@@ -7,7 +7,8 @@ let codeAnalytics = new Schema({
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   ref: String,
   opened: {type: Number, default: 0},
-  subscribers: {type: Number, default: 0}
+  subscribers: {type: Number, default: 0},
+  subscriberIds: [String]
 })
 
 module.exports = mongoose.model('codeAnalytics', codeAnalytics)
