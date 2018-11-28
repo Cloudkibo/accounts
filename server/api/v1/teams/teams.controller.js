@@ -37,7 +37,7 @@ exports.create = function (req, res) {
   dataLayer
     .saveTeamDocument(
       req.body.name,
-      req.body.decription,
+      req.body.description,
       req.body.created_by,
       req.body.companyId,
       req.body.teamPages,
