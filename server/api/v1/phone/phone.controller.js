@@ -59,6 +59,7 @@ exports.query = function (req, res) {
 
   dataLayer.findPhoneObjects(req.body)
     .then(result => {
+      console.log('Phone Objects', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
