@@ -14,7 +14,7 @@ const util = require('util')
 
 exports.findCompanyFromUser = (user) => {
   return new Promise((resolve, reject) => {
-    CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery(user.domain_email)
+    CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
       .then(companyUser => {
         if (companyUser) {
           return CompanyProfileDataLayer.findOneCompanyProfileObject(companyUser.companyId)
