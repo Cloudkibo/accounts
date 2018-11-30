@@ -4,7 +4,7 @@ const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
 const controller = require('./m_code.controller')
-// const auth = require('./../../../auth/auth.service')
+const auth = require('./../../../auth/auth.service')
 
 router.post('/',
   auth.isAuthenticated(),
