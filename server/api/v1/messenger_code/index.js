@@ -7,7 +7,7 @@ const controller = require('./m_code.controller')
 // const auth = require('./../../../auth/auth.service')
 
 router.post('/',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   validate({body: validationSchema.createCodePayload}),
   controller.createCode)
 
