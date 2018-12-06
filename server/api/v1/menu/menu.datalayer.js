@@ -7,6 +7,18 @@ const MenuModel = require('./Menu.model')
 
 exports.findOneMenuObject = (menuId) => {
   return MenuModel.findOne({_id: menuId})
+    .populate('pageId userId companyId')
+    .exec()
+}
+
+exports.findMenuObjects = (query) => {
+  return MenuModel.find(query)
+    .populate('pageId userId companyId')
+    .exec()
+}
+
+exports.aggregateInfo = (query) => {
+  return MenuModel.aggregate(query)
     .exec()
 }
 
@@ -15,10 +27,15 @@ exports.createMenuObject = (payload) => {
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateMenuObject = (menuId, payload) => {
   return MenuModel.updateOne({_id: menuId}, payload)
+    .exec()
+}
+
+exports.genericUpdateMenuObject = (query, updated, options) => {
+  return MenuModel.update(query, updated, options)
     .exec()
 }
 

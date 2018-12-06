@@ -34,6 +34,7 @@ exports.findOneTeamObjectUsingQuery = (queryObject) => {
 
 exports.findAllTeamObjectsUsingQuery = (queryObject) => {
   return TeamModel.find(queryObject)
+    .populate('created_by')
     .exec()
 }
 
@@ -47,6 +48,11 @@ exports.updateTeamObject = (userId, payload) => {
     .exec()
 }
 
+exports.genericUpdateTeamObject = (query, updated, options) => {
+  return TeamModel.update(query, updated, options)
+    .exec()
+}
+
 exports.deleteTeamObject = (teamId) => {
   return TeamModel.deleteOne({_id: teamId})
     .exec()
@@ -55,16 +61,25 @@ exports.deleteTeamObject = (teamId) => {
 // Agent DB Handlers
 exports.findAllAgentObjects = () => {
   return TeamAgentsModel.find()
+    .populate('teamId agentId')
     .exec()
 }
 
 exports.findOneAgentObjectUsingQuery = (queryObject) => {
   return TeamAgentsModel.findOne(queryObject)
+    .populate('teamId agentId')
     .exec()
 }
 
 exports.findAllAgentObjectsUsingQuery = (queryObject) => {
   return TeamAgentsModel.find(queryObject)
+    .populate('teamId agentId')
+    .exec()
+}
+
+exports.findDistinctAgentObjectsUsingQuery = (queryObject) => {
+  return TeamAgentsModel.find(queryObject)
+    .distinct('agentId')
     .exec()
 }
 
@@ -84,19 +99,33 @@ exports.deleteAgentObject = (teamId, companyId, agentId) => {
     .exec()
 }
 
+exports.genericUpdateAgentObject = (query, updated, options) => {
+  return TeamAgentsModel.update(query, updated, options)
+    .exec()
+}
+
 // Team Pages DB Handlers
 exports.findAllTeamPageObjects = () => {
   return TeamPagesModel.find()
+    .populate('pageId teamId')
     .exec()
 }
 
 exports.findOneTeamPageObjectUsingQuery = (queryObject) => {
   return TeamPagesModel.findOne(queryObject)
+    .populate('pageId teamId')
     .exec()
 }
 
 exports.findAllTeamPageObjectsUsingQuery = (queryObject) => {
   return TeamPagesModel.find(queryObject)
+    .populate('pageId teamId')
+    .exec()
+}
+
+exports.findDistinctPageObjectsUsingQuery = (queryObject) => {
+  return TeamPagesModel.find(queryObject)
+    .distinct('pageId')
     .exec()
 }
 
@@ -108,6 +137,11 @@ exports.findTeamPageObjectUsingAggregate = (aggregateObject) => {
 exports.saveTeamPageDocument = (teamId, companyId, pageId) => {
   let payload = { teamId, companyId, pageId }
   return TeamPagesModel.create(payload)
+}
+
+exports.genericUpdatePageObject = (query, updated, options) => {
+  return TeamPagesModel.update(query, updated, options)
+    .exec()
 }
 
 exports.deleteAgentObject = (teamId, companyId, pageId) => {

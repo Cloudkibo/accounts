@@ -9,7 +9,7 @@ exports.subscriberPayload = {
   properties: {
     pageScopedId: {
       type: 'string',
-      required: true
+      required: false
     },
     firstName: {
       type: 'string',
@@ -24,12 +24,12 @@ exports.subscriberPayload = {
       required: true
     },
     timezone: {
-      type: 'string',
+      type: 'number',
       required: true
     },
     email: {
       type: 'string',
-      required: true
+      required: false
     },
     gender: {
       type: 'string',
@@ -45,7 +45,7 @@ exports.subscriberPayload = {
     },
     coverPhoto: {
       type: 'string',
-      required: true
+      required: false
     },
     pageId: {
       type: 'string',
@@ -53,7 +53,7 @@ exports.subscriberPayload = {
     },
     phoneNumber: {
       type: 'string',
-      required: true
+      required: false
     },
     unSubscribedBy: {
       type: 'string',
@@ -63,7 +63,7 @@ exports.subscriberPayload = {
       type: 'string',
       required: false
     },
-    companyId:  {
+    companyId: {
       type: 'string',
       required: true
     },
@@ -74,7 +74,7 @@ exports.subscriberPayload = {
     isEnabledByPage: {
       type: 'boolean',
       required: false
-    },
+    }
   }
 }
 
@@ -98,7 +98,7 @@ exports.updateSubscriberPayload = {
       required: false
     },
     timezone: {
-      type: 'string',
+      type: 'number',
       required: false
     },
     email: {
@@ -137,7 +137,7 @@ exports.updateSubscriberPayload = {
       type: 'string',
       required: false
     },
-    companyId:  {
+    companyId: {
       type: 'string',
       required: false
     },
@@ -148,7 +148,27 @@ exports.updateSubscriberPayload = {
     isEnabledByPage: {
       type: 'boolean',
       required: false
-    },
+    }
   }
 }
 
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
+}

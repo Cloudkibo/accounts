@@ -17,7 +17,7 @@ exports.pagePayload = {
     },
     pageUserName: {
       type: 'string',
-      required: true
+      required: false
     },
     pagePic: {
       type: 'string',
@@ -27,12 +27,12 @@ exports.pagePayload = {
       type: 'number',
       required: true
     },
-    accessToken: { 
+    accessToken: {
       type: 'string',
       required: true
     },
     connected: {
-      type: 'string',
+      type: 'boolean',
       required: true
     },
     userId: {
@@ -48,7 +48,7 @@ exports.pagePayload = {
       required: false
     },
     welcomeMessage: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     isWelcomeMessageEnabled: {
@@ -73,12 +73,12 @@ exports.pageUpdatePayload = {
       type: 'number',
       required: false
     },
-    accessToken: { 
+    accessToken: {
       type: 'string',
       required: false
     },
     connected: {
-      type: 'string',
+      type: 'boolean',
       required: false
     },
     userId: {
@@ -94,15 +94,15 @@ exports.pageUpdatePayload = {
       required: false
     },
     welcomeMessage: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     isWelcomeMessageEnabled: {
-      type: 'string',
+      type: 'boolean',
       required: false
     },
     gotPageSubscriptionPermission: {
-      type: 'string',
+      type: 'boolean',
       required: false
     }
   }
@@ -116,4 +116,25 @@ exports.updateGreetingText = {
       required: true
     }
   }
+}
+
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
 }

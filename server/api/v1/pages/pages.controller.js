@@ -1,5 +1,7 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./pages.datalayer')
+const logicLayer = require('./pages.logiclayer')
+const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
 
 const util = require('util')
@@ -70,7 +72,6 @@ exports.connect = function (req, res) {
     })
 }
 
-
 exports.disconnect = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete page controller index')
 
@@ -84,25 +85,70 @@ exports.disconnect = function (req, res) {
     })
 }
 
-exports.getGreetingText = function(req, res) {
+exports.getGreetingText = function (req, res) {
   dataLayer.findOnePageObject(req.params._id)
-  .then(pageObject => {
-    res.status(200).json({status: 'success', payload: pageObject.greetingText})
-  })
-  .catch(err => {
-    res.status(500).json({status: 'failed', payload: err})
-  })
+    .then(pageObject => {
+      res.status(200).json({status: 'success', payload: pageObject.greetingText})
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
 }
 
 exports.setGreetingText = function (req, res) {
   logger.serverLog(TAG, 'Hit the setGreetingText page controller index')
 
-  dataLayer.updatePageObject(req.params._id, req.body)
+  CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .then(companyUser => {
+      let query = {pageId: req.params._id, companyId: companyUser.companyId}
+      let updated = req.body
+      return dataLayer.updatePageObjectUsingQuery(query, updated, {multi: true})
+    })
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at updated greetingText ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for page controller')
+
+  dataLayer.findPageObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying page ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the aggregate endpoint for page controller')
+  let query = logicLayer.validateAndConvert(req.body)
+
+  dataLayer.aggregateInfo(query)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate page ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdatePageObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }

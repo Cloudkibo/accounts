@@ -7,6 +7,18 @@ const PhoneModel = require('./Phone.model')
 
 exports.findOnePhoneObject = (phoneId) => {
   return PhoneModel.findOne({_id: phoneId})
+    .populate('pageId userId')
+    .exec()
+}
+
+exports.findPhoneObjects = (query) => {
+  return PhoneModel.find(query)
+    .populate('pageId userId')
+    .exec()
+}
+
+exports.aggregateInfo = (query) => {
+  return PhoneModel.aggregate(query)
     .exec()
 }
 
@@ -15,10 +27,15 @@ exports.createPhoneObject = (payload) => {
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updatePhoneObject = (phoneId, payload) => {
   return PhoneModel.updateOne({_id: phoneId}, payload)
+    .exec()
+}
+
+exports.genericUpdatePhoneObject = (query, updated, options) => {
+  return PhoneModel.update(query, updated, options)
     .exec()
 }
 

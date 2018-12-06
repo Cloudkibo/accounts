@@ -20,24 +20,24 @@ exports.listPayload = {
       required: true
     },
     content: {
-      type: 'object',
+      type: 'array',
       required: true
     },
     conditions: {
-      type: 'object',
+      type: 'array',
       required: true
     },
     initialList: {
       type: 'boolean',
-      required: true
+      required: false
     },
     parentList: {
       type: 'string',
-      required: true
+      required: false
     },
     parentListName: {
       type: 'string',
-      required: true
+      required: false
     }
   }
 }
@@ -58,11 +58,11 @@ exports.updateListPayload = {
       required: false
     },
     content: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     conditions: {
-      type: 'object',
+      type: 'array',
       required: false
     },
     initialList: {
@@ -80,3 +80,23 @@ exports.updateListPayload = {
   }
 }
 
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
+}

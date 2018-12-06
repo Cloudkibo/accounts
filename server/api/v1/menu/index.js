@@ -18,6 +18,15 @@ router.put('/:_id',
 
 router.delete('/:_id',
   controller.delete)
-  
+
+router.post('/query',
+  controller.query)
+
+router.post('/aggregate',
+  controller.aggregate)
+
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
 
 module.exports = router

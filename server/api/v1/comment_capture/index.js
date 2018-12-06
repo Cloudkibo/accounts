@@ -12,14 +12,13 @@ router.post('/',
   validate({body: validationSchema.postPayload}),
   controller.create)
 
-router.put('/:id',
-  validate({body: validationSchema.updatePostPayload}),
-  controller.update)
-
 router.delete('/:id',
   controller.delete)
 
 router.post('/query', controller.genericFetch)
 router.post('/aggregate', controller.aggregateFetch)
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
 
 module.exports = router

@@ -24,7 +24,7 @@ exports.postPayload = {
       required: true
     },
     payload: {
-      type: 'object',
+      type: 'array',
       required: true
     },
     includedKeywords: {
@@ -110,5 +110,26 @@ exports.genericQueryPayload = {
   'required': [
     'type',
     'query'
+  ]
+}
+
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
   ]
 }

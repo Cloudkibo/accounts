@@ -1,6 +1,7 @@
 let mongoose = require('mongoose')
 let Schema = mongoose.Schema
 let crypto = require('crypto')
+let logger = require('./../../../components/logger')
 
 const UserSchema = new Schema({
   name: String,
@@ -22,7 +23,7 @@ const UserSchema = new Schema({
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
   wizardSeen: {type: Boolean, default: false},
-  uiMode: String,
+  uiMode: {type: String, default: 'all'},
   advancedMode: {type: Boolean, default: false},
   eulaAccepted: {type: Boolean, default: true},
   permissionsRevoked: {type: Boolean, default: false},
@@ -37,6 +38,7 @@ UserSchema.virtual('password').set(function (password) {
   this._password = password
   this.salt = this.makeSalt()
   this.hashedPassword = this.encryptPassword(password)
+  logger.serverLog('UserModel Virtual Password: ', password)
 }).get(function () {
   return this._password
 })

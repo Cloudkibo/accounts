@@ -5,14 +5,14 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark 
+<body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark
                 m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
 
 <% if (individual) { %>
-    <%- include('../pages/signupSingle', { data }); %>     
+    <%- include('../pages/signupSingle', { data, Continue }); %>
 <% } else { %>
-    <%- include('../pages/signupTeam', { data }); %>    
-<% } %>              
+    <%- include('../pages/signupTeam', { data, Continue }); %>
+<% } %>
 
 <% include ../partials/footer %>
 </body>

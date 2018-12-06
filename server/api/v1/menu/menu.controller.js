@@ -53,3 +53,42 @@ exports.delete = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for menu controller')
+
+  dataLayer.findMenuObjects(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying menu ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the aggregate endpoint for menu controller')
+
+  dataLayer.aggregateInfo(req.body)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate menu ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdateMenuObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}

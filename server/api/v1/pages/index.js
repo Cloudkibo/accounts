@@ -4,6 +4,7 @@ const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
 const controller = require('./pages.controller')
+const auth = require('./../../../auth/auth.service')
 
 router.get('/:_id',
   controller.index)
@@ -30,6 +31,17 @@ router.get('/:_id/greetingText',
 
 router.put('/:_id/greetingText',
   validate({body: validationSchema.updateGreetingText}),
+  auth.isAuthenticated(),
   controller.setGreetingText)
+
+router.post('/query',
+  controller.query)
+
+router.post('/aggregate',
+  controller.aggregate)
+
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
 
 module.exports = router

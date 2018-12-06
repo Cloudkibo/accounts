@@ -6,32 +6,61 @@ const validationSchema = require('./validationSchema')
 const controller = require('./teams.controller')
 const agentController = require('./team_agents.controller')
 const pageController = require('./team_pages.controller')
+const auth = require('./../../../auth/auth.service')
 
-router.get('/', controller.index)
-router.get('/:id', controller.findOne)
-router.delete('/:id', controller.delete)
+router.get('/', auth.isAuthenticated(), controller.index)
+router.get('/:id', auth.isAuthenticated(), controller.findOne)
+router.delete('/:id', auth.isAuthenticated(), controller.delete)
 router.post('/',
   validate({body: validationSchema.teamPayload}),
+  auth.isAuthenticated(),
   controller.create)
 router.put('/:id',
   validate({body: validationSchema.teamUpdatePayload}),
+  auth.isAuthenticated(),
   controller.update)
 // Generic query endpoint
-router.post('/query', controller.genericTeamFetch)
-router.post('/aggregate', controller.aggregateTeamFetch)
+router.post('/query', auth.isAuthenticated(), controller.genericTeamFetch)
+router.post('/aggregate', auth.isAuthenticated(), controller.aggregateTeamFetch)
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  controller.genericUpdate)
 
-router.get('/agents', agentController.index)
-router.post('/agents', validate({body: validationSchema.agentPayload}), agentController.create)
-router.delete('/agents', validate({body: validationSchema.agentPayload}), agentController.delete)
+router.get('/agents', auth.isAuthenticated(), agentController.index)
+router.post('/agents',
+  validate({body: validationSchema.agentPayload}),
+  auth.isAuthenticated(),
+  agentController.create)
+router.delete('/agents',
+  validate({body: validationSchema.agentPayload}),
+  auth.isAuthenticated(),
+  agentController.delete)
 // Generic query endpoint
-router.post('/agents/query', agentController.genericAgentsFetch)
-router.post('/agents/aggregate', agentController.aggregateAgentsFetch)
+router.post('/agents/query', auth.isAuthenticated(), agentController.genericAgentsFetch)
+router.post('/agents/distinct', auth.isAuthenticated(), agentController.distinctAgentsFetch)
+router.post('/agents/aggregate', auth.isAuthenticated(), agentController.aggregateAgentsFetch)
+router.put('/agents/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  agentController.genericUpdate)
 
-router.get('/pages', pageController.index)
-router.post('/pages', validate({body: validationSchema.pagePayload}), pageController.create)
-router.delete('/pages', validate({body: validationSchema.pagePayload}), pageController.delete)
+router.get('/pages', auth.isAuthenticated(), pageController.index)
+router.post('/pages',
+  validate({body: validationSchema.pagePayload}),
+  auth.isAuthenticated(),
+  pageController.create)
+router.delete('/pages',
+  validate({body: validationSchema.pagePayload}),
+  auth.isAuthenticated(),
+  pageController.delete)
 // Generic query endpoint
-router.post('/pages/query', pageController.genericPagesFetch)
-router.post('/pages/aggregate', pageController.aggregatePagesFetch)
+router.post('/pages/query', auth.isAuthenticated(), pageController.genericPagesFetch)
+router.post('/pages/distinct', auth.isAuthenticated(), pageController.distinctPagesFetch)
+router.post('/pages/aggregate', auth.isAuthenticated(), pageController.aggregatePagesFetch)
+router.put('/pages/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  pageController.genericUpdate)
 
 module.exports = router

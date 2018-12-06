@@ -7,16 +7,19 @@ const CommentCaptureModel = require('./comment_capture.model')
 
 exports.findOnePostObject = (postId) => {
   return CommentCaptureModel.findOne({_id: postId})
+    .populate('pageId userId companyId')
     .exec()
 }
 
 exports.findOnePostObjectUsingQuery = (queryObject) => {
   return CommentCaptureModel.findOne(queryObject)
+    .populate('pageId userId companyId')
     .exec()
 }
 
 exports.findAllPostObjectsUsingQuery = (queryObject) => {
   return CommentCaptureModel.find(queryObject)
+    .populate('pageId userId companyId')
     .exec()
 }
 
@@ -32,6 +35,11 @@ exports.createPostObject = (payload) => {
 
 exports.updatePostObject = (postId, payload) => {
   return CommentCaptureModel.updateOne({_id: postId}, payload)
+    .exec()
+}
+
+exports.genericUpdatePostObject = (query, updated, options) => {
+  return CommentCaptureModel.update(query, updated, options)
     .exec()
 }
 

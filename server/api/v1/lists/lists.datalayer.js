@@ -7,23 +7,45 @@ const ListModel = require('./Lists.model')
 
 exports.findOneListObject = (listId) => {
   return ListModel.findOne({_id: listId})
+    .populate('userId')
+    .exec()
+}
+
+exports.findListObjects = (query) => {
+  return ListModel.find(query)
+    .populate('userId')
+    .exec()
+}
+
+exports.aggregateInfo = (query) => {
+  return ListModel.aggregate(query)
     .exec()
 }
 
 exports.createListObject = (listName, userId, companyId, content, conditions,
   initialList, parentList, parentListName) => {
-
-  let payload = { listName, userId, companyId, content, conditions,
-    initialList, parentList, parentListName }
+  let payload = { listName,
+    userId,
+    companyId,
+    content,
+    conditions,
+    initialList,
+    parentList,
+    parentListName }
 
   let obj = new ListModel(payload)
   return obj.save()
 }
 
-// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL 
+// DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateListObject = (listId, payload) => {
   return ListModel.updateOne({_id: listId}, payload)
+    .exec()
+}
+
+exports.genericUpdateListObject = (query, updated, options) => {
+  return ListModel.update(query, updated, options)
     .exec()
 }
 

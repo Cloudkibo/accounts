@@ -37,7 +37,7 @@ exports.create = function (req, res) {
   dataLayer
     .saveTeamDocument(
       req.body.name,
-      req.body.decription,
+      req.body.description,
       req.body.created_by,
       req.body.companyId,
       req.body.teamPages,
@@ -104,6 +104,19 @@ exports.aggregateTeamFetch = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdateTeamObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
     })
 }

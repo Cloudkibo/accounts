@@ -30,6 +30,65 @@ exports.userPayload = {
   }
 }
 
+exports.updateMode = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    '_id': {
+      'type': 'string'
+    },
+    'advancedMode': {
+      'type': 'boolean'
+    }
+  },
+  'required': [
+    '_id',
+    'advancedMode'
+  ]
+}
+
+exports.joinCompany = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'email': {
+      'type': 'string'
+    },
+    'password': {
+      'type': 'string'
+    },
+    'name': {
+      'type': 'string'
+    },
+    'token': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'email',
+    'password',
+    'name',
+    'token'
+  ]
+}
+
+exports.authenticatePassword = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'email': {
+      'type': 'string'
+    },
+    'password': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'email',
+    'password'
+  ]
+}
+
 exports.updateUserPayload = {
   type: 'object',
   properties: {
@@ -46,6 +105,27 @@ exports.updateUserPayload = {
       required: false
     }
   }
+}
+
+exports.genericUpdatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+    'query',
+    'newPayload',
+    'options'
+  ]
 }
 
 exports.enableGDPRDelete = {

@@ -8,7 +8,7 @@ const util = require('util')
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find subscriber controller index')
 
-  dataLayer.findOnePageObject(req.params._id)
+  dataLayer.findOneSubscriberObject(req.params._id)
     .then(subscriberObject => {
       res.status(200).json({status: 'success', payload: subscriberObject})
     })
@@ -18,12 +18,8 @@ exports.index = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create subscriber controller index')
-  dataLayer.createSubscriberObject(
-    req.body.pageScopedId, req.body.firstName, req.body.lastName, req.body.locale, req.body.timezone,
-    req.body.email, req.body.gender, req.body.senderId, req.body.profilePic, req.body.coverPhoto, req.body.pageId, req.body.phoneNumber, 
-    req.body.unSubscribedBy, req.body.source, req.body.companyId, req.body.isSubscribed, req.body.isEnabledByPage
-  )
+  logger.serverLog(TAG, 'Hit the create subscriber controller index', req.body)
+  dataLayer.createSubscriberObject(req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
@@ -55,5 +51,47 @@ exports.delete = function (req, res) {
     .catch(err => {
       logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.query = function (req, res) {
+  logger.serverLog(TAG, 'Hit the query endpoint for subscriber controller')
+
+  dataLayer.findSubscriberObjects(req.body)
+    .then(result => {
+      logger.serverLog(TAG, `query endpoint for subscriber found result ${util.inspect(result)}`)
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at querying subscriber ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.aggregate = function (req, res) {
+  logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
+  let query = logicLayer.validateAndConvert(req.body)
+  logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
+  dataLayer.aggregateInfo(query)
+    .then(result => {
+      logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at aggregate subscriber ${util.inspect(err)}`)
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdateSubscriberObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }

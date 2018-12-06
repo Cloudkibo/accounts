@@ -4,9 +4,27 @@ const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
 const controller = require('./user.controller')
+const auth = require('./../../../auth/auth.service')
 
-router.get('/:_id',
-  controller.index)
+router.get('/', auth.isAuthenticated(), controller.index)
+router.post('/updateChecks', auth.isAuthenticated(), controller.updateChecks)
+router.get('/updateSkipConnect', auth.isAuthenticated(), controller.updateSkipConnect)
+router.get('/fbAppId', auth.isAuthenticated(), controller.fbAppId)
+router.get('/addAccountType', controller.addAccountType)
+
+router.post('/authenticatePassword',
+  validate({body: validationSchema.authenticatePassword}),
+  auth.isAuthenticated(),
+  controller.authenticatePassword)
+
+router.post('/updateMode',
+  validate({body: validationSchema.updateMode}),
+  auth.isAuthenticated(),
+  controller.updateMode)
+
+router.post('/joinCompany',
+  validate({body: validationSchema.joinCompany}),
+  controller.joinCompany)
 
 router.post('/',
   validate({body: validationSchema.userPayload}),
@@ -14,16 +32,29 @@ router.post('/',
 
 router.put('/:_id',
   validate({body: validationSchema.updateUserPayload}),
+  auth.isAuthenticated(),
   controller.update)
 
 router.delete('/:_id',
+  auth.isAuthenticated(),
   controller.delete)
-  
-router.post('/:_id/gdpr',
+
+router.post('/gdpr',
   validate({body: validationSchema.enableGDPRDelete}),
+  auth.isAuthenticated(),
   controller.enableDelete)
 
-router.delete('/:_id/gdpr', 
+router.get('/gdpr',
+  auth.isAuthenticated(),
   controller.cancelDeletion)
+
+router.post('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  controller.genericUpdate)
+
+router.post('/query',
+  auth.isAuthenticated(),
+  controller.fetchGeneral)
 
 module.exports = router
