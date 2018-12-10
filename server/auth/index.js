@@ -28,7 +28,7 @@ router.get('/scripts/jsonp', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.writeHead(200, {'Content-Type': 'application/javascript'});
   res.setHeader('content-type', 'application/javascript');
-  res.send(`${callbackOfClient}("${token}")`)
+  res.end(`${callbackOfClient}("${token}")`)
 })
 
 // route to verify the token
