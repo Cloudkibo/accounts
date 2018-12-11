@@ -27,7 +27,8 @@ router.get('/scripts/jsonp', (req, res) => {
   let callbackOfClient = req.query.callback
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-  res.type('.js')
+  //res.type('.js')
+  res.setHeader("Content-Type", "application/javascript")
   res.send(`${callbackOfClient}("${token}")`)
 })
 
