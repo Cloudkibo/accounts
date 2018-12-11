@@ -31,7 +31,6 @@ exports.saveCompanyUserObject = (object) => {
   return object.save()
 }
 
-
 exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
   return CompanyUserModel.findOne(queryObject)
     .populate('companyId')

@@ -18,6 +18,8 @@ router.post('/forgot',
   validate({body: validationSchema.forgotPasswordSchema}),
   controller.forgot)
 
+router.post('/forgotWorkspaceName', controller.forgotWorkspaceName)
+
 router.post('/reset',
   validate({body: validationSchema.resetPasswordSchema}),
   controller.reset)

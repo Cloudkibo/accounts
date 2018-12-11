@@ -11,6 +11,12 @@ exports.findOnePageObject = (id) => {
     .exec()
 }
 
+exports.findOnePageObjectUsingQuery = (query) => {
+  return PageModel.findOne(query)
+    .populate('userId')
+    .exec()
+}
+
 exports.findPageObjects = (query) => {
   return PageModel.find(query)
     .populate('userId')
@@ -20,6 +26,26 @@ exports.findPageObjects = (query) => {
 exports.aggregateInfo = (query) => {
   return PageModel.aggregate(query)
     .exec()
+}
+
+exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, accessToken,
+  connected, userId, companyId, greetingText, welcomeMessage, isWelcomeMessageEnabled,
+  gotPageSubscriptionPermission) => {
+  let payload = { pageId,
+    pageName,
+    pageUserName,
+    pagePic,
+    likes,
+    accessToken,
+    connected,
+    userId,
+    companyId,
+    greetingText,
+    welcomeMessage,
+    isWelcomeMessageEnabled,
+    gotPageSubscriptionPermission }
+  let obj = new PageModel(payload)
+  return obj.save()
 }
 
 exports.createPageObject = (pageId, pageName, pageUserName, pagePic, likes, accessToken,
@@ -61,4 +87,8 @@ exports.updatePageObjectUsingQuery = (query, payload, options) => {
 exports.deletePageObject = (id) => {
   return PageModel.deleteOne({_id: id})
     .exec()
+}
+exports.savePageObject = (payload) => {
+  let obj = new PageModel(payload)
+  return obj.save()
 }

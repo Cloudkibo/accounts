@@ -9,24 +9,28 @@
                         <div class="m-login__wrapper">
                             <%- include('../partials/header', { heading: 'Individual Sign Up' }); %>
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input" type="text" placeholder="Name" name="name" id="name" autocomplete="off">
+                                        <input class="form-control m-input" type="text" placeholder="Name" name="name" id="name" autocomplete="off" required>
                                     </div>
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input" type="text" placeholder="Email" name="email" id="email" autocomplete="off">
+                                        <input class="form-control m-input" type="email" placeholder="Email" name="email" id="email" autocomplete="off" required>
                                     </div>
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password" id="password">
+                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password" id="password" required>
                                     </div>
                                     <div class="form-group m-form__group">
-                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Confirm Password" name="confirm_password" id="confirm_password">
+                                        <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Confirm Password" name="confirm_password" id="confirm_password" required>
                                     </div>
+                                    <div class="form-group m-form__group">
+                                            <div class="g-recaptcha" data-sitekey="6LfG33oUAAAAAFBHPd00Q8zOOI7ZYTXFEsIbXgho"></div>
+                                        </div>
                                     <div class="form-group m-form__group">
                                         <label class="m-checkbox m-checkbox--state-success">
-                                            <input type="checkbox">
+                                            <input type="checkbox" id="checkboxAgreement" name="checkboxAgreement">
                                             I've read and accept the <a href="#" data-toggle="modal" data-target="#m_modal_1">terms and conditions</a>
                                             <span></span>
                                         </label>
                                     </div>
+                                    
                                     <div class="form-group m-form__group">
                                       <div id='alertMsg' style="color: red;"></div>
                                      </div>

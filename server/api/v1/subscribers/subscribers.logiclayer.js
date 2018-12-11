@@ -19,9 +19,16 @@ exports.prepareUpdateUserPayload = (name, password, email, uiMode) => {
 exports.validateAndConvert = (body) => {
   let newBody = body
 
-  body.forEach((obj,  index) => {
+  body.forEach((obj, index) => {
+    console.log('PageId', obj.$match)
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
+    }
+    if (obj.$match && obj.$match.pageId && !obj.$match.pageId.$exists) {
+      newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
+    }
+    if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
+      newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
     }
   })
   return newBody

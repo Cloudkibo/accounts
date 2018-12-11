@@ -12,7 +12,7 @@ exports.findOneInvitationsObjectUsingQuery = (queryObject) => {
 }
 
 exports.findAllInvitationsObjectUsingQuery = (queryObject) => {
-  return InvitationsModel.findOne(queryObject)
+  return InvitationsModel.find(queryObject)
     .exec()
 }
 

@@ -7,11 +7,11 @@ var router = express.Router()
 const auth = require('./../../../auth/auth.service')
 
 router.get('/',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.index)
 
 router.post('/cancel',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.cancel)
 
 module.exports = router

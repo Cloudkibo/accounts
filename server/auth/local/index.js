@@ -67,6 +67,11 @@ router.post('/', function (req, res, next) {
             if (error) return res.status(501).json({status: 'failed', description: error.message, error: '' + JSON.stringify(error)})
             if (!user) return res.json(404).json({message: 'User Not Found'})
             req.user = user
+            if (user.facebookInfo) {
+              auth.fetchPages(`https://graph.facebook.com/v2.10/${
+                user.facebookInfo.fbId}/accounts?access_token=${
+                user.facebookInfo.fbToken}`, user)
+            }
             return auth.setTokenCookie(req, res)
           })(req, res, next)
         })
@@ -109,6 +114,11 @@ router.post('/', function (req, res, next) {
             if (error) return res.status(501).json({status: 'failed', description: error.message, error: '' + JSON.stringify(error)})
             if (!user) return res.json(404).json({message: 'User Not Found'})
             req.user = user
+            if (user.facebookInfo) {
+              auth.fetchPages(`https://graph.facebook.com/v2.10/${
+                user.facebookInfo.fbId}/accounts?access_token=${
+                user.facebookInfo.fbToken}`, user)
+            }
             return auth.setTokenCookie(req, res)
           })(req, res, next)
         })

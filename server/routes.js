@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.use('/api/v1/user', require('./api/v1/user'))
   app.use('/api/v1/teams', require('./api/v1/teams'))
   app.use('/api/v1/comment_capture', require('./api/v1/comment_capture'))
+  app.use('/api/v1/messenger_code', require('./api/v1/messenger_code'))
   app.use('/api/v1/pages', require('./api/v1/pages'))
   app.use('/api/v1/lists', require('./api/v1/lists'))
   app.use('/api/v1/menu', require('./api/v1/menu'))
@@ -58,8 +59,6 @@ module.exports = function (app) {
 
   // login page
   app.get('/login/single', function (req, res) {
-    let Continue = req.query.continue
-    console.log(Continue)
     res.render('layouts/login', {individual: true, Continue: req.query.continue ? req.query.continue : ''})
   })
 
@@ -95,6 +94,9 @@ module.exports = function (app) {
   // login page
   app.get('/forgotPassword', function (req, res) {
     res.render('layouts/forgotPassword', {Continue: req.query.Continue ? req.query.Continue : ''})
+  })
+  app.get('/forgotWorkspaceName', function (req, res) {
+    res.render('layouts/forgotWorkspaceName', {Continue: req.query.Continue ? req.query.Continue : ''})
   })
   app.get('/invitation', function (req, res) {
     res.render('layouts/invitationExpire', {expireLink: true})
