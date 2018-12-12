@@ -7,7 +7,8 @@ const landingPageSchema = new Schema({
   initialState: { type: Schema.ObjectId, ref: 'landingPageStates' },
   submittedState: {type: Schema.Types.Mixed},
   optInMessage: {type: Schema.Types.Mixed},
-  title: {type: String}
+  title: {type: String},
+  isActive: {type: Boolean, default: true}
 
 })
 
