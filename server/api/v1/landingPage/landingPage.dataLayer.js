@@ -7,7 +7,7 @@ exports.createLandingPage = (body) => {
     initialState: body.initialState,
     submittedState: body.submittedState,
     optInMessage: body.optInMessage,
-    url: body.url
+    title: body.title
   }
 
   let obj = new LandingPageModel(payload)

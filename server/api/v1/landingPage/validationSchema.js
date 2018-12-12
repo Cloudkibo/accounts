@@ -12,6 +12,10 @@ exports.createPayload = {
     initialState: {
       type: 'string',
       required: true
+    },
+    title: {
+      type: 'string',
+      required: true
     }
   }
 }
