@@ -31,8 +31,7 @@ exports.createStatePayload = {
       required: true
     },
     pageTemplate: {
-      type: 'string',
-      required: true
+      type: 'string'
     },
     backgroundColor: {
       type: 'string',
