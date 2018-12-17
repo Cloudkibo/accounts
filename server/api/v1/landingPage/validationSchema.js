@@ -54,8 +54,7 @@ exports.createStatePayload = {
       required: true
     },
     mediaLink: {
-      type: 'string',
-      required: true
+      type: 'string'
     },
     mediaPlacement: {
       type: 'string',
