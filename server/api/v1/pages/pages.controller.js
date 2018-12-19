@@ -3,6 +3,7 @@ const dataLayer = require('./pages.datalayer')
 const logicLayer = require('./pages.logiclayer')
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
+const needle = require('needle')
 
 const util = require('util')
 
@@ -149,6 +150,41 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+exports.whitelistDomain = function (req, res) {
+  dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, connected: true})
+    .then(page => {
+      needle.get(`https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+        (err, resp) => {
+          if (err) {
+            console.log('error in getting page access toke', err)
+          }
+          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${resp.body.access_token}`
+          let whitelistDomains = {
+            whitelisted_domains: req.body.whitelistDomains
+          }
+          needle.request('post', requesturl, whitelistDomains, {json: true}, function (err, resp) {
+            if (err) {
+              console.log('error in whitelisted_domains', err)
+            }
+            console.log('response from whitelisted_domains', resp.body)
+            if (resp.body.result === 'success') {
+              dataLayer.updatePageObject(page._id, {whitelist_domains: req.body.whitelistDomains})
+                .then(updated => {
+                  return res.status(200).json({status: 'success', payload: updated})
+                })
+                .catch(err => {
+                  return res.status(500).json({status: 'failed', payload: err})
+                })
+            } else {
+              return res.status(500).json({status: 'failed', payload: resp.body})
+            }
+          })
+        })
+    })
+    .catch(err => {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
