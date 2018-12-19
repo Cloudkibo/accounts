@@ -157,7 +157,7 @@ exports.whitelistDomain = function (req, res) {
   dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, connected: true})
     .then(page => {
       console.log('page fetched', page)
-      let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${page.accessTokens}`
+      let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${page.accessToken}`
       let whitelistDomains = {
         whitelisted_domains: req.body.whitelistDomains
       }
