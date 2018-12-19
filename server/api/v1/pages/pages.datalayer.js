@@ -83,7 +83,10 @@ exports.genericUpdatePageObject = (query, updated, options) => {
 exports.updatePageObjectUsingQuery = (query, payload, options) => {
   return PageModel.update(query, payload, options)
 }
-
+exports.findOnePageObjectandUpdate = (query, update, options) => {
+  return PageModel.findOneAndUpdate(query, update, options)
+    .exec()
+}
 exports.deletePageObject = (id) => {
   return PageModel.deleteOne({_id: id})
     .exec()
