@@ -44,4 +44,8 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
+router.post('/whitelistDomain',
+  validate({body: validationSchema.whiteListPayload}),
+  controller.whitelistDomain)
+
 module.exports = router
