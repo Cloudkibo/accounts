@@ -24,14 +24,15 @@ exports.createStatePayload = {
   properties: {
     title: {
       type: 'string',
-      required: true
+      required: false
     },
     description: {
       type: 'string',
-      required: true
+      required: false
     },
     pageTemplate: {
-      type: 'string'
+      type: 'string',
+      required: false
     },
     backgroundColor: {
       type: 'string',
@@ -47,18 +48,19 @@ exports.createStatePayload = {
     },
     buttonText: {
       type: 'string',
-      required: true
+      required: false
     },
     mediaType: {
       type: 'string',
-      required: true
+      required: false
     },
     mediaLink: {
-      type: 'string'
+      type: 'string',
+      required: false
     },
     mediaPlacement: {
       type: 'string',
-      required: true
+      required: false
     }
   }
 }
