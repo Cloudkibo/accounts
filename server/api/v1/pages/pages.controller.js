@@ -169,7 +169,7 @@ exports.whitelistDomain = function (req, res) {
         }
         console.log('response from whitelisted_domains', resp.body)
         if (resp.body.result === 'success') {
-          dataLayer.genericUpdatePageObject({pageId: req.body.page_id, connected: true}, {whitelist_domains: req.body.whitelistDomains}, {})
+          dataLayer.findAndUpdatePageObject({pageId: req.body.page_id, connected: true}, {whitelist_domains: req.body.whitelistDomains})
             .then(updated => {
               return res.status(200).json({status: 'success', payload: updated})
             })
