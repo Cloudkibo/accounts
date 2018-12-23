@@ -23,6 +23,7 @@ exports.query = function (req, res) {
     .then(result => {
       let landingPages = []
       for (let i = 0; i < result.length; i++) {
+        console.log('result', result[i])
         landingPages.push({
           initialState: result[i].initialState,
           submittedState: result[i].submittedState,
