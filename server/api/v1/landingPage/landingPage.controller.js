@@ -21,7 +21,13 @@ exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for landing page controller')
   dataLayer.findLandingPages(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      populateSubmittedState(result)
+        .then(result => {
+          res.status(200).json({status: 'success', payload: result.landingPages})
+        })
+        .catch(err => {
+          res.status(500).json({status: 'failed', payload: err})
+        })
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
