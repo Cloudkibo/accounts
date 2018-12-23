@@ -21,31 +21,7 @@ exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for landing page controller')
   dataLayer.findLandingPages(req.body)
     .then(result => {
-      let landingPages = []
-      for (let i = 0; i < result.length; i++) {
-        console.log('result', result[i])
-        landingPages.push({
-          initialState: result[i].initialState,
-          submittedState: result[i].submittedState,
-          isActive: result[i].isActive,
-          pageId: result[i].pageId,
-          optInMessage: result[i].optInMessage,
-          companyId: result[i].companyId,
-          _id: result[i]._id
-        })
-        if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE') {
-          dataLayerState.findOneLandingPageState(result[i].submittedState.state)
-            .then(state => {
-              landingPages[i].submittedState.state = state
-              if (i === result.length - 1) {
-                res.status(200).json({status: 'success', payload: landingPages})
-              }
-            })
-            .catch(err => {
-              console.log('failed to fetch landing page state', err)
-            })
-        }
-      }
+      res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
