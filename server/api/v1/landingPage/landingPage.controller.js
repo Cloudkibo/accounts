@@ -130,13 +130,13 @@ function populateSubmittedState (result) {
               description: result[i].submittedState.description,
               buttonText: result[i].submittedState.buttonText,
               state: {
-                _id: result[i].submittedState.state._id,
-                backgroundColor: result[i].submittedState.state.backgroundColor,
-                titleColor: result[i].submittedState.state.titleColor,
-                descriptionColor: result[i].submittedState.state.descriptionColor,
-                mediaType: result[i].submittedState.state.mediaType,
-                mediaLink: result[i].submittedState.state.mediaLink,
-                mediaPlacement: result[i].submittedState.state.mediaPlacement
+                _id: state._id,
+                backgroundColor: state.backgroundColor,
+                titleColor: state.titleColor,
+                descriptionColor: state.descriptionColor,
+                mediaType: state.mediaType,
+                mediaLink: state.mediaLink,
+                mediaPlacement: state.mediaPlacement
               }
             }
             if (i === result.length - 1) {
