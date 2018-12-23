@@ -15,7 +15,7 @@ exports.createPayload = {
     },
     title: {
       type: 'string',
-      required: true
+      required: false
     }
   }
 }
