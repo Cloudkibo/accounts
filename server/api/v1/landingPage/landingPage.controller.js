@@ -139,13 +139,13 @@ function populateSubmittedState (result) {
                 mediaPlacement: state.mediaPlacement
               }
             }
-            if (i === result.length - 1) {
-              resolve({landingPages: landingPages})
-            }
           })
           .catch(err => {
             console.log('failed to fetch landing page state', err)
           })
+      }
+      if (i === result.length - 1) {
+        resolve({landingPages: landingPages})
       }
     }
   })
