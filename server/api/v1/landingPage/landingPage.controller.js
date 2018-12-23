@@ -109,3 +109,62 @@ exports.deleteLandingPageState = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+function populateSubmittedState (result) {
+  return new Promise(function (resolve, reject) {
+    let landingPages = []
+    for (let i = 0; i < result.length; i++) {
+      console.log('result', result[i])
+      landingPages.push({
+        initialState: {
+          _id: result[i].initialState._id,
+          title: result[i].initialState.title,
+          description: result[i].initialState.description,
+          pageTemplate: result[i].initialState.pageTemplate,
+          backgroundColor: result[i].initialState.backgroundColor,
+          titleColor: result[i].initialState.titleColor,
+          descriptionColor: result[i].initialState.descriptionColor,
+          buttonText: result[i].initialState.buttonText,
+          mediaType: result[i].initialState.mediaType,
+          mediaLink: result[i].initialState.mediaLink,
+          mediaPlacement: result[i].initialState.mediaPlacement
+        },
+        submittedState: result[i].submittedState,
+        isActive: result[i].isActive,
+        pageId: {
+          _id: result[i].pageId._id,
+          pageName: result[i].pageId.pageName,
+          pageId: result[i].pageId.pageId
+        },
+        optInMessage: result[i].optInMessage,
+        companyId: result[i].companyId,
+        _id: result[i]._id
+      })
+      if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE') {
+        dataLayerState.findOneLandingPageState(result[i].submittedState.state)
+          .then(state => {
+            landingPages[i].submittedState = {
+              actionType: result[i].submittedState.actionType,
+              title: result[i].submittedState.title,
+              description: result[i].submittedState.description,
+              buttonText: result[i].submittedState.buttonText,
+              state: {
+                _id: result[i].submittedState.state._id,
+                backgroundColor: result[i].submittedState.state.backgroundColor,
+                titleColor: result[i].submittedState.state.titleColor,
+                descriptionColor: result[i].submittedState.state.descriptionColor,
+                mediaType: result[i].submittedState.state.mediaType,
+                mediaLink: result[i].submittedState.state.mediaLink,
+                mediaPlacement: result[i].submittedState.state.mediaPlacement
+              }
+            }
+            if (i === result.length - 1) {
+              resolve({landingPages: landingPages})
+            }
+          })
+          .catch(err => {
+            console.log('failed to fetch landing page state', err)
+          })
+      }
+    }
+  })
+}
