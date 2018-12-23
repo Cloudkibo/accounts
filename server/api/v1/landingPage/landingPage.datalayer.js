@@ -1,16 +1,7 @@
 const LandingPageModel = require('./landingPage.model')
 
 exports.createLandingPage = (body) => {
-  let payload = {
-    companyId: body.companyId,
-    pageId: body.pageId,
-    initialState: body.initialState,
-    submittedState: body.submittedState,
-    optInMessage: body.optInMessage,
-    title: body.title
-  }
-
-  let obj = new LandingPageModel(payload)
+  let obj = new LandingPageModel(body)
   return obj.save()
 }
 
