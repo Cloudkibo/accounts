@@ -110,7 +110,6 @@ function populateSubmittedState (result) {
           mediaLink: result[i].initialState.mediaLink,
           mediaPlacement: result[i].initialState.mediaPlacement
         },
-        submittedState: result[i].submittedState,
         isActive: result[i].isActive,
         pageId: {
           _id: result[i].pageId._id,
@@ -145,6 +144,8 @@ function populateSubmittedState (result) {
           .catch(err => {
             console.log('failed to fetch landing page state', err)
           })
+      } else {
+        landingPages[i].submittedState = result[i].submittedState
       }
       if (i === result.length - 1) {
         resolve({landingPages: landingPages})
