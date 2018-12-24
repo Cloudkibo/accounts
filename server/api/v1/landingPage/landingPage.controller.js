@@ -121,9 +121,11 @@ function populateSubmittedState (result) {
         companyId: result[i].companyId,
         _id: result[i]._id
       })
+      console.log('result[i].submittedState.actionType', result[i].submittedState.actionType)
       if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE') {
         dataLayerState.findOneLandingPageState(result[i].submittedState.state)
           .then(state => {
+            console.log('inside if state', state)
             landingPages[i].submittedState = {
               actionType: result[i].submittedState.actionType,
               title: result[i].submittedState.title,
