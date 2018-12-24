@@ -23,6 +23,7 @@ exports.query = function (req, res) {
     .then(result => {
       populateSubmittedState(result)
         .then(result => {
+          console.log('result', result)
           res.status(200).json({status: 'success', payload: result.landingPages})
         })
         .catch(err => {
