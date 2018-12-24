@@ -141,6 +141,9 @@ function populateSubmittedState (result) {
               companyId: result[i].companyId,
               _id: result[i]._id
             })
+            if (i === result.length - 1) {
+              resolve({landingPages: landingPages})
+            }
           })
           .catch(err => {
             console.log('failed to fetch landing page state', err)
@@ -178,9 +181,9 @@ function populateSubmittedState (result) {
           companyId: result[i].companyId,
           _id: result[i]._id
         })
-      }
-      if (i === result.length - 1) {
-        resolve({landingPages: landingPages})
+        if (i === result.length - 1) {
+          resolve({landingPages: landingPages})
+        }
       }
     }
   })
