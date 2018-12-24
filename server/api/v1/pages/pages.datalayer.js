@@ -92,3 +92,7 @@ exports.savePageObject = (payload) => {
   let obj = new PageModel(payload)
   return obj.save()
 }
+exports.findAndUpdatePageObject = (query, updated) => {
+  return PageModel.findOneAndUpdate(query, updated, {new: true})
+    .exec()
+}
