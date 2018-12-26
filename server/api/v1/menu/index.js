@@ -12,6 +12,10 @@ router.post('/',
   validate({body: validationSchema.menuPayload}),
   controller.create)
 
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  controller.genericUpdate)
+
 router.put('/:_id',
   validate({body: validationSchema.updatedMenuPayload}),
   controller.update)
@@ -25,8 +29,6 @@ router.post('/query',
 router.post('/aggregate',
   controller.aggregate)
 
-router.put('/update',
-  validate({body: validationSchema.genericUpdatePayload}),
-  controller.genericUpdate)
+
 
 module.exports = router
