@@ -82,7 +82,7 @@ exports.updateLandingPageState = function (req, res) {
 }
 
 exports.deleteLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete landing page controller')
+  logger.serverLog(TAG, 'Hit the delete landing page controller', req.params._id)
 
   landingPageStateDataLayer.deleteLandingPageState(req.params._id)
     .then(result => {

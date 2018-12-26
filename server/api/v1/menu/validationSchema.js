@@ -14,14 +14,6 @@ exports.menuPayload = {
     userId: {
       type: 'string',
       required: true
-    },
-    companyId: {
-      type: 'string',
-      required: true
-    },
-    jsonStructure: {
-      type: 'object',
-      required: true
     }
   }
 }
