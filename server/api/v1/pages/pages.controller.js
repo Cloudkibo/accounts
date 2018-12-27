@@ -182,3 +182,46 @@ exports.whitelistDomain = function (req, res) {
       })
     })
 }
+exports.deleteWhitelistDomain = function (req, res) {
+  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        console.log('error in getting page access token', err)
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          console.log('error in whitelisted_domains', err)
+        }
+        console.log('response from whitelisted_domains', resp.body)
+        var body = JSON.parse(JSON.stringify(resp.body))
+        console.log('Response body', body)
+        if (body.data.length > 0 && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          let whitelistDomains = body.data[0].whitelisted_domains
+          let temp = []
+          for (let i = 0; i < whitelistDomains.length; i++) {
+            if (whitelistDomains[i] !== req.body.whitelistDomain) {
+              temp.push(whitelistDomains[i])
+            }
+          }
+          if (temp.length === whitelistDomains.length) {
+            return res.status(200).json({status: 'failed', description: 'Domain not found'})
+          }
+          let whitelistedDomains = {
+            whitelisted_domains: temp
+          }
+          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+            if (err) {
+              console.log(`Unable to delete whitelist domains ${err}`)
+            }
+            if (resp.body.result === 'success') {
+              return res.status(200).json({status: 'success', payload: temp})
+            }
+          })
+        } else {
+          return res.status(500).json({status: 'failed', description: 'Unable to get whitelist domains'})
+        }
+      })
+    })
+}
