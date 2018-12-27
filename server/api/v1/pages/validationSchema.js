@@ -154,3 +154,16 @@ exports.whiteListPayload = {
     }
   }
 }
+exports.deleteWhitelistDomain = {
+  type: 'object',
+  properties: {
+    page_id: {
+      type: 'string',
+      required: true
+    },
+    whitelistDomain: {
+      type: 'string',
+      required: true
+    }
+  }
+}

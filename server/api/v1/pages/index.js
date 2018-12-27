@@ -49,4 +49,9 @@ router.post('/whitelistDomain',
   validate({body: validationSchema.whiteListPayload}),
   controller.whitelistDomain)
 
+router.post('/deleteWhitelistDomain',
+  auth.isAuthenticated(),
+  validate({body: validationSchema.deleteWhitelistDomain}),
+  controller.deleteWhitelistDomain)
+
 module.exports = router
