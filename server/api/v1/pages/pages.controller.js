@@ -193,9 +193,7 @@ exports.deleteWhitelistDomain = function (req, res) {
         if (err) {
           console.log('error in whitelisted_domains', err)
         }
-        console.log('response from whitelisted_domains', resp.body)
         var body = JSON.parse(JSON.stringify(resp.body))
-        console.log('Response body', body)
         if (body.data.length > 0 && body.data.length > 0 && body.data[0].whitelisted_domains) {
           let whitelistDomains = body.data[0].whitelisted_domains
           let temp = []
