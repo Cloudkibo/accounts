@@ -35,7 +35,7 @@ router.post('/agents',
 router.delete('/agents',
   validate({body: validationSchema.agentPayload}),
   auth.isAuthenticated(),
-  agentController.delete)
+  agentController.deleteAgent)
 // Generic query endpoint
 router.post('/agents/query', auth.isAuthenticated(), agentController.genericAgentsFetch)
 router.post('/agents/distinct', auth.isAuthenticated(), agentController.distinctAgentsFetch)

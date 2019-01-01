@@ -32,6 +32,22 @@ exports.create = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+exports.deleteAgent = function (req, res) {
+  logger.serverLog(TAG, 'Hit the deleteAgent agent endpoint')
+
+  dataLayer
+    .deleteAgentObject(
+      req.body.teamId,
+      req.body.companyId,
+      req.body.agentId)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
 
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete agent index')
