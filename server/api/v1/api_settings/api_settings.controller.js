@@ -84,7 +84,7 @@ exports.disable = function (req, res) {
 
 exports.reset = function (req, res) {
   logger.serverLog(TAG, 'Hit the reset index', req.body)
-
+  console.log('Hit the reset index', req.body)
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
       if (!settings) {
