@@ -29,6 +29,7 @@ exports.enable = function (req, res) {
 
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
+      console.log('settings', settings)
       if (!settings) {
         let payload = logicLayer.getSettingsPayload()
         dataLayer.createApiObject(payload)
