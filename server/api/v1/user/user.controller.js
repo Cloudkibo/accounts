@@ -510,11 +510,12 @@ exports.addAccountType = function (req, res) {
 }
 
 exports.enableDelete = function (req, res) {
-  logger.serverLog(TAG, 'Enabling GDPR Delete')
+  console.log('Enabling GDPR Delete', req.body)
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
-  dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
+  dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
+      console.log('updated user')
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
       let sendgrid = utility.getSendGridObject()
