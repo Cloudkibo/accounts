@@ -13,11 +13,15 @@ exports.invitePayload = {
     },
     'name': {
       'type': 'string'
+    },
+    'role': {
+      'type': 'string'
     }
   },
   'required': [
     'email',
-    'name'
+    'name',
+    'role'
   ]
 }
 
