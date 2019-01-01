@@ -25,7 +25,6 @@ router.post('/invite',
   controller.invite)
 
 router.post('/updateRole',
-  validate({body: validationSchema.updateRole}),
   auth.isAuthenticated(),
   controller.updateRole)
 
