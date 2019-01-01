@@ -31,7 +31,7 @@ exports.enable = function (req, res) {
     .then(settings => {
       console.log('settings', settings)
       if (!settings) {
-        let payload = logicLayer.getSettingsPayload()
+        let payload = logicLayer.getSettingsPayload(req.body.company_id)
         dataLayer.createApiObject(payload)
           .then(savedSettings => {
             res.status(201).json({ status: 'success', payload: savedSettings })
