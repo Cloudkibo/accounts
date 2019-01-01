@@ -47,7 +47,8 @@ exports.findOneUserByDomain = (body) => {
 // DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updateUserObject = (userId, payload, options = {}) => {
-  return UserModel.updateOne({_id: userId}, payload, options)
+  console.log('payload', payload)
+  return UserModel.updateOne({_id: userId}, {deleteInformation: payload}, options)
     .exec()
 }
 
