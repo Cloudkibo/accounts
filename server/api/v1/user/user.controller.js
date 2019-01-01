@@ -515,10 +515,10 @@ exports.enableDelete = function (req, res) {
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
   dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
-      console.log('updated user')
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
-      let sendgrid = utility.getSendGridObject()
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',
@@ -562,7 +562,8 @@ exports.cancelDeletion = function (req, res) {
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
-      let sendgrid = utility.getSendGridObject()
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',
