@@ -10,7 +10,7 @@ const auth = require('./../../../auth/auth.service')
 
 router.get('/', auth.isAuthenticated(), controller.index)
 router.get('/:id', auth.isAuthenticated(), controller.findOne)
-router.delete('/:id', auth.isAuthenticated(), controller.delete)
+router.delete('/delete/:id', auth.isAuthenticated(), controller.delete)
 router.post('/',
   validate({body: validationSchema.teamPayload}),
   auth.isAuthenticated(),
