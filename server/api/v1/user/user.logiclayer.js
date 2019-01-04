@@ -283,6 +283,7 @@ const getRandomString = () => {
 }
 
 const isEmailAndDomainFound = (body) => {
+  logger.serverLog('Body in emailanddomain', body)
   let temp = {}
 
   return new Promise((resolve, reject) => {

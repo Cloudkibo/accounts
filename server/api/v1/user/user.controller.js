@@ -183,11 +183,10 @@ exports.updateChecks = function (req, res) {
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
   let isTeam = logicLayer.isTeamAccount(req.body)
-
   logicLayer
     .isEmailAndDomainFound(req.body)
     .then(result => {
-      console.log('Result', result)
+      logger.serverLog(TAG, 'result')
       if (result.email) {
         return res.status(422).json({
           status: 'failed',
@@ -201,14 +200,11 @@ exports.create = function (req, res) {
       } else {
         let domain = logicLayer.getRandomString()
         let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
-        console.log('payload', payload)
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
-            console.log('user', user)
             PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
               .then(result => {
-                console.log('plans', result)
                 logger.serverLog(TAG, `Plans Found: ${util.inspect(result)}`)
                 // Separate default plans
                 let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
@@ -232,12 +228,10 @@ exports.create = function (req, res) {
                     let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
                     CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
                       .then(companyUserSaved => {
-                        console.log('company user created', companyUserSaved)
                         logger.serverLog(TAG, `Company User created: ${companyUserSaved}`)
                         PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
                           .then(permissionSaved => {
                             logger.serverLog(TAG, `Permission Saved: ${permissionSaved}`)
-                            console.log('Permission', permissionSaved)
                             let token = auth.signToken(user._id)
                             res.cookie('token', token)
                             res.status(201)
@@ -287,12 +281,12 @@ exports.create = function (req, res) {
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at: ${err}`)
-                return res.status(500).json({status: 'failed', description: `Error at finding plan${JSON.stringify(err)}`})
+                return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
               })
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${err}`)
-            return res.status(500).json({status: 'failed', description: `Error at isEmail and Domain FOund ${JSON.stringify(err)}`})
+            return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
           })
       }
     })
@@ -461,7 +455,7 @@ exports.delete = function (req, res) {
 exports.authenticatePassword = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete user controller authenticatePassword')
 
-  dataLayer.findOneUserByEmail(req.body.email)
+  dataLayer.findOneUserByEmail(req.body)
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {

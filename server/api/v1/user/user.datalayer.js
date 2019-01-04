@@ -34,8 +34,8 @@ exports.createUserObject = (payload) => {
   return obj.save()
 }
 
-exports.findOneUserByEmail = (email) => {
-  return UserModel.findOne({email: email})
+exports.findOneUserByEmail = (body) => {
+  return UserModel.findOne({email: body.email})
     .exec()
 }
 
