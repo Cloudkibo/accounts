@@ -7,7 +7,7 @@ exports.createPageReferral = (body) => {
 
 exports.findPageReferrals = (query) => {
   return PageReferralModel.find(query)
-    .populate('companyId')
+    .populate('companyId pageId')
     .exec()
 }
 
