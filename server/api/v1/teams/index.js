@@ -10,7 +10,7 @@ const auth = require('./../../../auth/auth.service')
 
 router.get('/', auth.isAuthenticated(), controller.index)
 router.get('/:id', auth.isAuthenticated(), controller.findOne)
-router.delete('/:id', auth.isAuthenticated(), controller.delete)
+router.delete('/delete/:id', auth.isAuthenticated(), controller.delete)
 router.post('/',
   validate({body: validationSchema.teamPayload}),
   auth.isAuthenticated(),
@@ -35,7 +35,7 @@ router.post('/agents',
 router.delete('/agents',
   validate({body: validationSchema.agentPayload}),
   auth.isAuthenticated(),
-  agentController.delete)
+  agentController.deleteAgent)
 // Generic query endpoint
 router.post('/agents/query', auth.isAuthenticated(), agentController.genericAgentsFetch)
 router.post('/agents/distinct', auth.isAuthenticated(), agentController.distinctAgentsFetch)

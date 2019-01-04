@@ -187,6 +187,7 @@ exports.create = function (req, res) {
   logicLayer
     .isEmailAndDomainFound(req.body)
     .then(result => {
+      console.log('Result', result)
       if (result.email) {
         return res.status(422).json({
           status: 'failed',
@@ -200,12 +201,14 @@ exports.create = function (req, res) {
       } else {
         let domain = logicLayer.getRandomString()
         let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
-        logger.serverLog(TAG, payload)
+        console.log('payload', payload)
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
+            console.log('user', user)
             PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
               .then(result => {
+                console.log('plans', result)
                 logger.serverLog(TAG, `Plans Found: ${util.inspect(result)}`)
                 // Separate default plans
                 let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
@@ -229,10 +232,12 @@ exports.create = function (req, res) {
                     let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
                     CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
                       .then(companyUserSaved => {
+                        console.log('company user created', companyUserSaved)
                         logger.serverLog(TAG, `Company User created: ${companyUserSaved}`)
                         PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
                           .then(permissionSaved => {
                             logger.serverLog(TAG, `Permission Saved: ${permissionSaved}`)
+                            console.log('Permission', permissionSaved)
                             let token = auth.signToken(user._id)
                             res.cookie('token', token)
                             res.status(201)
@@ -282,12 +287,12 @@ exports.create = function (req, res) {
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at: ${err}`)
-                return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
+                return res.status(500).json({status: 'failed', description: `Error at finding plan${JSON.stringify(err)}`})
               })
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${err}`)
-            return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
+            return res.status(500).json({status: 'failed', description: `Error at isEmail and Domain FOund ${JSON.stringify(err)}`})
           })
       }
     })
@@ -510,14 +515,16 @@ exports.addAccountType = function (req, res) {
 }
 
 exports.enableDelete = function (req, res) {
-  logger.serverLog(TAG, 'Enabling GDPR Delete')
+  console.log('Enabling GDPR Delete', req.body)
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
-  dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
+  dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
+      console.log('updateUserObject', updatedUser)
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
-      let sendgrid = utility.getSendGridObject()
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',
@@ -561,7 +568,9 @@ exports.cancelDeletion = function (req, res) {
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
-      let sendgrid = utility.getSendGridObject()
+      console.log('updateUserObject', updatedUser)
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',

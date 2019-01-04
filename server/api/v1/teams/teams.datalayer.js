@@ -144,7 +144,7 @@ exports.genericUpdatePageObject = (query, updated, options) => {
     .exec()
 }
 
-exports.deleteAgentObject = (teamId, companyId, pageId) => {
+exports.deletePageObject = (teamId, companyId, pageId) => {
   let payload = { teamId, companyId, pageId }
   return TeamPagesModel.deleteOne(payload)
     .exec()

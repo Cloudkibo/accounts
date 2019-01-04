@@ -272,6 +272,11 @@ exports.updateRole = function (req, res) {
       user.role = req.body.role
       companyUser.role = req.body.role
 
+      console.log('user.role', user.role)
+      console.log(' companyUser.role', companyUser.role)
+
+
+
       promiseUser = UserDataLayer.saveUserObject(user)
       promiseCompanyUser = CompanyUserDataLayer.saveCompanyUserObject(companyUser)
       let permissionPromise = PermissionDataLayer

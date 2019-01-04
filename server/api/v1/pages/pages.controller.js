@@ -3,6 +3,7 @@ const dataLayer = require('./pages.datalayer')
 const logicLayer = require('./pages.logiclayer')
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
+const needle = require('needle')
 
 const util = require('util')
 
@@ -150,5 +151,105 @@ exports.genericUpdate = function (req, res) {
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+exports.fetchWhitelistedDomains = function (req, res) {
+  needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        console.log('error in getting page access token', err)
+        return res.status(200).json({status: 'failed', description: 'Error in getting accessToken'})
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          return res.status(200).json({status: 'failed', description: 'Error in getting whitelisted_domains'})
+        }
+        var body = JSON.parse(JSON.stringify(resp.body))
+        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          let whitelistDomains = body.data[0].whitelisted_domains
+          return res.status(200).json({status: 'success', payload: whitelistDomains})
+        }
+      })
+    })
+}
+exports.whitelistDomain = function (req, res) {
+  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        console.log('error in getting page access token', err)
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          console.log('error in whitelisted_domains', err)
+        }
+        var body = JSON.parse(JSON.stringify(resp.body))
+        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          let temp = body.data[0].whitelisted_domains
+          for (var i = 0; i < req.body.whitelistDomains.length; i++) {
+            temp.push(req.body.whitelistDomains[i])
+          }
+          let whitelistedDomains = {
+            whitelisted_domains: temp
+          }
+          console.log('whitelistdomains', whitelistedDomains)
+          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+            if (err) {
+              console.log('error in whitelisted_domains', err)
+            }
+            console.log('response from whitelisted_domains', resp.body)
+            if (resp.body.result === 'success') {
+              return res.status(200).json({status: 'success', payload: temp})
+            } else {
+              return res.status(500).json({status: 'failed', payload: resp.body})
+            }
+          })
+        }
+      })
+    })
+}
+exports.deleteWhitelistDomain = function (req, res) {
+  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        console.log('error in getting page access token', err)
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          console.log('error in whitelisted_domains', err)
+        }
+        var body = JSON.parse(JSON.stringify(resp.body))
+        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          let whitelistDomains = body.data[0].whitelisted_domains
+          let temp = []
+          for (let i = 0; i < whitelistDomains.length; i++) {
+            if (whitelistDomains[i] !== req.body.whitelistDomain) {
+              temp.push(whitelistDomains[i])
+            }
+          }
+          if (temp.length === whitelistDomains.length) {
+            return res.status(500).json({status: 'failed', description: 'Domain not found'})
+          }
+          let whitelistedDomains = {
+            whitelisted_domains: temp
+          }
+          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+            if (err) {
+              console.log(`Unable to delete whitelist domains ${err}`)
+            }
+            if (resp.body.result === 'success') {
+              console.log(`Response Body ${resp.body}`)
+              console.log(`Domains Left ${temp}`)
+              return res.status(200).json({status: 'success', payload: temp})
+            }
+          })
+        } else {
+          return res.status(500).json({status: 'failed', description: 'Unable to get whitelist domains'})
+        }
+      })
     })
 }

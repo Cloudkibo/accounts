@@ -20,7 +20,7 @@ exports.menuPayload = {
       required: true
     },
     jsonStructure: {
-      type: 'object',
+      type: 'array',
       required: true
     }
   }

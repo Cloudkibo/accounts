@@ -138,3 +138,32 @@ exports.genericUpdatePayload = {
     'options'
   ]
 }
+exports.whiteListPayload = {
+  type: 'object',
+  properties: {
+    page_id: {
+      type: 'string',
+      required: true
+    },
+    whitelistDomains: {
+      type: 'array',
+      items: {
+        type: 'string'
+      },
+      required: true
+    }
+  }
+}
+exports.deleteWhitelistDomain = {
+  type: 'object',
+  properties: {
+    page_id: {
+      type: 'string',
+      required: true
+    },
+    whitelistDomain: {
+      type: 'string',
+      required: true
+    }
+  }
+}
