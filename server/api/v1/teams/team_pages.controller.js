@@ -36,7 +36,7 @@ exports.create = function (req, res) {
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete page index')
 
-  dataLayer.deleteTeamObject(
+  dataLayer.deletePageObject(
     req.body.teamId,
     req.body.companyId,
     req.body.pageId)

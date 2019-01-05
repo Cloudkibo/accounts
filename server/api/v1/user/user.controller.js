@@ -183,10 +183,10 @@ exports.updateChecks = function (req, res) {
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
   let isTeam = logicLayer.isTeamAccount(req.body)
-
   logicLayer
     .isEmailAndDomainFound(req.body)
     .then(result => {
+      logger.serverLog(TAG, 'result')
       if (result.email) {
         return res.status(422).json({
           status: 'failed',
@@ -200,7 +200,6 @@ exports.create = function (req, res) {
       } else {
         let domain = logicLayer.getRandomString()
         let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
-        logger.serverLog(TAG, payload)
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
@@ -282,12 +281,12 @@ exports.create = function (req, res) {
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at: ${err}`)
-                return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
+                return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
               })
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${err}`)
-            return res.status(500).json({status: 'failed', description: JSON.stringify(err)})
+            return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
           })
       }
     })
@@ -456,7 +455,7 @@ exports.delete = function (req, res) {
 exports.authenticatePassword = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete user controller authenticatePassword')
 
-  dataLayer.findOneUserByEmail(req.body.email)
+  dataLayer.findOneUserByEmail(req.body)
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {
@@ -510,14 +509,16 @@ exports.addAccountType = function (req, res) {
 }
 
 exports.enableDelete = function (req, res) {
-  logger.serverLog(TAG, 'Enabling GDPR Delete')
+  console.log('Enabling GDPR Delete', req.body)
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
-  dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
+  dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
+      console.log('updateUserObject', updatedUser)
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
-      let sendgrid = utility.getSendGridObject()
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',
@@ -561,7 +562,9 @@ exports.cancelDeletion = function (req, res) {
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
-      let sendgrid = utility.getSendGridObject()
+      console.log('updateUserObject', updatedUser)
+      // let sendgrid = utility.getSendGridObject()
+      let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
         from: 'support@cloudkibo.com',

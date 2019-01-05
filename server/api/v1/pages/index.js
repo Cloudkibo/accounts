@@ -44,9 +44,18 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
+router.get('/whitelistDomain/:_id',
+  auth.isAuthenticated(),
+  controller.fetchWhitelistedDomains)
+
 router.post('/whitelistDomain',
   auth.isAuthenticated(),
   validate({body: validationSchema.whiteListPayload}),
   controller.whitelistDomain)
+
+router.post('/deleteWhitelistDomain',
+  auth.isAuthenticated(),
+  validate({body: validationSchema.deleteWhitelistDomain}),
+  controller.deleteWhitelistDomain)
 
 module.exports = router

@@ -21,14 +21,18 @@ exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for landing page controller')
   dataLayer.findLandingPages(req.body)
     .then(result => {
-      populateSubmittedState(result)
-        .then(result => {
-          console.log('result', result)
-          res.status(200).json({status: 'success', payload: result.landingPages})
-        })
-        .catch(err => {
-          res.status(500).json({status: 'failed', payload: err})
-        })
+      if (result.length > 0) {
+        populateSubmittedState(result)
+          .then(result => {
+            console.log('result', result)
+            res.status(200).json({status: 'success', payload: result.landingPages})
+          })
+          .catch(err => {
+            res.status(500).json({status: 'failed', payload: err})
+          })
+      } else {
+        res.status(200).json({status: 'success', payload: []})
+      }
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
@@ -82,7 +86,7 @@ exports.updateLandingPageState = function (req, res) {
 }
 
 exports.deleteLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete landing page controller')
+  logger.serverLog(TAG, 'Hit the delete landing page controller', req.params._id)
 
   landingPageStateDataLayer.deleteLandingPageState(req.params._id)
     .then(result => {
