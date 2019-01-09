@@ -172,7 +172,7 @@ function populateSubmittedState (result) {
             title: result[i].submittedState.title,
             description: result[i].submittedState.description,
             buttonText: result[i].submittedState.buttonText,
-            url: result[i].submittedState.buttonText,
+            url: result[i].submittedState.url,
             tab: result[i].submittedState.tab
           },
           isActive: result[i].isActive,
