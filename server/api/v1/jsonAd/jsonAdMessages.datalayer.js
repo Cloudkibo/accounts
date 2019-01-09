@@ -4,34 +4,34 @@ By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
 
-const JsonPostbackPayloadModel = require('./jsonPostbackPayload.model')
+const JsonAdMessages = require('./jsonAdMessages.model')
 
 exports.findOneUsingQuery = (queryObject) => {
-  return JsonPostbackPayloadModel.findOne(queryObject)
+  return JsonAdMessages.findOne(queryObject)
     .exec()
 }
 
 exports.findAllUsingQuery = (queryObject) => {
-  return JsonPostbackPayloadModel.find(queryObject)
+  return JsonAdMessages.find(queryObject)
     .exec()
 }
 
 exports.deleteUsingQuery = (query) => {
-  return JsonPostbackPayloadModel.deleteMany(query)
+  return JsonAdMessages.deleteMany(query)
     .exec()
 }
 
 exports.deleteOneUsingQuery = (query) => {
-  return JsonPostbackPayloadModel.deleteOne(query)
+  return JsonAdMessages.deleteOne(query)
     .exec()
 }
 
 exports.countUsingQuery = (query) => {
-  return JsonPostbackPayloadModel.count(query)
+  return JsonAdMessages.count(query)
     .exec()
 }
 
 exports.create = (payload) => {
-  let obj = new JsonPostbackPayloadModel(payload)
+  let obj = new JsonAdMessages(payload)
   return obj.save()
 }
