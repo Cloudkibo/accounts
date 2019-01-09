@@ -37,6 +37,6 @@ exports.create = (payload) => {
 }
 
 exports.update = (query, updated, options) => {
-    return JsonAdModel.update(query, updated, options)
-      .exec()
+  return JsonAdModel.update(query, updated, options)
+    .exec()
 }
