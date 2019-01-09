@@ -186,28 +186,29 @@ exports.whitelistDomain = function (req, res) {
           console.log('error in whitelisted_domains', err)
         }
         var body = JSON.parse(JSON.stringify(resp.body))
+        let temp = []
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
-          let temp = body.data[0].whitelisted_domains
-          for (var i = 0; i < req.body.whitelistDomains.length; i++) {
-            temp.push(req.body.whitelistDomains[i])
-          }
-          let whitelistedDomains = {
-            whitelisted_domains: temp
-          }
-          console.log('whitelistdomains', whitelistedDomains)
-          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
-          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
-            if (err) {
-              console.log('error in whitelisted_domains', err)
-            }
-            console.log('response from whitelisted_domains', resp.body)
-            if (resp.body.result === 'success') {
-              return res.status(200).json({status: 'success', payload: temp})
-            } else {
-              return res.status(500).json({status: 'failed', payload: resp.body})
-            }
-          })
+          temp = body.data[0].whitelisted_domains
         }
+        for (var i = 0; i < req.body.whitelistDomains.length; i++) {
+          temp.push(req.body.whitelistDomains[i])
+        }
+        let whitelistedDomains = {
+          whitelisted_domains: temp
+        }
+        console.log('whitelistdomains', whitelistedDomains)
+        let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+        needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+          if (err) {
+            console.log('error in whitelisted_domains', err)
+          }
+          console.log('response from whitelisted_domains', resp.body)
+          if (resp.body.result === 'success') {
+            return res.status(200).json({status: 'success', payload: temp})
+          } else {
+            return res.status(500).json({status: 'failed', payload: resp.body})
+          }
+        })
       })
     })
 }
