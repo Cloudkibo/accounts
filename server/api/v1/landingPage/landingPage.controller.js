@@ -75,9 +75,10 @@ exports.createLandingPageState = function (req, res) {
 }
 
 exports.updateLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update landing page state controller')
+  console.log('Hit the update landing page state controller', req.body)
   landingPageStateDataLayer.updateLandingPageState(req.params._id, req.body)
     .then(result => {
+      console.log('result of updateLandingPageState', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
@@ -172,7 +173,7 @@ function populateSubmittedState (result) {
             title: result[i].submittedState.title,
             description: result[i].submittedState.description,
             buttonText: result[i].submittedState.buttonText,
-            url: result[i].submittedState.buttonText,
+            url: result[i].submittedState.url,
             tab: result[i].submittedState.tab
           },
           isActive: result[i].isActive,

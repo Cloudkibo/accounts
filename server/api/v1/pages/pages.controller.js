@@ -165,11 +165,12 @@ exports.fetchWhitelistedDomains = function (req, res) {
         if (err) {
           return res.status(200).json({status: 'failed', description: 'Error in getting whitelisted_domains'})
         }
+        var whitelistDomains = []
         var body = JSON.parse(JSON.stringify(resp.body))
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
-          let whitelistDomains = body.data[0].whitelisted_domains
-          return res.status(200).json({status: 'success', payload: whitelistDomains})
+          whitelistDomains = body.data[0].whitelisted_domains
         }
+        return res.status(200).json({status: 'success', payload: whitelistDomains})
       })
     })
 }
@@ -185,28 +186,29 @@ exports.whitelistDomain = function (req, res) {
           console.log('error in whitelisted_domains', err)
         }
         var body = JSON.parse(JSON.stringify(resp.body))
+        let temp = []
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
-          let temp = body.data[0].whitelisted_domains
-          for (var i = 0; i < req.body.whitelistDomains.length; i++) {
-            temp.push(req.body.whitelistDomains[i])
-          }
-          let whitelistedDomains = {
-            whitelisted_domains: temp
-          }
-          console.log('whitelistdomains', whitelistedDomains)
-          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
-          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
-            if (err) {
-              console.log('error in whitelisted_domains', err)
-            }
-            console.log('response from whitelisted_domains', resp.body)
-            if (resp.body.result === 'success') {
-              return res.status(200).json({status: 'success', payload: temp})
-            } else {
-              return res.status(500).json({status: 'failed', payload: resp.body})
-            }
-          })
+          temp = body.data[0].whitelisted_domains
         }
+        for (var i = 0; i < req.body.whitelistDomains.length; i++) {
+          temp.push(req.body.whitelistDomains[i])
+        }
+        let whitelistedDomains = {
+          whitelisted_domains: temp
+        }
+        console.log('whitelistdomains', whitelistedDomains)
+        let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+        needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+          if (err) {
+            console.log('error in whitelisted_domains', err)
+          }
+          console.log('response from whitelisted_domains', resp.body)
+          if (resp.body.result === 'success') {
+            return res.status(200).json({status: 'success', payload: temp})
+          } else {
+            return res.status(500).json({status: 'failed', payload: resp.body})
+          }
+        })
       })
     })
 }
@@ -222,33 +224,48 @@ exports.deleteWhitelistDomain = function (req, res) {
           console.log('error in whitelisted_domains', err)
         }
         var body = JSON.parse(JSON.stringify(resp.body))
+        let temp = []
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
           let whitelistDomains = body.data[0].whitelisted_domains
-          let temp = []
           for (let i = 0; i < whitelistDomains.length; i++) {
             if (whitelistDomains[i] !== req.body.whitelistDomain) {
               temp.push(whitelistDomains[i])
             }
           }
-          if (temp.length === whitelistDomains.length) {
+          if (temp.length > 0 && temp.length === whitelistDomains.length) {
             return res.status(500).json({status: 'failed', description: 'Domain not found'})
           }
           let whitelistedDomains = {
             whitelisted_domains: temp
           }
-          let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
-          needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
-            if (err) {
-              console.log(`Unable to delete whitelist domains ${err}`)
-            }
-            if (resp.body.result === 'success') {
-              console.log(`Response Body ${resp.body}`)
-              console.log(`Domains Left ${temp}`)
-              return res.status(200).json({status: 'success', payload: temp})
-            }
-          })
+          if (temp.length < 1) {
+            let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+            needle.request('delete', requesturl, {'fields': ['whitelisted_domains']}, {json: true}, function (err, resp) {
+              if (err) {
+                console.log(`Unable to delete whitelist domains ${util.inspect(err)}`)
+              }
+              var response = JSON.parse(JSON.stringify(resp.body))
+              if (response.result === 'success') {
+                return res.status(200).json({status: 'success', payload: temp})
+              } else {
+                return res.status(200).json({status: 'failed', description: `Unable to delete whitelist domain ${response}`})
+              }
+            })
+          } else {
+            let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+            needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+              if (err) {
+                console.log(`Unable to delete whitelist domains ${err}`)
+              }
+              if (resp.body.result === 'success') {
+                console.log(`Response Body ${resp.body}`)
+                console.log(`Domains Left ${temp}`)
+                return res.status(200).json({status: 'success', payload: temp})
+              }
+            })
+          }
         } else {
-          return res.status(500).json({status: 'failed', description: 'Unable to get whitelist domains'})
+          return res.status(500).json({status: 'success', payload: temp})
         }
       })
     })

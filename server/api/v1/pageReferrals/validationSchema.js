@@ -16,10 +16,6 @@ exports.createPayload = {
     reply: {
       type: 'array',
       required: true
-    },
-    sequenceId: {
-      type: 'string',
-      required: false
     }
   }
 }
