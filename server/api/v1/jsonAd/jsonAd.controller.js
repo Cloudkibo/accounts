@@ -98,7 +98,7 @@ exports.edit = function (req, res) {
 }
 
 exports.getAll = function (req, res) {
-  JsonAdDataLayer.findAllUsingQuery({})
+  JsonAdDataLayer.findAllUsingQuery({userId: req.user.userId})
     .then(response => {
       res.status(200).json({status: 'success', payload: response})
     })
