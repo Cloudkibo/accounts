@@ -14,8 +14,8 @@ exports.create = function (req, res) {
     JsonAdDataLayer.create({
       pageId: req.body.pageId,
       title: req.body.title,
-      companyId: req.body.companyId,
-      userId: req.body.userId
+      companyId: req.user.companyId,
+      userId: req.user.userId
     })
       .then(jsonAd => {
         response.jsonAd = jsonAd
