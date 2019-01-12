@@ -27,6 +27,7 @@ exports.create = function (req, res) {
             jsonAdMessagesDataLayer.create({
               jsonAdId: jsonAd._id,
               title: message.title,
+              jsonAdMessageId: message.jsonAdMessageId,
               jsonAdMessageParentId: message.jsonAdMessageParentId,
               messageContent: message.messageContent
             }).then(jsonAdMessage => {
@@ -72,6 +73,7 @@ exports.edit = function (req, res) {
             requests.push(new Promise((resolve, reject) => {
               jsonAdMessagesDataLayer.create({
                 jsonAdId: req.body.jsonAdId,
+                jsonAdMessageId: message.jsonAdMessageId,
                 title: message.title,
                 jsonAdMessageParentId: message.jsonAdMessageParentId,
                 messageContent: message.messageContent
