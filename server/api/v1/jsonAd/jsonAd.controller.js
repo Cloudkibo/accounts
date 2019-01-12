@@ -21,6 +21,7 @@ exports.create = function (req, res) {
         response.jsonAd = jsonAd
         console.log('jsonAd succesfully created', jsonAd)
         for (let i = 0; i < messages.length; i++) {
+          console.log('jsonAd messages', messages)
           let message = messages[i]
           requests.push(new Promise((resolve, reject) => {
             jsonAdMessagesDataLayer.create({
