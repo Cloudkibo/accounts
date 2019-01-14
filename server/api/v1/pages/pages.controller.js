@@ -272,7 +272,7 @@ exports.deleteWhitelistDomain = function (req, res) {
 }
 
 exports.isWhitelisted = function (req, res) {
-  needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
     (err, resp) => {
       if (err) {
         console.log('error in getting page access token', err)
@@ -286,6 +286,7 @@ exports.isWhitelisted = function (req, res) {
         var whitelistDomains = []
         var isWhitelisted = false
         var body = JSON.parse(JSON.stringify(resp.body))
+        console.log('Body', body)
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
           whitelistDomains = body.data[0].whitelisted_domains
           console.log('White listed domains', whitelistDomains)
