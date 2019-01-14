@@ -17,7 +17,7 @@ router.delete('/:id',
 
 router.post('/query', controller.genericFetch)
 router.post('/aggregate', controller.aggregateFetch)
-router.put('/update',
+router.post('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
