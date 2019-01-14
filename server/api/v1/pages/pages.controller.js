@@ -288,8 +288,10 @@ exports.isWhitelisted = function (req, res) {
         var body = JSON.parse(JSON.stringify(resp.body))
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
           whitelistDomains = body.data[0].whitelisted_domains
+          console.log('White listed domains', whitelistDomains)
           for (var i = 0; i < whitelistDomains.length; i++) {
             if (whitelistDomains[i] === req.body.domain) {
+              console.log('Domains', whitelistDomains[i])
               isWhitelisted = true
               break
             }
