@@ -270,3 +270,32 @@ exports.deleteWhitelistDomain = function (req, res) {
       })
     })
 }
+
+exports.isWhitelisted = function (req, res) {
+  needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        console.log('error in getting page access token', err)
+        return res.status(200).json({status: 'failed', description: 'Error in getting accessToken'})
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          return res.status(200).json({status: 'failed', description: 'Error in getting whitelisted_domains'})
+        }
+        var whitelistDomains = []
+        var isWhitelisted = false
+        var body = JSON.parse(JSON.stringify(resp.body))
+        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          whitelistDomains = body.data[0].whitelisted_domains
+          for (var i = 0; i < whitelistDomains.length; i++) {
+            if (whitelistDomains[i] === req.body.domain) {
+              isWhitelisted = true
+              break
+            }
+          }
+        }
+        return res.status(200).json({status: 'success', payload: isWhitelisted})
+      })
+    })
+}
