@@ -75,9 +75,10 @@ exports.createLandingPageState = function (req, res) {
 }
 
 exports.updateLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update landing page state controller')
+  console.log('Hit the update landing page state controller', req.body)
   landingPageStateDataLayer.updateLandingPageState(req.params._id, req.body)
     .then(result => {
+      console.log('result of updateLandingPageState', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
@@ -102,7 +103,7 @@ function populateSubmittedState (result) {
     for (let i = 0; i < result.length; i++) {
       console.log('result', result[i])
       console.log('result[i].submittedState.actionType', result[i].submittedState.actionType)
-      if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE') {
+      if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE' && result[i].submittedState.state) {
         dataLayerState.findOneLandingPageState(result[i].submittedState.state)
           .then(state => {
             console.log('inside if state', state)
@@ -172,8 +173,8 @@ function populateSubmittedState (result) {
             title: result[i].submittedState.title,
             description: result[i].submittedState.description,
             buttonText: result[i].submittedState.buttonText,
-            url: result[i].submittedState.buttonText,
-            tab: result[i].submittedState.tab
+            url: result[i].submittedState.url ? result[i].submittedState.url : '',
+            tab: result[i].submittedState.tab ? result[i].submittedState.tab : ''
           },
           isActive: result[i].isActive,
           pageId: {

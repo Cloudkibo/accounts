@@ -31,6 +31,7 @@ module.exports = function (app) {
   app.use('/api/v1/tags', require('./api/v1/tags'))
   app.use('/api/v1/landingPage', require('./api/v1/landingPage'))
   app.use('/api/v1/pageReferrals', require('./api/v1/pageReferrals'))
+  app.use('/api/v1/jsonAd', require('./api/v1/jsonAd'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
