@@ -13,6 +13,7 @@ exports.findOneUsingQuery = (queryObject) => {
 
 exports.findAllUsingQuery = (queryObject) => {
   return JsonAdModel.find(queryObject)
+    .populate('pageId companyId')
     .exec()
 }
 
