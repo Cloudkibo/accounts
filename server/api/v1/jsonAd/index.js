@@ -11,6 +11,10 @@ router.post('/create',
   validate({body: validationSchema.create}),
   controller.create)
 
+router.post('/query',
+  auth.isAuthenticated(),
+  controller.query)
+
 router.post('/edit',
   auth.isAuthenticated(),
   validate({body: validationSchema.edit}),

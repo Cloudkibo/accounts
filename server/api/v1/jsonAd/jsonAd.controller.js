@@ -173,3 +173,12 @@ exports.deleteOne = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+exports.query = function (req, res) {
+  JsonAdDataLayer.findAllUsingQuery(req.body)
+    .then(response => {
+      res.status(200).json({status: 'success', payload: response})
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
