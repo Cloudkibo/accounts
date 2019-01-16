@@ -167,3 +167,17 @@ exports.deleteWhitelistDomain = {
     }
   }
 }
+
+exports.isWhitelisted = {
+  type: 'object',
+  properties: {
+    page_id: {
+      type: 'string',
+      required: true
+    },
+    domain: {
+      type: 'string',
+      required: true
+    }
+  }
+}

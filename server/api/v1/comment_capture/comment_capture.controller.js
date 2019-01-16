@@ -30,8 +30,7 @@ exports.create = function (req, res) {
 
 exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update post controller index')
-
-  dataLayer.updatePostObject(req.params.id, logicLayer.prepareUpdatePostPayload(req.body))
+  dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })

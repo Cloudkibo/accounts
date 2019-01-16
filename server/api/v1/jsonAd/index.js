@@ -28,6 +28,10 @@ router.get('/:id',
   auth.isAuthenticated(),
   controller.getOne)
 
+router.get('/jsonAdResponse/:id',
+  auth.isAuthenticated(),
+  controller.getJsonAdResponse)
+
 router.delete('/delete/:id',
   auth.isAuthenticated(),
   controller.deleteOne)
