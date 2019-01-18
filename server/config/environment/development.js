@@ -3,6 +3,15 @@
 // Development specific configuration
 // ==================================
 module.exports = {
+
+  // Server port
+  port: 3024,
+
+  // Secure Server port
+  secure_port: 8444,
+
+  domain: `${process.env.DOMAIN || 'http://localhost:3024'}`,
+
   // MongoDB connection options
   mongo: {
     uri: 'mongodb://localhost/accounts-dev'
