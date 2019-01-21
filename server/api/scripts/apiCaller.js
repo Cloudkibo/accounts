@@ -1,5 +1,5 @@
 const requestPromise = require('request-promise')
-const config = require('../../../config/environment/index')
+const config = require('../../config/environment/index')
 
 exports.callApi = (endpoint, method = 'get', body, token, type) => {
   let headers
