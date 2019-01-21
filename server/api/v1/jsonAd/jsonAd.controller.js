@@ -2,6 +2,7 @@ const logger = require('../../../components/logger')
 const jsonAdMessagesDataLayer = require('./jsonAdMessages.datalayer')
 const JsonAdDataLayer = require('./jsonAd.datalayer')
 const TAG = '/api/v1/menu/menu.controller.js'
+const mongoose = require('mongoose')
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create json ad endpoint')
@@ -72,6 +73,7 @@ exports.edit = function (req, res) {
             let message = messages[i]
             requests.push(new Promise((resolve, reject) => {
               jsonAdMessagesDataLayer.create({
+                _id: mongoose.Types.ObjectId(message._id),
                 jsonAdId: req.body.jsonAdId,
                 jsonAdMessageId: message.jsonAdMessageId,
                 title: message.title,
