@@ -3,8 +3,10 @@ let Schema = mongoose.Schema
 
 let jsonAdMessages = new Schema({
   jsonAdId: {type: Schema.ObjectId, ref: 'jsonAd'},
+  jsonAdMessageId: {type: String},
   jsonAdMessageParentId: {type: String},
-  messageContent: [{type: Object}]
+  title: {type: String},
+  messageContent: Schema.Types.Mixed
 })
 
 module.exports = mongoose.model('jsonAdMessages', jsonAdMessages)

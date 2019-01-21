@@ -30,6 +30,25 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
       newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
     }
+    if (obj.$match && obj.$match.$and) {
+      obj.$match.$and.forEach((object, index1) => {
+        if (object.companyId) {
+          newBody[index].$match.$and[index1].companyId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].companyId)
+        }
+        if (object.pageId && !object.pageId.$exists) {
+          newBody[index].$match.$and[index1].pageId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].pageId)
+        }
+        if (object['pageId._id'] && !object['pageId._id'].$exists) {
+          newBody[index].$match.$and[index1]['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['pageId._id'])
+        }
+        if (object._id && object._id.$gt) {
+          newBody[index].$match.$and[index1]._id.$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]._id.$gt)
+        }
+        if (object._id && object._id.$lt) {
+          newBody[index].$match.$and[index1]._id.$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]._id.$lt)
+        }
+      })
+    }
   })
   return newBody
 }
