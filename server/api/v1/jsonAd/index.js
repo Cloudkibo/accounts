@@ -11,6 +11,10 @@ router.post('/create',
   validate({body: validationSchema.create}),
   controller.create)
 
+router.post('/query',
+  auth.isAuthenticated(),
+  controller.query)
+
 router.post('/edit',
   auth.isAuthenticated(),
   validate({body: validationSchema.edit}),
@@ -23,6 +27,10 @@ router.get('/',
 router.get('/:id',
   auth.isAuthenticated(),
   controller.getOne)
+
+router.get('/jsonAdResponse/:id',
+  auth.isAuthenticated(),
+  controller.getJsonAdResponse)
 
 router.delete('/delete/:id',
   auth.isAuthenticated(),

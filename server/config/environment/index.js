@@ -12,12 +12,6 @@ const all = {
   // Project root path
   root: path.normalize(`${__dirname}/../../..`),
 
-  // Server port
-  port: process.env.PORT || 3001,
-
-  // Secure Server port
-  secure_port: process.env.SECURE_PORT || 8443,
-
   ip: process.env.IP || undefined,
 
   userRoles: ['buyer', 'admin', 'supervisor', 'agent'],
@@ -197,7 +191,10 @@ const all = {
     }
   },
 
-  domain: `${process.env.DOMAIN || 'https://accounts.cloudkibo.com'}`,
+  api_urls: {
+    kibochat: `${process.env.DB_LAYER_IP_KIBOCHAT}/api/v1`,
+    kiboengage: `${process.env.DB_LAYER_IP_KIBOENGAGE}/api/v1`
+  },
 
   // Mongo Options
   mongo: {
