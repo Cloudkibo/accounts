@@ -191,6 +191,11 @@ const all = {
     }
   },
 
+  api_urls: {
+    kibochat: `${process.env.DB_LAYER_IP_KIBOCHAT}/api/v1`,
+    kiboengage: `${process.env.DB_LAYER_IP_KIBOENGAGE}/api/v1`
+  },
+
   // Mongo Options
   mongo: {
     options: {
