@@ -1,11 +1,11 @@
-const logger = require('../../../components/logger')
+const logger = require('../../components/logger')
 const TAG = '/api/scripts/controller.js'
 const SusbscribersDataLayer = require('../v1/subscribers/subscribers.datalayer')
 const { callApi } = require('./apiCaller')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
-  SusbscribersDataLayer.findOneSubscriberObject({})
+  SusbscribersDataLayer.findSubscriberObjects({})
     .then(subscribers => {
       if (subscribers.length > 0) {
         subscribers.forEach((sub, index) => {
