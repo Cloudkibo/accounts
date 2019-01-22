@@ -51,6 +51,7 @@ exports.normalizeSubscribersDatetimeNull = function (req, res) {
           SubscribersModel.find({pageId: page._id, datetime: null}).exec()
             .then(subscribers => {
               if (subscribers.length > 0) {
+                let count = 0
                 SubscribersModel.findOne({_id: {$lt: subscribers[0]._id}}).sort({_id: -1}).exec()
                   .then(startSub => {
                     if (startSub) {
@@ -59,10 +60,15 @@ exports.normalizeSubscribersDatetimeNull = function (req, res) {
                         .then(endSub => {
                           if (endSub) {
                             const endDate = endSub.datetime
-                            subscribers.forEach(sub => {
+                            subscribers.forEach((sub, index) => {
                               let rDate = randomDate(new Date(startDate, endDate))
                               SubscribersModel.update({_id: sub._id}, {datetime: new Date(rDate)}).exec()
-                                .then(updated => {})
+                                .then(updated => {
+                                  count++
+                                  if (index === (subscribers.length - 1)) {
+                                    return res.status(200).json({ status: 'success', payload: `${count} records have been normalized successfully!` })
+                                  }
+                                })
                                 .catch(err => {
                                   return res.status(500).json({status: 'failed', payload: `Failed to update subscriber ${err}`})
                                 })
@@ -88,6 +94,4 @@ exports.normalizeSubscribersDatetimeNull = function (req, res) {
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch distint pages ${err}`})
     })
-
-  return res.status(200).json({ status: 'success', payload: 'Normalized successfully!' })
 }
