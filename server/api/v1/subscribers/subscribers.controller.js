@@ -72,8 +72,8 @@ exports.aggregate = function (req, res) {
   logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
   let query = logicLayer.validateAndConvert(req.body)
   logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
-  logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
-  logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
+//   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
+//   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
   dataLayer.aggregateInfo(query)
     .then(result => {
       logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
