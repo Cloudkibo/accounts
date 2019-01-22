@@ -61,7 +61,7 @@ exports.normalizeSubscribersDatetimeNull = function (req, res) {
                           if (endSub) {
                             const endDate = endSub.datetime
                             subscribers.forEach((sub, index) => {
-                              let rDate = randomDate(new Date(startDate, endDate))
+                              let rDate = randomDate(new Date(startDate), new Date(endDate))
                               SubscribersModel.update({_id: sub._id}, {datetime: new Date(rDate)}).exec()
                                 .then(updated => {
                                   count++
