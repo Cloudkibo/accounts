@@ -13,7 +13,6 @@ exports.create = function (req, res) {
   }
   requests.push(new Promise((resolve, reject) => {
     JsonAdDataLayer.create({
-      pageId: req.body.pageId,
       title: req.body.title,
       companyId: req.user.companyId,
       userId: req.user.userId
