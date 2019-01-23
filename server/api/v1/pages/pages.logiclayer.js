@@ -8,9 +8,14 @@ let mongoose = require('mongoose')
 exports.validateAndConvert = (body) => {
   let newBody = body
 
-  body.forEach((obj,  index) => {
-    if (obj.$match && obj.$match.companyId) {
-      newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
+  body.forEach((obj, index) => {
+    if (obj.$match) {
+      if (obj.$match.companyId) {
+        newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
+      }
+      if (obj.$match._id) {
+        newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
+      }
     }
   })
   return newBody
