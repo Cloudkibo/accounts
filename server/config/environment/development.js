@@ -10,7 +10,7 @@ module.exports = {
   // Secure Server port
   secure_port: 8444,
 
-  domain: `${process.env.DOMAIN || 'http://localhost:3024'}`,
+  domain: `${process.env.DOMAIN || 'http://localhost:3001'}`,
 
   // MongoDB connection options
   mongo: {
