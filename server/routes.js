@@ -46,12 +46,12 @@ module.exports = function (app) {
   })
 
   // login page
-  app.get('/login', function (req, res) {
-    res.render('layouts/index', {
-      buttonOne: { name: 'Individual Account', url: `/login/single?continue=${req.query.continue ? req.query.continue : ''}` },
-      buttonTwo: { name: 'Team Account', url: `/login/team?continue=${req.query.continue ? req.query.continue : ''}` }
-    })
-  })
+  // app.get('/login', function (req, res) {
+  //   res.render('layouts/index', {
+  //     buttonOne: { name: 'Individual Account', url: `/login/single?continue=${req.query.continue ? req.query.continue : ''}` },
+  //     buttonTwo: { name: 'Team Account', url: `/login/team?continue=${req.query.continue ? req.query.continue : ''}` }
+  //   })
+  // })
 
   // signup page
   app.get('/signup', function (req, res) {
@@ -62,14 +62,14 @@ module.exports = function (app) {
   })
 
   // login page
-  app.get('/login/single', function (req, res) {
+  app.get('/login', function (req, res) {
     res.render('layouts/login', {individual: true, Continue: req.query.continue ? req.query.continue : ''})
   })
 
   // login page
-  app.get('/login/team', function (req, res) {
-    res.render('layouts/login', {individual: false, Continue: req.query.continue ? req.query.continue : ''})
-  })
+  // app.get('/login/team', function (req, res) {
+  //   res.render('layouts/login', {individual: false, Continue: req.query.continue ? req.query.continue : ''})
+  // })
 
   // signup page
   app.get('/signup/single', function (req, res) {
