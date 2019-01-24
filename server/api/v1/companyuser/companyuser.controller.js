@@ -19,3 +19,18 @@ exports.genericFetch = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.genericFetchAll = function (req, res) {
+  logger.serverLog(TAG, 'Hit the genericFetchAll controller index')
+
+  dataLayer
+    .findAllCompanyUserObjectUsingQuery(req.body)
+    .then(result => {
+      logger.serverLog(TAG, `query endpoint for c_user ${util.inspect(result)}`)
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
