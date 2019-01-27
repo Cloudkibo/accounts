@@ -32,6 +32,11 @@ exports.updateCustomFieldSubscriber = (body) => {
     } else if (body.purpose === 'updateAll') {
       // Can updated multiple record matching the query
       return MongoInterface.updateMany(query, updated, options)
+    } else if (body.purpose === 'updateArray') {
+      for (var i = 0; body.match.length > i; i++) {
+        query = body.match[i]
+        return MongoInterface.findOneAndUpdate(query, updated, options)
+      }
     } else {
       return new Promise((resolve, reject) => { reject(new Error('Correct Purpose Not Found')) })
     }

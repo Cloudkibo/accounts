@@ -12,7 +12,7 @@ exports.createPayload = {
       'type': 'objectId'
     },
     'subscriberId': {
-      'type': 'objectId'
+      'type': 'string'
     },
     'value': {
       'type': 'string'
@@ -54,34 +54,36 @@ exports.queryPayload = {
 }
 
 exports.updatePayload =
-{
-  '$schema': 'http://json-schema.org/draft-04/schema#',
-  'type': 'object',
-  'properties': {
-    'purpose': {
-      'type': 'string'
-    },
-    'match': {
-      'type': 'object',
-      'properties': {
-        'customFieldId': {
-          'type': 'objectId'
-        },
-        'subscriberId': {
-          'type': 'objectId'
-        },
-        'value': {
-          'type': 'string'
+  {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'type': 'object',
+    'properties': {
+      'purpose': {
+        'type': 'string'
+      },
+      'match': [
+        {
+          'type': 'object',
+          'properties': {
+            'customFieldId': {
+              'type': 'objectId'
+            },
+            'subscriberId': {
+              'type': 'objectId'
+            },
+            'value': {
+              'type': 'string'
+            }
+          }
         }
+      ],
+      'updated': {
+        'type': 'object'
       }
     },
-    'updated': {
-      'type': 'object'
-    }
-  },
-  'required': [
-    'purpose',
-    'match',
-    'updated'
-  ]
-}
+    'required': [
+      'purpose',
+      'match',
+      'updated'
+    ]
+  }
