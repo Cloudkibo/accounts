@@ -25,10 +25,23 @@ exports.validateAndConvert = (body) => {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
     if (obj.$match && obj.$match.pageId && !obj.$match.pageId.$exists) {
-      newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
+      if (obj.$match.pageId.$in) {
+        let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
+        newBody[index].$match.pageId.$in = pageIds
+      } else {
+        newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
+      }
     }
     if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
       newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
+    }
+    if (obj.$match && obj.$match.datetime) {
+      if (obj.$match.datetime.$gte) {
+        newBody[index].$match.datetime.$gte = new Date(newBody[index].$match.datetime.$gte)
+      }
+      if (obj.$match.datetime.$lt) {
+        newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
+      }
     }
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
