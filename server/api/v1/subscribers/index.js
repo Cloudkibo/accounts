@@ -32,4 +32,8 @@ router.put('/update',
   auth.isAuthenticated(),
   controller.genericUpdate)
 
+router.get('/updateData',
+  auth.isAuthenticated(),
+  controller.updateData)
+
 module.exports = router
