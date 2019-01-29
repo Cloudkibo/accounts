@@ -7,13 +7,13 @@ const CustomFieldModel = require('./custom_field.model')
 
 exports.find = (criteria = {}) => {
   return CustomFieldModel.find(criteria)
-    .populate('companyId', 'createdBy')
+    .populate('createdBy')
     .exec()
 }
 
 exports.findOne = (criteria) => {
   return CustomFieldModel.findOne(criteria)
-    .populate('companyId', 'createdBy')
+    .populate('createdBy')
     .exec()
 }
 
