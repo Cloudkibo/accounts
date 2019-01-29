@@ -1,14 +1,16 @@
 const logger = require('../../../components/logger')
 const logicLayer = require('./subscribers.logiclayer')
-const dataLayer = require('./subscribers.datalayer')
+const subscribersDataLayer = require('./subscribers.datalayer')
+const companyUsersDataLayer = require('../companyUser/companyuser.datalayer')
+const pagesDataLayer = require('../pages/pages.datalayer')
 const TAG = '/api/v1/subscribers/subscribers.controller.js'
-
+const needle = require('needle')
 const util = require('util')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find subscriber controller index')
 
-  dataLayer.findOneSubscriberObject(req.params._id)
+  subscribersDataLayer.findOneSubscriberObject(req.params._id)
     .then(subscriberObject => {
       res.status(200).json({status: 'success', payload: subscriberObject})
     })
@@ -19,7 +21,7 @@ exports.index = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create subscriber controller index', req.body)
-  dataLayer.createSubscriberObject(req.body)
+  subscribersDataLayer.createSubscriberObject(req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
@@ -31,7 +33,7 @@ exports.create = function (req, res) {
 exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update subscriber controller index')
 
-  dataLayer.updateSubscriberObject(req.params._id, req.body)
+  subscribersDataLayer.updateSubscriberObject(req.params._id, req.body)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
@@ -44,7 +46,7 @@ exports.update = function (req, res) {
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete subscriber controller index')
 
-  dataLayer.deleteSubscriberObject(req.params._id)
+  subscribersDataLayer.deleteSubscriberObject(req.params._id)
     .then(result => {
       res.status(200).json({status: 'success', payload: result})
     })
@@ -57,7 +59,7 @@ exports.delete = function (req, res) {
 exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for subscriber controller')
 
-  dataLayer.findSubscriberObjects(req.body)
+  subscribersDataLayer.findSubscriberObjects(req.body)
     .then(result => {
       logger.serverLog(TAG, `query endpoint for subscriber found result ${util.inspect(result)}`)
       res.status(200).json({status: 'success', payload: result})
@@ -72,9 +74,9 @@ exports.aggregate = function (req, res) {
   logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
   let query = logicLayer.validateAndConvert(req.body)
   logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
-//   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
-//   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
-  dataLayer.aggregateInfo(query)
+  //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
+  //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
+  subscribersDataLayer.aggregateInfo(query)
     .then(result => {
       logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
       res.status(200).json({status: 'success', payload: result})
@@ -88,12 +90,67 @@ exports.aggregate = function (req, res) {
 exports.genericUpdate = function (req, res) {
   logger.serverLog(TAG, 'generic update endpoint')
 
-  dataLayer.genericUpdateSubscriberObject(req.body.query, req.body.newPayload, req.body.options)
+  subscribersDataLayer.genericUpdateSubscriberObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.updateData = function (req, res) {
+  companyUsersDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user.userId})
+    .then(companyUser => {
+      let companyId = companyUser.companyId
+      subscribersDataLayer.findSubscriberObjects({companyId: companyId})
+        .then(users => {
+          let requests = []
+          for (let i = 0; i < users.length; i++) {
+            requests.push(new Promise((resolve, reject) => {
+              pagesDataLayer.findOnePageObject(users[i].pageId)
+                .then(page => {
+                  let accessToken = page.accessToken
+                  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken}`)
+                  needle.get(
+                    `https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken}`,
+                    (err, resp) => {
+                      if (err) {
+                        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+                      }
+                      console.log('resp.body', resp.body)
+                      subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {})
+                        .then(updated => {
+                          resolve(users[i]._id)
+                          logger.serverLog(TAG, `Succesfully updated subscriber ${users[i]._id}`)
+                        })
+                        .catch(err => {
+                          reject(err)
+                          logger.serverLog(TAG, `Failed to update subscriber ${JSON.stringify(err)}`)
+                        })
+                    })
+                })
+                .catch(err => {
+                  reject(err)
+                })
+            }))
+          }
+          Promise.all(requests)
+            .then((responses) => res.status(200).json({status: 'success', payload: responses}))
+            .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+        })
+        .catch(err => {
+          return res.status(500).json({
+            status: 'failed',
+            payload: `Failed to fetch subscribers ${JSON.stringify(err)}`
+          })
+        })
+    })
+    .catch(err => {
+      return res.status(500).json({
+        status: 'failed',
+        payload: `Failed to fetch company user ${JSON.stringify(err)}`
+      })
     })
 }
