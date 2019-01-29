@@ -24,7 +24,7 @@ exports.createPayload = {
       'type': 'string'
     },
     'createdDate': {
-      'type': 'Date'
+      'type': 'string'
     }
   },
   'required': [
@@ -46,7 +46,7 @@ exports.queryPayload = {
       'type': 'object',
       'properties': {
         '_id': {
-          'type': 'ObjectId'
+          'type': 'string'
         },
         'name': {
           'type': 'string'
@@ -64,7 +64,7 @@ exports.queryPayload = {
           'type': 'string'
         },
         'createdDate': {
-          'type': 'date'
+          'type': 'string'
         }
       }
     }
@@ -87,7 +87,7 @@ exports.updatePayload =
         'type': 'object',
         'properties': {
           '_id': {
-            'type': 'ObjectId'
+            'type': 'string'
           },
           'name': {
             'type': 'string'
@@ -105,7 +105,7 @@ exports.updatePayload =
             'type': 'string'
           },
           'createdDate': {
-            'type': 'date'
+            'type': 'string'
           }
         }
       },

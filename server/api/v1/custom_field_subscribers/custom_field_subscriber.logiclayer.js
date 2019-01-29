@@ -3,6 +3,8 @@ This file will contain the functions for logic layer.
 By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
+let mongoose = require('mongoose')
+
 exports.validateCreatePayload = (body) => {
   let bool = true
   let arrayOfRequiredFields = [
@@ -22,19 +24,20 @@ exports.validateCreatePayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
-  let query = []
+  let newBody = body
+  body.forEach((obj, index) => {
+    if (obj.match) {
+      if (obj.match.customFieldId) {
+        newBody[index].match.customFieldId = mongoose.Types.ObjectId(newBody[index].match.customFieldId)
+      }
+      if (obj.match.subscriberId) {
+        newBody[index].match.subscriberId = mongoose.Types.ObjectId(newBody[index].match.subscriberId)
+      }
+      if (obj.match._id) {
+        newBody[index].match._id = mongoose.Types.ObjectId(newBody[index].match._id)
+      }
+    }
+  })
 
-  if (body.match) query.push({$match: body.match})
-  else return 'Match Criteria Not Found'
-
-  if (body.group) {
-    if (!Object.keys(body.group).includes('_id')) return '_id is missing in Group Criteria'
-    else query.push({$group: body.group})
-  }
-
-  if (body.skip) query.push({$skip: body.skip})
-  if (body.sort) query.push({$sort: body.sort})
-  if (body.limit) query.push({$limit: body.limit})
-
-  return query
+  return newBody
 }

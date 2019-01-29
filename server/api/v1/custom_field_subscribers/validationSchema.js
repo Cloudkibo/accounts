@@ -9,7 +9,7 @@ exports.createPayload = {
   'type': 'object',
   'properties': {
     'customFieldId': {
-      'type': 'objectId'
+      'type': 'string'
     },
     'subscriberId': {
       'type': 'string'
@@ -35,11 +35,14 @@ exports.queryPayload = {
     'match': {
       'type': 'object',
       'properties': {
+        '_id': {
+          'type': 'string'
+        },
         'customFieldId': {
-          'type': 'objectId'
+          'type': 'string'
         },
         'subscriberId': {
-          'type': 'objectId'
+          'type': 'string'
         },
         'value': {
           'type': 'string'
@@ -66,10 +69,10 @@ exports.updatePayload =
           'type': 'object',
           'properties': {
             'customFieldId': {
-              'type': 'objectId'
+              'type': 'string'
             },
             'subscriberId': {
-              'type': 'objectId'
+              'type': 'string'
             },
             'value': {
               'type': 'string'
