@@ -25,19 +25,29 @@ exports.validateCreatePayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
-  let newBody = body
-  body.forEach((obj, index) => {
-    if (obj.match) {
-      if (obj.match.companyId) {
-        newBody[index].match.companyId = mongoose.Types.ObjectId(newBody[index].match.companyId)
-      }
-      if (obj.match.createdBy) {
-        newBody[index].match.createdBy = mongoose.Types.ObjectId(newBody[index].match.createdBy)
-      }
-      if (obj.match._id) {
-        newBody[index].match._id = mongoose.Types.ObjectId(newBody[index].match._id)
-      }
+  let query = []
+
+  if (body.match) {
+    if (body.match.companyId && !body.match.companyId.$exists) {
+      body.match.companyId = mongoose.Types.ObjectId(body.match.companyId)
     }
-  })
-  return newBody
+    if (body.match.createdBy && !body.match.createdBy.$exists) {
+      body.match.createdBy = mongoose.Types.ObjectId(body.match.createdBy)
+    }
+    if (body.match._id && !body.match._id.$exists) {
+      body.match._id = mongoose.Types.ObjectId(body.match._id)
+    }
+    query.push({ $match: body.match })
+  } else return 'Match Criteria Not Found'
+
+  if (body.group) {
+    if (!Object.keys(body.group).includes('_id')) return '_id is missing in Group Criteria'
+    else query.push({ $group: body.group })
+  }
+
+  if (body.skip) query.push({ $skip: body.skip })
+  if (body.sort) query.push({ $sort: body.sort })
+  if (body.limit) query.push({ $limit: body.limit })
+
+  return query
 }

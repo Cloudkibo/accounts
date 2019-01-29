@@ -24,20 +24,29 @@ exports.validateCreatePayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
-  let newBody = body
-  body.forEach((obj, index) => {
-    if (obj.match) {
-      if (obj.match.customFieldId) {
-        newBody[index].match.customFieldId = mongoose.Types.ObjectId(newBody[index].match.customFieldId)
-      }
-      if (obj.match.subscriberId) {
-        newBody[index].match.subscriberId = mongoose.Types.ObjectId(newBody[index].match.subscriberId)
-      }
-      if (obj.match._id) {
-        newBody[index].match._id = mongoose.Types.ObjectId(newBody[index].match._id)
-      }
-    }
-  })
+  let query = []
 
-  return newBody
+  if (body.match) {
+    if (body.match.customFieldId && !body.match.customFieldId.$exists) {
+      body.match.customFieldId = mongoose.Types.ObjectId(body.match.customFieldId)
+    }
+    if (body.match.subscriberId && !body.match.subscriberId.$exists) {
+      body.match.subscriberId = mongoose.Types.ObjectId(body.match.subscriberId)
+    }
+    if (body.match._id && !body.match._id.$exists) {
+      body.match._id = mongoose.Types.ObjectId(body.match._id)
+    }
+    query.push({ $match: body.match })
+  } else return 'Match Criteria Not Found'
+
+  if (body.group) {
+    if (!Object.keys(body.group).includes('_id')) return '_id is missing in Group Criteria'
+    else query.push({ $group: body.group })
+  }
+
+  if (body.skip) query.push({ $skip: body.skip })
+  if (body.sort) query.push({ $sort: body.sort })
+  if (body.limit) query.push({ $limit: body.limit })
+
+  return query
 }
