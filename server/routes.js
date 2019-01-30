@@ -33,6 +33,8 @@ module.exports = function (app) {
   app.use('/api/v1/pageReferrals', require('./api/v1/pageReferrals'))
   app.use('/api/v1/jsonAd', require('./api/v1/jsonAd'))
   app.use('/api/scripts', require('./api/scripts'))
+  app.use('/api/v1/custom_fields', require('./api/v1/custom_fields'))
+  app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))

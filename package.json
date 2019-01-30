@@ -9,10 +9,9 @@
     "stop:prod": "forever stopall",
     "debug": "cross-env DEBUG=express:router:route,express:application,kibopush:* NODE_ENV=development nodemon --trace-warnings server/app.js",
     "lint": "echo 'Pre-commit checks...' && standard --fix && echo \"No code style errors found.\"",
-    "start": "cross-env DEBUG=accounts:* DOMAIN=localhost nodemon --trace-warnings server/app.js",
+    "start": "cross-env DEBUG=accounts:* DOMAIN=http://localhost:3024 nodemon --trace-warnings server/app.js",
     "start:staging": "cross-env DEBUG=accounts:* forever start server/app.js",
-    "stop:staging": "forever stopall",
-    "start:local": "cross-env DEBUG=accounts:* DOMAIN=localhost:3001 nodemon --trace-warnings server/app.js"
+    "stop:staging": "forever stopall"
   },
   "pre-commit": [
     "lint",

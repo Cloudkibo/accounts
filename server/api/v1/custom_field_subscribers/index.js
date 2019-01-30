@@ -3,37 +3,27 @@ const router = express.Router()
 const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
-const controller = require('./subscribers.controller')
+const controller = require('./custom_field_subscriber.controller')
 const auth = require('./../../../auth/auth.service')
 
-router.get('/:_id',
+router.get('/',
   auth.isAuthenticated(),
   controller.index)
-
 router.post('/',
-  validate({body: validationSchema.subscriberPayload}),
   auth.isAuthenticated(),
+  validate({body: validationSchema.createPayload}),
   controller.create)
-
-router.delete('/:_id',
-  auth.isAuthenticated(),
-  controller.delete)
-
 router.post('/query',
   auth.isAuthenticated(),
+  validate({body: validationSchema.queryPayload}),
   controller.query)
-
-router.post('/aggregate',
+router.put('/',
   auth.isAuthenticated(),
-  controller.aggregate)
-
-router.put('/update',
-  validate({body: validationSchema.genericUpdatePayload}),
+  validate({body: validationSchema.updatePayload}),
+  controller.update)
+router.delete('/',
   auth.isAuthenticated(),
-  controller.genericUpdate)
-
-router.get('/updateData',
-  auth.isAuthenticated(),
-  controller.updateData)
+  validate({body: validationSchema.queryPayload}),
+  controller.delete)
 
 module.exports = router
