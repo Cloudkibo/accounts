@@ -70,7 +70,19 @@ exports.update = function (req, res) {
     }
     DataLayer.findCustomFieldsUsingQuery(query)
       .then(foundCustomField => {
-        res.status(500).json({ status: 'failed', messsage: `${req.body.updated.name} custom field already exists` })
+        if (foundCustomField) {
+          console.log(foundCustomField)
+          res.status(500).json({ status: 'failed', messsage: `${req.body.updated.name} custom field already exists` })
+        } else {
+          DataLayer.updateCustomField(req.body)
+            .then(foundObjects => {
+              res.status(200).json({ status: 'success', payload: foundObjects })
+            })
+            .catch(err => {
+              logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
+              res.status(500).json({ status: 'failed', payload: err.toString() })
+            })
+        }
       })
       .catch(err => {
         logger.serverLog(CUSTOMFIELD, `Error found update Controller : ${util.inspect(err)}`)
