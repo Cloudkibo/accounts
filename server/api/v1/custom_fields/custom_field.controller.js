@@ -28,11 +28,11 @@ exports.create = function (req, res) {
   DataLayer.findCustomFieldsUsingQuery(query)
     .then(foundCustomFields => {
       if (foundCustomFields) {
-        res.status(500).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
+        res.status(201).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
       } else {
         DataLayer.createOneCustomFieldObject(req.body)
           .then(createdObject => {
-            res.status(200).json({ status: 'success', payload: createdObject })
+            res.status(208).json({ status: 'success', payload: createdObject })
           })
           .catch(err => {
             logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
