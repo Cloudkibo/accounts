@@ -28,7 +28,7 @@ exports.create = function (req, res) {
   DataLayer.findCustomFieldsUsingQuery(query)
     .then(foundCustomFields => {
       if (foundCustomFields) {
-        res.status(500).json({ status: 'failed', messsage: `${req.body.name} custom field already exists` })
+        res.status(500).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
       } else {
         DataLayer.createOneCustomFieldObject(req.body)
           .then(createdObject => {
@@ -72,7 +72,7 @@ exports.update = function (req, res) {
       .then(foundCustomField => {
         if (foundCustomField) {
           console.log(foundCustomField)
-          res.status(500).json({ status: 'failed', messsage: `${req.body.updated.name} custom field already exists` })
+          res.status(500).json({ status: 'failed', payload: `${req.body.updated.name} custom field already exists` })
         } else {
           DataLayer.updateCustomField(req.body)
             .then(foundObjects => {
