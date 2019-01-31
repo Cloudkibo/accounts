@@ -44,6 +44,5 @@ exports.create = (payload) => {
 
 exports.aggregate = (query) => {
   return CustomFieldSubscriberModel.aggregate(query)
-    .populate('customFieldId subscriberId')
     .exec()
 }
