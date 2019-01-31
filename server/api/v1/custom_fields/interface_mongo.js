@@ -44,6 +44,5 @@ exports.create = (payload) => {
 
 exports.aggregate = (query) => {
   return CustomFieldModel.aggregate(query)
-    .populate('companyId', 'createdBy')
     .exec()
 }

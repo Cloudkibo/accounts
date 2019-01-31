@@ -6,7 +6,7 @@ const customFieldsSchema = new Schema({
   type: { type: String, required: true },
   description: { type: String },
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
-  createdBy: { type: Schema.ObjectId, ref: 'companyuser' },
+  createdBy: { type: Schema.ObjectId, ref: 'users' },
   createdDate: { type: Date, default: Date.now }
 })
 
