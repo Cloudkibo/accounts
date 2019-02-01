@@ -14,6 +14,17 @@ const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
 
 const util = require('util')
 
+/*
+......Review Comments.....
+
+--> we should populate companyprofile in companyUser. That way we won't need endpoint
+    to fetch companyprofile
+--> Remove addPlanID script
+--> update plan validation should be handled on KiboChat and KiboEngage
+--> captcha keys should be present in environment variables
+
+*/
+
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find controller index')
 
@@ -37,40 +48,6 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: err})
-    })
-}
-
-exports.addPlanID = function (req, res) {
-  logger.serverLog(TAG, 'Hit the addPlanID controller index')
-  dataLayer
-    .findAllProfileObjectsUsingQuery({})
-    .then(companies => {
-      companies.forEach((company, index) => {
-        PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: company.stripe.plan})
-          .then(plan => {
-            company.planId = plan._id
-            dataLayer.saveProfileObject(company)
-              .then(result => {
-                if (index === (companies.length - 1)) {
-                  return res.status(200).json({
-                    status: 'success',
-                    description: 'Successfuly added!'
-                  })
-                }
-              })
-          })
-          .catch(err => {
-            logger.serverLog(TAG, `Error in plan addplanid ${util.inspect(err)}`)
-            return res.status(500).json({status: 'failed', payload: err})
-          })
-      })
-    })
-    .catch(err => {
-      logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
     })
 }
 
@@ -272,11 +249,6 @@ exports.updateRole = function (req, res) {
       user.role = req.body.role
       companyUser.role = req.body.role
 
-      console.log('user.role', user.role)
-      console.log(' companyUser.role', companyUser.role)
-
-
-
       promiseUser = UserDataLayer.saveUserObject(user)
       promiseCompanyUser = CompanyUserDataLayer.saveCompanyUserObject(companyUser)
       let permissionPromise = PermissionDataLayer
@@ -309,6 +281,10 @@ exports.removeMember = function (req, res) {
   if (config.userRoles.indexOf(req.user.role) > 1) {
     return res.status(401).json(
       {status: 'failed', description: 'Unauthorised to perform this action.'})
+  }
+  if (config.userRoles.indexOf(req.body.role) < 0) {
+    return res.status(404)
+      .json({status: 'failed', description: 'Invalid role.'})
   }
 
   let query = {domain_email: req.body.domain_email}

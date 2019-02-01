@@ -10,6 +10,14 @@ const stripeEvents = require('./stripeEvents')
 
 const auth = require('./../../../auth/auth.service')
 
+/*
+......Review Comments.....
+
+--> validate /query request
+--> authenticate every request
+
+*/
+
 var stripeWebhook = new StripeWebhook({
   stripeApiKey: config.stripeOptions.apiKey,
   respond: true
@@ -35,17 +43,12 @@ router.post('/removeMember',
 
 router.get('/members',
   auth.isAuthenticated(),
-  auth.isAuthenticated(),
   controller.members)
 
 router.post('/updateAutomatedOptions',
   validate({body: validationSchema.updateAutomatedOptions}),
   auth.isAuthenticated(),
   controller.updateAutomatedOptions)
-
-router.get('/addPlanID',
-  auth.isAuthenticated(),
-  controller.addPlanID)
 
 router.post('/setCard',
   validate({body: validationSchema.setCard}),
@@ -72,10 +75,11 @@ router.post('/stripe/events',
   stripeEvents
 )
 
-router.post('/query', controller.genericFetch)
-router.post('/aggregate', controller.aggregateFetch)
+router.post('/query', auth.isAuthenticated(), controller.genericFetch)
+router.post('/aggregate', auth.isAuthenticated(), controller.aggregateFetch)
 router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
   controller.genericUpdate)
 
 module.exports = router
