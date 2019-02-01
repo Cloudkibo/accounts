@@ -119,3 +119,25 @@ exports.updatePayload =
       'updated'
     ]
   }
+
+exports.deletePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'purpose': {
+      'type': 'string'
+    },
+    'match': {
+      'type': 'object',
+      'properties': {
+        '_id': {
+          'type': 'string'
+        }
+      }
+    }
+  },
+  'required': [
+    'match',
+    'purpose'
+  ]
+}

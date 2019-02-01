@@ -28,11 +28,11 @@ exports.create = function (req, res) {
   DataLayer.findCustomFieldsUsingQuery(query)
     .then(foundCustomFields => {
       if (foundCustomFields) {
-        res.status(500).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
+        res.status(201).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
       } else {
         DataLayer.createOneCustomFieldObject(req.body)
           .then(createdObject => {
-            res.status(200).json({ status: 'success', payload: createdObject })
+            res.status(208).json({ status: 'success', payload: createdObject })
           })
           .catch(err => {
             logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
@@ -61,43 +61,31 @@ exports.query = function (req, res) {
 
 exports.update = function (req, res) {
   logger.serverLog(CUSTOMFIELD, `Update endpoint is hit:`)
-  if (req.body.updated.name) {
-    let query = {
-      purpose: 'findOne',
-      match: {
-        name: req.body.updated.name
-      }
+  let query = {
+    purpose: 'findOne',
+    match: {
+      name: req.body.updated.name
     }
-    DataLayer.findCustomFieldsUsingQuery(query)
-      .then(foundCustomField => {
-        if (foundCustomField) {
-          console.log(foundCustomField)
-          res.status(500).json({ status: 'failed', payload: `${req.body.updated.name} custom field already exists` })
-        } else {
-          DataLayer.updateCustomField(req.body)
-            .then(foundObjects => {
-              res.status(200).json({ status: 'success', payload: foundObjects })
-            })
-            .catch(err => {
-              logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
-              res.status(500).json({ status: 'failed', payload: err.toString() })
-            })
-        }
-      })
-      .catch(err => {
-        logger.serverLog(CUSTOMFIELD, `Error found update Controller : ${util.inspect(err)}`)
-        res.status(500).json({ status: 'failed', payload: err.toString() })
-      })
-  } else {
-    DataLayer.updateCustomField(req.body)
-      .then(foundObjects => {
-        res.status(200).json({ status: 'success', payload: foundObjects })
-      })
-      .catch(err => {
-        logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
-        res.status(500).json({ status: 'failed', payload: err.toString() })
-      })
   }
+  DataLayer.findCustomFieldsUsingQuery(query)
+    .then(foundCustomField => {
+      if (foundCustomField) {
+        res.status(208).json({ status: 'failed', payload: `${req.body.updated.name} custom field already exists` })
+      } else {
+        DataLayer.updateCustomField(req.body)
+          .then(foundObjects => {
+            res.status(200).json({ status: 'success', payload: foundObjects })
+          })
+          .catch(err => {
+            logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
+            res.status(500).json({ status: 'failed', payload: err.toString() })
+          })
+      }
+    })
+    .catch(err => {
+      logger.serverLog(CUSTOMFIELD, `Error found update Controller : ${util.inspect(err)}`)
+      res.status(500).json({ status: 'failed', payload: err.toString() })
+    })
 }
 
 exports.delete = function (req, res) {

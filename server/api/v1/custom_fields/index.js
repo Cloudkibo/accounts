@@ -11,19 +11,21 @@ router.get('/',
   controller.index)
 router.post('/',
   auth.isAuthenticated(),
-  validate({body: validationSchema.createPayload}),
+  validate({ body: validationSchema.createPayload }),
   controller.create)
 router.post('/query',
   auth.isAuthenticated(),
-  validate({body: validationSchema.queryPayload}),
+  validate({ body: validationSchema.queryPayload }),
   controller.query)
 router.put('/',
   auth.isAuthenticated(),
-  validate({body: validationSchema.updatePayload}),
+  validate({ body: validationSchema.updatePayload }),
   controller.update)
 router.delete('/',
-  auth.isAuthenticated(),
-  validate({body: validationSchema.queryPayload}),
+  auth.isAuthenticated(() => {
+    console.log('reached')
+  }),
+  validate({ body: validationSchema.deletePayload }),
   controller.delete)
 
 module.exports = router
