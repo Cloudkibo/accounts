@@ -33,6 +33,7 @@ exports.validateAndConvert = (body) => {
       }
     }
     if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
+      console.log('in pageId if')
       newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
     }
     if (obj.$match && obj.$match.datetime) {
@@ -63,5 +64,6 @@ exports.validateAndConvert = (body) => {
       })
     }
   })
+  console.log('new body', JSON.stringify(newBody))
   return newBody
 }

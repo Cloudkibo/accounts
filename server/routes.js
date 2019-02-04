@@ -1,6 +1,7 @@
 const config = require('./config/environment/index')
 const logger = require('./../server/components/logger')
 const TAG = '/server/routes.js'
+const Raven = require('raven')
 
 module.exports = function (app) {
   // API middlewares go here
@@ -115,6 +116,7 @@ module.exports = function (app) {
   })
 
   if (config.env === 'production' || config.env === 'staging') {
+    app.use(Raven.errorHandler())
     app.use(function (err, req, res, next) {
       console.error(err.stack)
       logger.serverLog(TAG, err.stack)

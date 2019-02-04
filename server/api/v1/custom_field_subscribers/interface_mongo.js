@@ -7,13 +7,13 @@ const CustomFieldSubscriberModel = require('./custom_field_subscriber.model')
 
 exports.find = (criteria = {}) => {
   return CustomFieldSubscriberModel.find(criteria)
-    .populate('customFieldId', 'subscriberId')
+    .populate('customFieldId subscriberId')
     .exec()
 }
 
 exports.findOne = (criteria) => {
   return CustomFieldSubscriberModel.findOne(criteria)
-    .populate('customFieldId', 'subscriberId')
+    .populate('customFieldId subscriberId')
     .exec()
 }
 
@@ -44,6 +44,5 @@ exports.create = (payload) => {
 
 exports.aggregate = (query) => {
   return CustomFieldSubscriberModel.aggregate(query)
-    .populate('customFieldId', 'subscriberId')
     .exec()
 }
