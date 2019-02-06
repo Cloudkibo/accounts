@@ -46,7 +46,7 @@ function isAuthenticated () {
       if (req.user) {
         logger.serverLog(TAG, `inside users`)
         let userPromise = UserDataLayer.findOneUserObject(req.user._id)
-        let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+        let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user._id})
         let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
 
         Promise.all([userPromise, companyUserPromise, permissionsPromise])

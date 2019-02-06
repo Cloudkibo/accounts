@@ -23,7 +23,7 @@ exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
 
   let userPromise = dataLayer.findOneUserObject(req.user._id)
-  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user._id})
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user._id})
   let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
 
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
@@ -38,7 +38,7 @@ exports.index = function (req, res) {
         return res.status(404).json(resp)
       }
 
-      CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
+      CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
         .then(foundCompany => {
           company = foundCompany
           return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
@@ -80,7 +80,7 @@ exports.updateMode = function (req, res) {
   let permissions
   let company
   let userPromise = dataLayer.findOneUserObject(req.user._id)
-  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.body._id})
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.body._id})
   let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.body._id})
 
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
@@ -96,7 +96,7 @@ exports.updateMode = function (req, res) {
       return dataLayer.saveUserObject(user)
     })
     .then(savedUser => {
-      return CompanyProfileDataLayer.findOneCompanyProfileObjectUsingQuery({_id: companyUser.companyId})
+      return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
     })
     .then(foundCompany => {
       company = foundCompany
@@ -302,7 +302,7 @@ exports.joinCompany = function (req, res) {
   let permissionSaved
   let tokenString
 
-  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
+  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({token: req.body.token})
     .then(token => {
       invitationToken = token
       if (!invitationToken) {
@@ -312,7 +312,7 @@ exports.joinCompany = function (req, res) {
         })
       }
       return CompanyUserDataLayer
-        .findOneCompanyUserObjectUsingQuery({companyId: invitationToken.companyId, role: 'buyer'})
+        .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
     })
     .then(compUser => {
       logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
@@ -476,10 +476,10 @@ exports.addAccountType = function (req, res) {
   dataLayer.findAllUserObjects()
     .then(users => {
       users.forEach((user, index) => {
-        CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
+        CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
           .then(companyUser => {
             logger.serverLog(TAG, `Found Company User: ${companyUser}`)
-            return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
+            return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
           })
           .then(cp => {
             logger.serverLog(TAG, `Found Company Profile: ${cp}`)

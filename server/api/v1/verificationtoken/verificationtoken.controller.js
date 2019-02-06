@@ -34,11 +34,11 @@ exports.verify = function (req, res) {
             return res.render('layouts/verification', {verification: false})
           } else {
             CompanyUsersDataLayer
-              .findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
+              .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
               .then(companyuser => {
                 logger.serverLog(TAG, `Company User found ${companyuser}`)
                 return CompanyProfileDataLayer
-                  .findOneCPWithPlanPop({_id: companyuser.companyId})
+                  .findOneCPWithPlanPop({_id: companyuser.companyId}, true, 'planId')
               })
               .then(company => {
                 logger.serverLog(TAG, `Company Profile found ${company}`)

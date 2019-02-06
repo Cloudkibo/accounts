@@ -202,7 +202,7 @@ exports.migrateCompanies = function (req, res) {
   let options = {multi: true}
 
   CompanyDataLayer
-    .genericUpdateCompanyProfileObject(query, updated, options)
+    .genericUpdatePostObject(query, updated, options)
     .then(result => {
       logger.serverLog(TAG, 'Companies migrated on KiboPush. Going to migrate them from stripe.')
       // migrate subscriptions from stripe

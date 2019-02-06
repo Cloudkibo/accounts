@@ -3,7 +3,6 @@ This file will contain the functions for logic layer.
 By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
-const UserDataLayer = require('./../user/user.datalayer')
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const CompanyProfileDataLayer = require('./../companyprofile/companyprofile.datalayer')
 const logger = require('./../../../components/logger')
@@ -14,10 +13,10 @@ const util = require('util')
 
 exports.findCompanyFromUser = (user) => {
   return new Promise((resolve, reject) => {
-    CompanyUserDataLayer.findOneCompanyUserObjectUsingQuery({domain_email: user.domain_email})
+    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
       .then(companyUser => {
         if (companyUser) {
-          return CompanyProfileDataLayer.findOneCompanyProfileObject(companyUser.companyId)
+          return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
         } else { reject(new Error('Company User Not Found')) }
       })
       .then(companyProfile => {

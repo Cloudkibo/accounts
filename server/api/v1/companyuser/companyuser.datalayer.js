@@ -4,21 +4,7 @@ By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
 
-/*
-
-.......Review Comments........
-
---> There should be only one function for findOne
---> There should be only one function for save/create
-
-*/
-
 const CompanyUserModel = require('./companyuser.model')
-
-exports.findOneCompanyUserObjectUsingQuery = (queryObject) => {
-  return CompanyUserModel.findOne(queryObject)
-    .exec()
-}
 
 exports.CreateCompanyUserObject = (payload) => {
   let obj = new CompanyUserModel(payload)
@@ -36,14 +22,15 @@ exports.removeOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
-exports.saveCompanyUserObject = (object) => {
-  return object.save()
-}
-
-exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
-  return CompanyUserModel.findOne(queryObject)
-    .populate('companyId')
-    .exec()
+exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject, populate, parameter) => {
+  if (populate) {
+    return CompanyUserModel.findOne(queryObject)
+      .populate(parameter)
+      .exec()
+  } else {
+    return CompanyUserModel.findOne(queryObject)
+      .exec()
+  }
 }
 
 exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) => {
