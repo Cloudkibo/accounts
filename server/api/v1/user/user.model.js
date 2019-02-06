@@ -28,7 +28,7 @@ const UserSchema = new Schema({
   eulaAccepted: {type: Boolean, default: true},
   permissionsRevoked: {type: Boolean, default: false},
   skippedFacebookConnect: {type: Boolean, default: false},
-  deleteInformation: Schema.Types.Mixed //GDPR INFO
+  deleteInformation: Schema.Types.Mixed // GDPR INFO
 })
 
 /**
@@ -83,16 +83,16 @@ var validatePresenceOf = function (value) {
 }
 
 // Validate email is not taken
-UserSchema.path('domain_email').validate(function (value, respond) {
+UserSchema.path('domain_email').validate(function (value) {
   var self = this
   this.constructor.findOne({domain_email: value},
     function (err, user) {
       if (err) throw err
       if (user) {
-        if (self.id === user.id) return respond(true)
-        return respond(false)
+        if (self.id === user.id) return true
+        return false
       }
-      respond(true)
+      return true
     })
 }, 'The specified email address is already in use with this workspace name.')
 
