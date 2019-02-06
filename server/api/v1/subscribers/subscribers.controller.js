@@ -100,6 +100,33 @@ exports.genericUpdate = function (req, res) {
     })
 }
 
+exports.updatePicture = function (req, res) {
+  console.log('hit the updateOneSubscriberData endpoint')
+  let subscriber = req.body.subscriber
+  let accessToken = subscriber.pageId.accessToken
+  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken}`)
+  needle.get(
+    `https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken}`,
+    (err, resp) => {
+      if (err) {
+        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+      }
+      if (resp.body.profile_pic) {
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
+          .then(updated => {
+            logger.serverLog(TAG, `Succesfully updated subscriber with senderId ${subscriber.senderId}`)
+            return res.status(200).json({status: 'success', payload: updated})
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Failed to update subscriber ${JSON.stringify(err)}`)
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+      } else {
+        return res.status(500).json({status: 'failed', payload: `profile picture not found for subscriber with senderId ${subscriber.senderId}`})
+      }
+    })
+}
+
 exports.updateData = function (req, res) {
   companyUsersDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user.userId})
     .then(companyUser => {
