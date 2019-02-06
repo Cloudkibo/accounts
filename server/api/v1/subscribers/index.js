@@ -37,7 +37,7 @@ router.get('/updateData',
   controller.updateData)
 
 router.post('/updatePicture',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.updatePicture)
 
 module.exports = router
