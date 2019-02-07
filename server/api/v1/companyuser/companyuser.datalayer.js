@@ -22,10 +22,13 @@ exports.removeOneCompanyUserObjectUsingQuery = (queryObject) => {
     .exec()
 }
 
-exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject, populate, parameter) => {
-  if (populate) {
+exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
+  console.log('queryObject', queryObject.populate)
+  if (queryObject.populate) {
+    let populateBy = queryObject.populate
+    delete queryObject.populate
     return CompanyUserModel.findOne(queryObject)
-      .populate(parameter)
+      .populate(populateBy)
       .exec()
   } else {
     return CompanyUserModel.findOne(queryObject)
