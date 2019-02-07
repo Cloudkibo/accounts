@@ -128,7 +128,7 @@ exports.updatePicture = function (req, res) {
 }
 
 exports.updateData = function (req, res) {
-  companyUsersDataLayer.findOneCompanyUserObjectUsingQuery({userId: req.user.userId})
+  companyUsersDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user.userId})
     .then(companyUser => {
       let companyId = companyUser.companyId
       subscribersDataLayer.findSubscriberObjects({companyId: companyId})

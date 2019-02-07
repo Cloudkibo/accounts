@@ -10,14 +10,6 @@ const stripeEvents = require('./stripeEvents')
 
 const auth = require('./../../../auth/auth.service')
 
-/*
-......Review Comments.....
-
---> validate /query request
---> authenticate every request
-
-*/
-
 var stripeWebhook = new StripeWebhook({
   stripeApiKey: config.stripeOptions.apiKey,
   respond: true

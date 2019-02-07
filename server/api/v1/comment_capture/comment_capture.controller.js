@@ -8,7 +8,7 @@ const util = require('util')
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find post controller index')
 
-  dataLayer.findOnePostObject(req.params.id)
+  dataLayer.findOnePostObjectUsingQuery({_id: req.params.id})
     .then(post => {
       return res.status(200).json({status: 'success', payload: post})
     })

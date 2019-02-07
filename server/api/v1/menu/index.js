@@ -29,6 +29,4 @@ router.post('/query',
 router.post('/aggregate',
   controller.aggregate)
 
-
-
 module.exports = router
