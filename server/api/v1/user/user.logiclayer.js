@@ -155,7 +155,7 @@ const emailHeader = (body) => {
 
 const inHouseEmailHeader = (body) => {
   return {
-    to: ['sojharo@gmail.com', 'sojharo@live.com', 'jawaid@cloudkibo.com', 'jekram@hotmail.com', 'dayem@cloudkibo.com', 'surendar@cloudkibo.com'],
+    to: ['sojharo@cloudkibo.com', 'jawaid@cloudkibo.com', 'jekram@hotmail.com', 'imran@cloudkibo.com', 'faizan@cloudkibo.com'],
     from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account created by ' + body.name,
     text: 'New Account Created'
