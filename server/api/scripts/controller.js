@@ -1,19 +1,19 @@
 const logger = require('../../components/logger')
 const TAG = '/api/scripts/controller.js'
-const SusbscribersDataLayer = require('../v1/subscribers/subscribers.datalayer')
+const SubscribersDataLayer = require('../v1/subscribers/subscribers.datalayer')
 const SubscribersModel = require('../v1/subscribers/Subscribers.model')
 const { callApi } = require('./apiCaller')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
-  SusbscribersDataLayer.findSubscriberObjects({})
+  SubscribersDataLayer.findSubscriberObjects({})
     .then(subscribers => {
       if (subscribers.length > 0) {
         subscribers.forEach((sub, index) => {
           callApi(`sessions/query`, 'post', {purpose: 'findOne', match: {subscriber_id: sub._id.toString()}}, '', 'kibochat')
             .then(session => {
               if (session) {
-                SusbscribersDataLayer.updateSubscriberObject(sub._id, {datetime: session.request_time})
+                SubscribersDataLayer.updateSubscriberObject(sub._id, {datetime: session.request_time})
                   .then(updated => {
                     if (index === (subscribers.length - 1)) {
                       return res.status(200).json({ status: 'success', payload: 'Normalized successfully!' })
@@ -93,5 +93,32 @@ exports.normalizeSubscribersDatetimeNull = function (req, res) {
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch distint pages ${err}`})
+    })
+}
+
+exports.addFullName = function (req, res) {
+  logger.serverLog(TAG, 'Hit the scripts addFullName')
+  SubscribersDataLayer.findSubscriberObjects({})
+    .then(subscribers => {
+      let requests = []
+      if (subscribers.length > 0) {
+        subscribers.forEach((subscriber, index) => {
+          requests.push(new Promise((resolve, reject) => {
+            SubscribersDataLayer.updateSubscriberObject(subscriber._id, {fullName: `${subscriber.firstName} ${subscriber.lastName}`})
+              .then(update => {
+                resolve({_id: subscriber._id, fullName: `${subscriber.firstName} ${subscriber.lastName}`})
+              })
+              .catch(err => {
+                reject(err)
+              })
+          }))
+        })
+      }
+      Promise.all(requests)
+        .then((responses) => res.status(200).json({status: 'success', payload: responses}))
+        .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch subscribers ${err}`})
     })
 }
