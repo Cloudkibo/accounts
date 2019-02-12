@@ -53,7 +53,7 @@ exports.index = function (req, res) {
       logger.serverLog(TAG,
         `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
           id: serverPath,
-          url: `${config.domain}/api/v1/files/download/${serverPath}`
+          url: `${config.domain}/files/download/${serverPath}`
         })}`)
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
         let pages = JSON.parse(req.body.pages)
@@ -104,7 +104,7 @@ exports.index = function (req, res) {
                           id: serverPath,
                           attachment_id: resp.body.attachment_id,
                           name: req.files.file.name,
-                          url: `${config.domain}/api/v1/files/download/${serverPath}`
+                          url: `${config.domain}/files/download/${serverPath}`
                         }
                       })
                     }
@@ -120,13 +120,82 @@ exports.index = function (req, res) {
           payload: {
             id: serverPath,
             name: req.files.file.name,
-            url: `${config.domain}/api/v1/files/download/${serverPath}`
+            url: `${config.domain}/files/download/${serverPath}`
           }
         })
       }
     }
   )
 }
+
+exports.uploadForTemplate = function (req, res) {
+  let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
+  console.log('req.body', req.body)
+  if (req.body.pages && req.body.pages.length > 0) {
+    pageDataLayer.findOnePageObject(req.body.pages[0])
+      .then(page => {
+        console.log('page fetched', page)
+        needle.get(
+          `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+          (err, resp2) => {
+            if (err) {
+              return res.status(500).json({
+                status: 'failed',
+                description: 'unable to get page access_token: ' + JSON.stringify(err)
+              })
+            }
+            let pageAccessToken = resp2.body.access_token
+            let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
+            const messageData = {
+              'message': JSON.stringify({
+                'attachment': {
+                  'type': req.body.componentType,
+                  'payload': {
+                    'is_reusable': true
+                  }
+                }
+              }),
+              'filedata': fileReaderStream
+            }
+            console.log('messageData', messageData)
+            request(
+              {
+                'method': 'POST',
+                'json': true,
+                'formData': messageData,
+                'uri': 'https://graph.facebook.com/v2.6/me/message_attachments?access_token=' + pageAccessToken
+              },
+              function (err, resp) {
+                if (err) {
+                  console.log('error in uploading', err)
+                  return res.status(500).json({
+                    status: 'failed',
+                    description: 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err)
+                  })
+                } else {
+                  logger.serverLog(TAG,
+                    `file uploaded on Facebook ${JSON.stringify(resp.body)}`)
+                  return res.status(201).json({
+                    status: 'success',
+                    payload: {
+                      id: req.body.id,
+                      attachment_id: resp.body.attachment_id,
+                      name: req.body.name,
+                      url: req.body.url
+                    }
+                  })
+                }
+              })
+          })
+      })
+      .catch(error => {
+        return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${JSON.stringify(error)}`})
+      })
+  } else {
+    return res.status(500).json({status: 'failed', payload: `Failed to upload`})
+  }
+}
+
 exports.download = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/userfiles')
   try {

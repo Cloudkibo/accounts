@@ -40,13 +40,18 @@ module.exports = function (app) {
   app.use('/api/scripts', require('./api/scripts'))
   app.use('/api/v1/custom_fields', require('./api/v1/custom_fields'))
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
-  app.use('/api/v1/files', require('./api/v1/files'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
 
   app.options('/uploadFile', cors(corsOptions))
   app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)
+
+  app.options('/files/download/:id', cors(corsOptions))
+  app.get('/files/download/:id', cors(), controller.download)
+
+  app.options('/uploadTemplate', cors(corsOptions))
+  app.post('/uploadTemplate', cors(), controller.uploadForTemplate)
 
   // index page
   app.get('/', function (req, res) {
