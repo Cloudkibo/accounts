@@ -2,6 +2,9 @@ const config = require('./config/environment/index')
 const logger = require('./../server/components/logger')
 const TAG = '/server/routes.js'
 const Raven = require('raven')
+const cors = require('cors')
+const controller = require('./api/v1/files/files.controller')
+const corsOptions = require('./api/v1/files/utility')
 
 module.exports = function (app) {
   // API middlewares go here
@@ -35,9 +38,13 @@ module.exports = function (app) {
   app.use('/api/scripts', require('./api/scripts'))
   app.use('/api/v1/custom_fields', require('./api/v1/custom_fields'))
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
+  app.use('/api/v1/files', require('./api/v1/files'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
+
+  app.options('/uploadFile', cors(corsOptions))
+  app.post('/uploadFile', cors(), controller.index)
 
   // index page
   app.get('/', function (req, res) {

@@ -196,6 +196,7 @@ const all = {
     kiboengage: `${process.env.DB_LAYER_IP_KIBOENGAGE}/api/v1`
   },
 
+  whitelistedDomains: [process.env.KIBOENGAGE || 'http://localhost:3021', process.env.KIBOCHAT || 'http://localhost:3021'],
   // Mongo Options
   mongo: {
     options: {
