@@ -27,6 +27,7 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.pageId && !obj.$match.pageId.$exists) {
       if (obj.$match.pageId.$in) {
         let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
+        console.log('pageIds', pageIds)
         newBody[index].$match.pageId.$in = pageIds
       } else {
         newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
@@ -64,6 +65,6 @@ exports.validateAndConvert = (body) => {
       })
     }
   })
-  console.log('new body', JSON.stringify(newBody))
+  console.log('new body new', JSON.stringify(newBody))
   return newBody
 }

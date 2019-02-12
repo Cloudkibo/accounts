@@ -8,7 +8,7 @@ const TAG = 'api/v1/inviteagenttoken/inviteagenttoken.controller.js'
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the index point')
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
         return res.status(404).json({
@@ -38,7 +38,7 @@ exports.index = function (req, res) {
 exports.cancel = function (req, res) {
   logger.serverLog(TAG, 'Hit the index point')
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
         return res.status(404).json({

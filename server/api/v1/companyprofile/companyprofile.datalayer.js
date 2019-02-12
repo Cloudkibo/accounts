@@ -5,29 +5,15 @@ Thus we can use it from other non express callers like cron etc
 */
 const CompanyProfileModel = require('./companyprofile.model')
 
-/*
-......Review Comments.....
-
---> There should be only one function for findOne
---> There should be only one function for update
---> There should be only one function for save/create
-
-*/
-
-exports.findOneCompanyProfileObject = (Id) => {
-  return CompanyProfileModel.findOne({_id: Id})
-    .exec()
-}
-
-exports.findOneCompanyProfileObjectUsingQuery = (queryObject) => {
-  return CompanyProfileModel.findOne(queryObject)
-    .exec()
-}
-
-exports.findOneCPWithPlanPop = (query) => {
-  return CompanyProfileModel.findOne(query)
-    .populate('planId')
-    .exec()
+exports.findOneCPWithPlanPop = (query, populate, parameter) => {
+  if (populate) {
+    return CompanyProfileModel.findOne(query)
+      .populate(parameter)
+      .exec()
+  } else {
+    return CompanyProfileModel.findOne(query)
+      .exec()
+  }
 }
 
 exports.findAllProfileObjectsUsingQuery = (queryObject) => {
@@ -51,18 +37,9 @@ exports.findOneProfileAndUpdate = (query, update, options) => {
     .exec()
 }
 
-exports.genericUpdateCompanyProfileObject = (query, updated, options) => {
-  return CompanyProfileModel.update(query, updated, options)
-    .exec()
-}
-
 exports.deletePostObject = (postId) => {
   return CompanyProfileModel.deleteOne({_id: postId})
     .exec()
-}
-
-exports.saveProfileObject = (object) => {
-  return object.save()
 }
 
 exports.genericUpdatePostObject = (query, updated, options) => {

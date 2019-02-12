@@ -19,9 +19,8 @@ const util = require('util')
 
 --> we should populate companyprofile in companyUser. That way we won't need endpoint
     to fetch companyprofile
---> Remove addPlanID script
---> update plan validation should be handled on KiboChat and KiboEngage
---> captcha keys should be present in environment variables
+--> update plan validation should be handled on KiboChat and KiboEngage =>
+      update plan is not being called from KiboEngage and KiboChat
 
 */
 
@@ -29,7 +28,7 @@ exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find controller index')
 
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
         return res.status(404).json({
@@ -38,7 +37,7 @@ exports.index = function (req, res) {
         })
       }
       dataLayer
-        .findOneCompanyProfileObject(companyUser.companyId)
+        .findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(companyProfile => {
           return res.status(200).json({status: 'success', payload: companyProfile})
         })
@@ -54,7 +53,7 @@ exports.index = function (req, res) {
 exports.setCard = function (req, res) {
   logger.serverLog(TAG, 'Hit the setCard controller index')
 
-  dataLayer.findOneCompanyProfileObject(req.body.companyId)
+  dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
       if (!profile) { return res.status(404).json({status: 'failed', description: 'Company not found'}) }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
@@ -86,11 +85,11 @@ exports.updatePlan = function (req, res) {
     .then(plan => {
       let query = {_id: req.body.companyId}
       let update = {planId: plan._id, 'stripe.plan': req.body.plan}
-      dataLayer.genericUpdateCompanyProfileObject(query, update, {})
+      dataLayer.genericUpdatePostObject(query, update, {})
         .then(result => { logger.serverLog(TAG, `update: ${result}`) })
         .catch(err => { logger.serverLog(TAG, err) })
 
-      dataLayer.findOneCompanyProfileObject(req.body.companyId)
+      dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
         .then(company => {
           if (!company) return res.status(404).json({status: 'failed', description: 'Company not found'})
 
@@ -114,7 +113,7 @@ exports.invite = function (req, res) {
   let companyUserQuery = {domain_email: req.user.domain_email}
 
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery)
+    .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery, true, 'companyId')
     .then(companyUser => {
       companyUser
         ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
@@ -238,7 +237,7 @@ exports.updateRole = function (req, res) {
   let query = {domain_email: req.body.domain_email}
 
   let promiseCompanyUser = CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery(query)
+    .findOneCompanyUserObjectUsingQueryPoppulate(query)
   let promiseUser = UserDataLayer
     .findOneUserObjectUsingQuery(query)
   Promise.all([promiseUser, promiseCompanyUser])
@@ -250,7 +249,7 @@ exports.updateRole = function (req, res) {
       companyUser.role = req.body.role
 
       promiseUser = UserDataLayer.saveUserObject(user)
-      promiseCompanyUser = CompanyUserDataLayer.saveCompanyUserObject(companyUser)
+      promiseCompanyUser = CompanyUserDataLayer.updateOneCompanyUserObjectUsingQuery({_id: companyUser._id}, {role: req.body.role}, {})
       let permissionPromise = PermissionDataLayer
         .updatUserPermissionsObjectUsingQuery({userId: user._id}, config.permissions[req.body.role], {multi: true})
 
@@ -309,7 +308,7 @@ exports.members = function (req, res) {
 
   let query = {domain_email: req.user.domain_email}
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery(query)
+    .findOneCompanyUserObjectUsingQueryPoppulate(query)
     .then(companyUser => {
       CompanyUserDataLayer
         .findAllCompanyUserObjectUsingQuery({companyId: companyUser.companyId})
@@ -330,7 +329,7 @@ exports.updateAutomatedOptions = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatedautomated options controller index')
 
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
         return res.status(404).json({
@@ -360,7 +359,7 @@ exports.getAutomatedOptions = function (req, res) {
   logger.serverLog(TAG, 'Hit the getAutomatedOptions controller index')
 
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQuery({domain_email: req.user.domain_email})
+    .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
         return res.status(404).json({
@@ -370,7 +369,7 @@ exports.getAutomatedOptions = function (req, res) {
       }
 
       dataLayer
-        .findOneCompanyProfileObject(companyUser.companyId)
+        .findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(company => {
           res.status(200).json({status: 'success', payload: company})
         })
@@ -388,7 +387,7 @@ exports.genericFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
   dataLayer
-    .findOneCPWithPlanPop(req.body)
+    .findOneCPWithPlanPop(req.body, true, 'planId')
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })
@@ -426,11 +425,5 @@ exports.genericUpdate = function (req, res) {
 }
 
 exports.getKeys = function (req, res) {
-  if (config.env === 'production') {
-    res.status(200).json({status: 'success', captchaKey: '6Lf9kV4UAAAAALTke6FGn_KTXZdWPDorAQEKQbER', stripeKey: config.stripeOptions.stripePubKey})
-  } else if (config.env === 'staging') {
-    res.status(200).json({status: 'success', captchaKey: '6LdWsF0UAAAAAK4UFpMYmabq7HwQ6XV-lyWd7Li6', stripeKey: config.stripeOptions.stripePubKey})
-  } else if (config.env === 'development') {
-    res.status(200).json({status: 'success', captchaKey: '6LckQ14UAAAAAFH2D15YXxH9o9EQvYP3fRsL2YOU', stripeKey: config.stripeOptions.stripePubKey})
-  }
+  res.status(200).json({status: 'success', captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
 }

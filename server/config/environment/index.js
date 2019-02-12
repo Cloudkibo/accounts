@@ -21,7 +21,7 @@ const all = {
     username: 'cloudkibo',
     password: 'cl0udk1b0'
   },
-
+  captchaKey: process.env.CAPTCHA_KEY || '6LckQ14UAAAAAFH2D15YXxH9o9EQvYP3fRsL2YOU',
   stripeOptions: {
     apiKey: process.env.STRIPE_KEY || 'sk_test_gB8zWtkvbbYFbFFnuj3t4EZn',
     product: 'prod_CxuUOUCZj9ZqwG',
@@ -196,6 +196,7 @@ const all = {
     kiboengage: `${process.env.DB_LAYER_IP_KIBOENGAGE}/api/v1`
   },
 
+  whitelistedDomains: [process.env.KIBOENGAGE || 'http://localhost:3021', process.env.KIBOCHAT || 'http://localhost:3021'],
   // Mongo Options
   mongo: {
     options: {

@@ -11,6 +11,9 @@ const subscriberSchema = new Schema({
   lastName: {
     type: String
   },
+  fullName: {
+    type: String
+  },
   locale: {
     type: String
   },
