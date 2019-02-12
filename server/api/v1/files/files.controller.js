@@ -9,6 +9,7 @@ let request = require('request')
 const crypto = require('crypto')
 
 exports.index = function (req, res) {
+  console.log('in upload function')
   var today = new Date()
   var uid = crypto.randomBytes(5).toString('hex')
   var serverPath = 'f' + uid + '' + today.getFullYear() + '' +
