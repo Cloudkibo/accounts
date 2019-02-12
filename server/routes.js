@@ -47,8 +47,8 @@ module.exports = function (app) {
   app.options('/uploadFile', cors(corsOptions))
   app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)
 
-  app.options('/files/download/:id', cors(corsOptions))
-  app.get('/files/download/:id', cors(), controller.download)
+  app.options('/api/v1/files/download/:id', cors(corsOptions))
+  app.get('/api/v1/files/download/:id', cors(), controller.download)
 
   app.options('/uploadTemplate', cors(corsOptions))
   app.post('/uploadTemplate', cors(), controller.uploadForTemplate)

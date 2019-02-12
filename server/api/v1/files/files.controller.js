@@ -53,7 +53,7 @@ exports.index = function (req, res) {
       logger.serverLog(TAG,
         `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
           id: serverPath,
-          url: `${config.domain}/files/download/${serverPath}`
+          url: `${config.domain}/api/v1/files/download/${serverPath}`
         })}`)
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
         let pages = JSON.parse(req.body.pages)
@@ -104,7 +104,7 @@ exports.index = function (req, res) {
                           id: serverPath,
                           attachment_id: resp.body.attachment_id,
                           name: req.files.file.name,
-                          url: `${config.domain}/files/download/${serverPath}`
+                          url: `${config.domain}/api/v1/files/download/${serverPath}`
                         }
                       })
                     }
@@ -120,7 +120,7 @@ exports.index = function (req, res) {
           payload: {
             id: serverPath,
             name: req.files.file.name,
-            url: `${config.domain}/files/download/${serverPath}`
+            url: `${config.domain}/api/v1/files/download/${serverPath}`
           }
         })
       }
