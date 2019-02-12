@@ -270,3 +270,7 @@ exports.deleteWhitelistDomain = function (req, res) {
       })
     })
 }
+exports.upload = function (req, res) {
+  console.log('in upload')
+  return res.status(500).json({status: 'success'})
+}
