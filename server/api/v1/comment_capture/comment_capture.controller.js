@@ -2,6 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./comment_capture.logiclayer')
 const dataLayer = require('./comment_capture.datalayer')
 const TAG = '/api/v1/comment_capture/comment_capture.controller.js'
+const needle = require('needle')
 
 const util = require('util')
 
@@ -42,8 +43,15 @@ exports.update = function (req, res) {
 
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete post controller index')
-
-  dataLayer.deletePostObject(req.params.id)
+  // delete post from facebook
+  dataLayer.findOnePostObjectUsingQuery({_id: req.params.id})
+    .then(post => {
+      return needle.request('delete', `https://graph.facebook.com/v3.2/${post.post_id}?access_token=${post.pageId.accessToken}`, null)
+    })
+    // delete post from database
+    .then(result => {
+      return dataLayer.deletePostObject(req.params.id)
+    })
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
     })
