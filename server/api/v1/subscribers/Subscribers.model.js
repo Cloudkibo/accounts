@@ -53,6 +53,12 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: true
   },
+  status: {
+    type: String
+  },
+  last_activity_time: {
+    type: Date
+  },
   datetime: { type: Date, default: Date.now }
 })
 
