@@ -22,7 +22,8 @@ exports.create = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: req.body.name
+      name: req.body.name,
+      companyId: req.body.companyId
     }
   }
   DataLayer.findCustomFieldsUsingQuery(query)
@@ -64,7 +65,8 @@ exports.update = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: req.body.updated.name
+      name: req.body.updated.name,
+      companyId: req.user.companyId
     }
   }
   DataLayer.findCustomFieldsUsingQuery(query)

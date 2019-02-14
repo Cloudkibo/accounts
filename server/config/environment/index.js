@@ -191,11 +191,6 @@ const all = {
     }
   },
 
-  api_urls: {
-    kibochat: `${process.env.DB_LAYER_IP_KIBOCHAT}/api/v1`,
-    kiboengage: `${process.env.DB_LAYER_IP_KIBOENGAGE}/api/v1`
-  },
-
   whitelistedDomains: [process.env.KIBOENGAGE || 'http://localhost:3021', process.env.KIBOCHAT || 'http://localhost:3021'],
   // Mongo Options
   mongo: {

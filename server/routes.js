@@ -5,6 +5,8 @@ const Raven = require('raven')
 const cors = require('cors')
 const controller = require('./api/v1/files/files.controller')
 const corsOptions = require('./api/v1/files/utility')
+const multiparty = require('connect-multiparty')
+const multipartyMiddleware = multiparty()
 
 module.exports = function (app) {
   // API middlewares go here
@@ -38,13 +40,18 @@ module.exports = function (app) {
   app.use('/api/scripts', require('./api/scripts'))
   app.use('/api/v1/custom_fields', require('./api/v1/custom_fields'))
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
-  app.use('/api/v1/files', require('./api/v1/files'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
 
   app.options('/uploadFile', cors(corsOptions))
-  app.post('/uploadFile', cors(), controller.index)
+  app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)
+
+  app.options('/api/v1/files/download/:id', cors(corsOptions))
+  app.get('/api/v1/files/download/:id', cors(), controller.download)
+
+  app.options('/uploadTemplate', cors(corsOptions))
+  app.post('/uploadTemplate', cors(), controller.uploadForTemplate)
 
   // index page
   app.get('/', function (req, res) {

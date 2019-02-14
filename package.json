@@ -11,6 +11,7 @@
     "lint": "echo 'Pre-commit checks...' && standard --fix && echo \"No code style errors found.\"",
     "start": "cross-env DEBUG=accounts:* DOMAIN=http://localhost:3024 nodemon --trace-warnings server/app.js",
     "start:staging": "cross-env DEBUG=accounts:* forever start server/app.js",
+    "start:faizan": "cross-env DEBUG=kibopush:* NODE_ENV=development DOMAIN=https://kibopush-faizan.ngrok.io nodemon server/app.js",
     "stop:staging": "forever stopall"
   },
   "pre-commit": [
@@ -34,9 +35,11 @@
   },
   "homepage": "https://github.com/Cloudkibo/accounts#readme",
   "dependencies": {
+    "async": "^2.6.1",
     "babel-eslint": "^9.0.0",
     "composable-middleware": "^0.3.0",
     "compression": "^1.7.3",
+    "connect-multiparty": "^2.2.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.5",
     "debug": "^2.6.8",

@@ -3,6 +3,7 @@ const TAG = '/api/scripts/controller.js'
 const SubscribersDataLayer = require('../v1/subscribers/subscribers.datalayer')
 const SubscribersModel = require('../v1/subscribers/Subscribers.model')
 const { callApi } = require('./apiCaller')
+const async = require('async')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
@@ -121,4 +122,26 @@ exports.addFullName = function (req, res) {
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch subscribers ${err}`})
     })
+}
+
+function updateSubscriber (session, callback) {
+  SubscribersModel.update({_id: session.subscriber_id}, {status: session.status, last_activity_time: session.last_activity_time}).exec()
+    .then(result => {
+      callback()
+    })
+    .catch(err => {
+      callback(err)
+    })
+}
+
+exports.putSessionDetails = function (req, res) {
+  callApi('sessions/', 'get', {}, '', 'chatdblayer').then(sessions => {
+    async.each(sessions, updateSubscriber, function (err) {
+      if (err) {
+        res.status(500).json({status: 'failed', payload: err})
+      } else {
+        res.status(200).json({status: 'success', payload: 'updated successfully'})
+      }
+    })
+  })
 }
