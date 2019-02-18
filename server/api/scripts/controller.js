@@ -2,8 +2,13 @@ const logger = require('../../components/logger')
 const TAG = '/api/scripts/controller.js'
 const SubscribersDataLayer = require('../v1/subscribers/subscribers.datalayer')
 const SubscribersModel = require('../v1/subscribers/Subscribers.model')
+const PagesModel = require('../v1/pages/Pages.model')
+const PostsModel = require('../v1/comment_capture/comment_capture.model')
+const ReferralModel = require('../v1/pageReferrals/pageReferrals.model')
+const MenuModel = require('../v1/menu/Menu.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
+const config = require('./../../config/environment/index')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
@@ -141,6 +146,206 @@ exports.putSessionDetails = function (req, res) {
         res.status(500).json({status: 'failed', payload: err})
       } else {
         res.status(200).json({status: 'success', payload: 'updated successfully'})
+      }
+    })
+  })
+}
+
+function updateCards (cards) {
+  return new Promise(function (resolve, reject) {
+    let id = ''
+    cards.forEach((card, index) => {
+      if (card.fileurl && card.fileurl.url) {
+        id = card.fileurl.url.substring(card.fileurl.url.indexOf('download/') + 9)
+        if (config.env === 'staging') {
+          card.fileurl.url = `https://saccounts.cloudkibo.com/api/v1/files/download/${id}`
+        } else {
+          card.fileurl.url = `https://accounts.cloudkibo.com/api/v1/files/download/${id}`
+        }
+      }
+      if (card.image_url) {
+        id = card.image_url.substring(card.image_url.indexOf('download/') + 9)
+        if (config.env === 'staging') {
+          card.image_url = `https://saccounts.cloudkibo.com/api/v1/files/download/${id}`
+        } else {
+          card.image_url = `https://accounts.cloudkibo.com/api/v1/files/download/${id}`
+        }
+      }
+      if (index === cards.length - 1) {
+        resolve(cards)
+      }
+    })
+  })
+}
+
+function updatePayload (payloads) {
+  return new Promise(function (resolve, reject) {
+    let id = ''
+    payloads.forEach((payload, index) => {
+      if (payload.componentType === 'gallery') {
+        updateCards(payload.cards)
+          .then(cards => {
+          })
+      } else if (payload.componentType === 'list') {
+        updateCards(payload.listItems)
+          .then(cards => {
+          })
+      } else {
+        if (payload.fileurl && payload.fileurl.url) {
+          id = payload.fileurl.url.substring(payload.fileurl.url.indexOf('download/') + 9)
+          if (config.env === 'staging') {
+            payload.fileurl.url = `https://saccounts.cloudkibo.com/api/v1/files/download/${id}`
+          } else {
+            payload.fileurl.url = `https://accounts.cloudkibo.com/api/v1/files/download/${id}`
+          }
+        }
+        if (payload.image_url) {
+          id = payload.image_url.substring(payload.image_url.indexOf('download/') + 9)
+          if (config.env === 'staging') {
+            payload.image_url = `https://saccounts.cloudkibo.com/api/v1/files/download/${id}`
+          } else {
+            payload.image_url = `https://accounts.cloudkibo.com/api/v1/files/download/${id}`
+          }
+        }
+      }
+      if (index === payloads.length - 1) {
+        resolve(payloads)
+      }
+    })
+  })
+}
+
+exports.normalizePageUrls = function (req, res) {
+  PagesModel.find({})
+    .then(pages => {
+      console.log('broadcast found')
+      pages.forEach((page, index) => {
+        updatePayload(page.welcomeMessage)
+          .then(payload => {
+            console.log('payload', payload)
+            PagesModel.updateOne({_id: page._id}, {welcomeMessage: payload}).then(updated => {
+              console.log('updated', updated)
+            })
+          })
+        if (index === pages.length - 1) {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+}
+
+exports.normalizeCommentUrls = function (req, res) {
+  PostsModel.find({})
+    .then(posts => {
+      posts.forEach((post, index) => {
+        updatePaylodForComments(post.payload)
+          .then(payload => {
+            console.log('payload', payload)
+            PostsModel.updateOne({_id: post._id}, {payload: payload}).then(updated => {
+              console.log('updated', updated)
+            })
+          })
+        if (index === posts.length - 1) {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+}
+function updatePaylodForComments (payloads) {
+  return new Promise(function (resolve, reject) {
+    let id = ''
+    payloads.forEach((payload, index) => {
+      if (payload.url) {
+        id = payload.url.substring(payload.url.indexOf('download/') + 9)
+        if (config.env === 'staging') {
+          payload.url = `https://saccounts.cloudkibo.com/api/v1/files/download/${id}`
+        } else {
+          payload.url = `https://accounts.cloudkibo.com/api/v1/files/download/${id}`
+        }
+      }
+      if (index === payloads.length - 1) {
+        resolve(payloads)
+      }
+    })
+  })
+}
+exports.normalizeReferralUrls = function (req, res) {
+  ReferralModel.find({})
+    .then(referrals => {
+      console.log('broadcast found')
+      referrals.forEach((referral, index) => {
+        updatePayload(referral.reply)
+          .then(payload => {
+            console.log('payload', payload)
+            ReferralModel.updateOne({_id: referral._id}, {reply: payload}).then(updated => {
+              console.log('updated', updated)
+            })
+          })
+        if (index === referrals.length - 1) {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+}
+exports.normalizePersistentMenu = function (req, res) {
+  MenuModel.find({})
+    .then(menus => {
+      menus.forEach((menu, index) => {
+        updatePaylodForMenu(menu.jsonStructure)
+          .then(jsonStructure => {
+            console.log('jsonStructure', jsonStructure)
+            MenuModel.updateOne({_id: menu._id}, {jsonStructure: jsonStructure}).then(updated => {
+              console.log('updated', updated)
+            })
+          })
+        if (index === menus.length - 1) {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+}
+function updatePaylodForMenu (jsonStructures) {
+  return new Promise(function (resolve, reject) {
+    jsonStructures.forEach((jsonStructure, index) => {
+      if (jsonStructure.payload) {
+        updatePayload(JSON.parse(jsonStructure.payload))
+          .then(payload => {
+            console.log('updated payload', JSON.stringify(payload))
+            jsonStructure.payload = JSON.stringify(payload)
+          })
+      } else if (jsonStructure.submenu && jsonStructure.submenu.length > 0) {
+        loopOnSubMenu(jsonStructure.submenu)
+          .then(submenu => {
+            jsonStructure.submenu = submenu
+          })
+      }
+      if (index === jsonStructures.length - 1) {
+        resolve(jsonStructures)
+      }
+    })
+  })
+}
+
+function loopOnSubMenu (submenus) {
+  console.log('loop on submenu')
+  return new Promise(function (resolve, reject) {
+    submenus.forEach((submenu, index) => {
+      console.log('submenu', submenu)
+      if (submenu.payload) {
+        updatePayload(JSON.parse(submenu.payload))
+          .then(payload => {
+            submenu.payload = JSON.stringify(payload)
+          })
+      }
+      if (submenu.submenu && submenu.submenu.length > 0) {
+        console.log('in if', submenu)
+        loopOnSubMenu(submenu.submenu)
+          .then(submenu => {
+            submenu.submenu = submenu
+          })
+      }
+      if (index === submenus.length - 1) {
+        resolve(submenus)
       }
     })
   })
