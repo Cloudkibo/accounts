@@ -6,5 +6,9 @@ router.get('/susbscribers/normalizeDatetime', controller.normalizeSubscribersDat
 router.get('/susbscribers/normalizeDatetimeNull', controller.normalizeSubscribersDatetimeNull)
 router.get('/subscribers/addFullName', controller.addFullName)
 router.get('/subscribers/putSessionDetails', controller.putSessionDetails)
+router.get('/normalizePageUrls', controller.normalizePageUrls)
+router.get('/normalizeCommentUrls', controller.normalizeCommentUrls)
+router.get('/normalizeReferralUrls', controller.normalizeReferralUrls)
+router.get('/normalizePersistentMenu', controller.normalizePersistentMenu)
 
 module.exports = router
