@@ -302,7 +302,7 @@ exports.joinCompany = function (req, res) {
   let permissionSaved
   let tokenString
 
-  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({token: req.body.token})
+  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
     .then(token => {
       invitationToken = token
       if (!invitationToken) {
