@@ -40,7 +40,3 @@ exports.updateOneCompanyUserObjectUsingQuery = (query, updated, options) => {
   return CompanyUserModel.updateOne(query, updated, options)
     .exec()
 }
-exports.aggregateInfo = (query) => {
-  return CompanyUserModel.aggregate(query)
-    .exec()
-}
