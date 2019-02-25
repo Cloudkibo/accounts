@@ -3,5 +3,5 @@
 git pull origin master
 npm install
 npm install --only=dev
-forever stop server/app.js
-forever start server /app.js
+npm run stop:prod
+npm run start:prod
