@@ -9,37 +9,38 @@ var router = express.Router()
 const auth = require('./../../../auth/auth.service')
 
 router.get('/',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.index)
 
 router.get('/:id',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.findOne)
 
 router.post('/',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   validate({body: validationSchema.createPayload}),
   controller.create)
 
 router.delete('/:id',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.delete)
 
 router.post('/query',
-  // auth.isAuthenticated(),
+  validate({body: validationSchema.queryPayload}),
+  auth.isAuthenticated(),
   controller.query)
 
 router.post('/aggregate',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.aggregate)
 
 router.put('/update',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
 router.post('/deleteMany',
-  // auth.isAuthenticated(),
+  auth.isAuthenticated(),
   controller.deleteMany)
 
 module.exports = router

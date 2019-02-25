@@ -40,7 +40,8 @@ exports.queryPayload = {
   'type': 'object',
   'properties': {
     'purpose': {
-      'type': 'string'
+      'type': 'string',
+      'required': true
     },
     'match': {
       'type': 'object',
@@ -58,7 +59,8 @@ exports.queryPayload = {
           'type': 'string'
         },
         'companyId': {
-          'type': 'string'
+          'type': 'string',
+          'required': true
         },
         'createdBy': {
           'type': 'string'
@@ -66,13 +68,10 @@ exports.queryPayload = {
         'createdDate': {
           'type': 'string'
         }
-      }
+      },
+      'required': true
     }
-  },
-  'required': [
-    'purpose',
-    'match'
-  ]
+  }
 }
 
 exports.updatePayload =

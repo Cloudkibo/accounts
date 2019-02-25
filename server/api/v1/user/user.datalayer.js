@@ -81,3 +81,7 @@ exports.CountUserObjectUsingQuery = (query) => {
   return UserModel.count(query)
     .exec()
 }
+exports.aggregateInfo = (query) => {
+  return UserModel.aggregate(query)
+    .exec()
+}
