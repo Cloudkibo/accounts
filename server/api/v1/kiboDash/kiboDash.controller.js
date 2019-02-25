@@ -3,7 +3,7 @@ const TAG = 'api/kibodash/dash.controller.js'
 const UsersDataLayer = require('../user/user.datalayer')
 const PagesDataLayer = require('../pages/pages.datalayer')
 const dataLayer = require('./datalayer')
-const logicLayer = require('./logicLayer')
+const logicLayer = require('./logiclayer')
 const SubscribersDataLayer = require('../subscribers/subscribers.datalayer')
 const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields, filterDate,
   groupCompanyWiseAggregates, companyWisePageCount, joinPageWithSubscribers, selectPageFields,
