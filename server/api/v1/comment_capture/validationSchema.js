@@ -68,8 +68,7 @@ exports.genericQueryPayload = {
   'type': 'object',
   'properties': {
     'type': {
-      'type': 'string',
-      'required': true
+      'type': 'string'
     },
     'query': {
       'type': 'object',
@@ -105,10 +104,13 @@ exports.genericQueryPayload = {
             }
           ]
         }
-      },
-      'required': true
+      }
     }
-  }
+  },
+  'required': [
+    'type',
+    'query'
+  ]
 }
 
 exports.genericUpdatePayload = {
@@ -129,24 +131,5 @@ exports.genericUpdatePayload = {
     'query',
     'newPayload',
     'options'
-  ]
-}
-
-/*
-This file will contain the validation schemas.
-By separating it from controller, we are cleaning the code.
-Now the middleware will automatically send error response if the payload fails
-*/
-
-exports.indexPayload = {
-  '$schema': 'http://json-schema.org/draft-04/schema#',
-  'type': 'object',
-  'properties': {
-    'companyId': {
-      'type': 'string'
-    }
-  },
-  'required': [
-    'companyId'
   ]
 }

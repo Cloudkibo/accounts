@@ -68,14 +68,3 @@ exports.genericUpdatePayload = {
     'options'
   ]
 }
-
-exports.queryPayload = {
-  '$schema': 'http://json-schema.org/draft-04/schema#',
-  'type': 'object',
-  'properties': {
-    'companyId': {
-      'type': 'string',
-      'required': true
-    }
-  }
-}

@@ -40,7 +40,6 @@ module.exports = function (app) {
   app.use('/api/scripts', require('./api/scripts'))
   app.use('/api/v1/custom_fields', require('./api/v1/custom_fields'))
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
-  app.use('/api/kibodash', require('./api/v1/kiboDash'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
