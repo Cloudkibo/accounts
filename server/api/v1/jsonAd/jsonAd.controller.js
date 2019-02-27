@@ -58,39 +58,62 @@ exports.edit = function (req, res) {
   let requests = []
 
   let response = {
+    jsonAd: {},
     jsonAdMessages: []
   }
   JsonAdDataLayer.findOneUsingQuery({_id: req.body.jsonAdId})
     .then(jsonAd => {
-      response.jsonAd = jsonAd
       requests.push(new Promise((resolve, reject) => {
         jsonAdMessagesDataLayer.deleteUsingQuery({
           jsonAdId: req.body.jsonAdId
         }).then(deleted => {
-          console.log('jsonAdMessages succesfully deleted', deleted)
-          for (let i = 0; i < messages.length; i++) {
-            let message = messages[i]
-            requests.push(new Promise((resolve, reject) => {
-              jsonAdMessagesDataLayer.create({
-                _id: mongoose.Types.ObjectId(message._id),
-                jsonAdId: req.body.jsonAdId,
-                jsonAdMessageId: message.jsonAdMessageId,
-                title: message.title,
-                jsonAdMessageParentId: message.jsonAdMessageParentId,
-                messageContent: message.messageContent
-              }).then(jsonAdMessage => {
-                console.log('jsonAdMessage succesfully created', jsonAdMessage)
-                response.jsonAdMessages.push(jsonAdMessage)
-                resolve(jsonAdMessage)
-              }).catch(err => {
+          requests.push(new Promise((resolve, reject) => {
+            JsonAdDataLayer.deleteOneUsingQuery({_id: jsonAd._id})
+              .then(deletedJsonAd => {
+                requests.push(new Promise((resolve, reject) => {
+                  JsonAdDataLayer.create({
+                    title: req.body.title,
+                    companyId: req.user.companyId,
+                    userId: req.user.userId
+                  })
+                    .then(createdJsonAd => {
+                      response.jsonAd = createdJsonAd
+                      for (let i = 0; i < messages.length; i++) {
+                        let message = messages[i]
+                        requests.push(new Promise((resolve, reject) => {
+                          jsonAdMessagesDataLayer.create({
+                            _id: mongoose.Types.ObjectId(message._id),
+                            jsonAdId: createdJsonAd._id,
+                            jsonAdMessageId: message.jsonAdMessageId,
+                            title: message.title,
+                            jsonAdMessageParentId: message.jsonAdMessageParentId,
+                            messageContent: message.messageContent
+                          }).then(jsonAdMessage => {
+                            response.jsonAdMessages.push(jsonAdMessage)
+                            resolve(jsonAdMessage)
+                            if (messages.length - 1 === i) {
+                              Promise.all(requests)
+                                .then((responses) => res.status(200).json({status: 'success', payload: response}))
+                                .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+                            }
+                          }).catch(err => {
+                            reject(err)
+                          })
+                        }))
+                      }
+                      resolve(createdJsonAd)
+                    })
+                    .catch(err => {
+                      reject(err)
+                    })
+                }))
+                resolve(deletedJsonAd)
+              })
+              .catch(err => {
                 reject(err)
               })
-            }))
-          }
+          }))
           resolve(deleted)
-          Promise.all(requests)
-            .then((responses) => res.status(200).json({status: 'success', payload: response}))
-            .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
         }).catch(err => {
           reject(err)
         })
