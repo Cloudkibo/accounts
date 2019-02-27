@@ -140,7 +140,7 @@ function updateSubscriber (session, callback) {
 }
 
 exports.putSessionDetails = function (req, res) {
-  callApi('sessions/', 'get', {}, '', 'chatdblayer').then(sessions => {
+  callApi('sessions/', 'get', {}, '', 'kibochat').then(sessions => {
     async.each(sessions, updateSubscriber, function (err) {
       if (err) {
         res.status(500).json({status: 'failed', payload: err})
