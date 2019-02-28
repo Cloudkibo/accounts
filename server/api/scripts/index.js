@@ -10,5 +10,6 @@ router.get('/normalizePageUrls', controller.normalizePageUrls)
 router.get('/normalizeCommentUrls', controller.normalizeCommentUrls)
 router.get('/normalizeReferralUrls', controller.normalizeReferralUrls)
 router.get('/normalizePersistentMenu', controller.normalizePersistentMenu)
+router.get('/user/normalizeForFbDisconnect', controller.normalizeForFbDisconnect)
 
 module.exports = router
