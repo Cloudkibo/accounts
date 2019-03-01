@@ -191,7 +191,7 @@ const all = {
     }
   },
 
-  whitelistedDomains: [process.env.KIBOENGAGE || 'http://localhost:3021', process.env.KIBOCHAT || 'http://localhost:3021'],
+  whitelistedDomains: [process.env.KIBOENGAGE || 'http://localhost:3021', process.env.KIBOCHAT || 'http://localhost:3021', process.env.KIBOLITE || 'http://localhost:8000'],
   // Mongo Options
   mongo: {
     options: {
