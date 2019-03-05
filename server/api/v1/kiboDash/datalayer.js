@@ -10,7 +10,7 @@ exports.aggregateForBroadcasts = (match, group, lookup, limit, sort, skip) => {
   if (limit) query.limit = limit.$limit
   if (sort) query.sort = sort.$sort
   if (skip) query.skip = skip.$skip
-  return callApi(`broadcasts/query`, 'post', query, '', 'kiboengage')
+  return callApi(`broadcasts/kiboDashQuery`, 'post', query, '', 'kiboengage')
 }
 exports.aggregateForPolls = (match, group, lookup, limit, sort, skip) => {
   let query = {
@@ -22,7 +22,7 @@ exports.aggregateForPolls = (match, group, lookup, limit, sort, skip) => {
   if (limit) query.limit = limit.$limit
   if (sort) query.sort = sort.$sort
   if (skip) query.skip = skip.$skip
-  return callApi(`polls/query`, 'post', query, '', 'kiboengage')
+  return callApi(`polls/kiboDashQuery`, 'post', query, '', 'kiboengage')
 }
 exports.aggregateForSurveys = (match, group, lookup, limit, sort, skip) => {
   let query = {
@@ -34,7 +34,7 @@ exports.aggregateForSurveys = (match, group, lookup, limit, sort, skip) => {
   if (limit) query.limit = limit.$limit
   if (sort) query.sort = sort.$sort
   if (skip) query.skip = skip.$skip
-  return callApi(`surveys/query`, 'post', query, '', 'kiboengage')
+  return callApi(`surveys/kiboDashQuery`, 'post', query, '', 'kiboengage')
 }
 exports.aggregateForBroadcastPages = (match, group, lookup, limit, sort, skip) => {
   let query = {
@@ -72,16 +72,13 @@ exports.aggregateForPollPages = (match, group, lookup, limit, sort, skip) => {
   if (skip) query.skip = skip.$skip
   return callApi(`page_poll/query`, 'post', query, '', 'kiboengage')
 }
-exports.aggregateForAutoposting = (match, group, lookup, project, limit, sort, skip) => {
+exports.aggregateForAutoposting = (lookup, project, projectAgain, match) => {
   let query = {
-    purpose: 'aggregate',
-    match: match.$match
+    purpose: 'aggregate'
   }
-  if (group) query.group = group.$group
   if (lookup) query.lookup = lookup.$lookup
-  if (limit) query.limit = limit.$limit
-  if (sort) query.sort = sort.$sort
-  if (skip) query.skip = skip.$skip
   if (project) query.project = project.$project
-  return callApi(`autoposting/query`, 'post', query, '', 'kiboengage')
+  if (projectAgain) query.projectAgain = projectAgain.$project
+  if (match) query.match = match.$match
+  return callApi(`autoposting/kiboDashQuery`, 'post', query, '', 'kiboengage')
 }
