@@ -5,7 +5,7 @@ const PagesDataLayer = require('../pages/pages.datalayer')
 const dataLayer = require('./datalayer')
 const logicLayer = require('./logiclayer')
 const SubscribersDataLayer = require('../subscribers/subscribers.datalayer')
-const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields, filterDate,
+const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields,
   groupCompanyWiseAggregates, companyWisePageCount, joinPageWithSubscribers, selectPageFields,
   filterCompanySubscribers, filterUserDate, pageWiseAggregate, filterPageSubscribers,
   joinAutpostingMessages, selectAutoPostingFields,
@@ -15,10 +15,12 @@ const mongoose = require('mongoose')
 
 exports.platformWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
-  let startDate = req.body.startDate
-  let dateFilterAggregates = filterDate
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
-
+  let startDate = ''
+  let dateFilterAggregates = {$match: {}}
+  if (req.body.startDate && req.body.startDate !== '') {
+    startDate = req.body.startDate
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
   let userDateFilter = filterUserDate
   userDateFilter['$match']['createdAt'] = { $gte: new Date(startDate) }
   let connectetPages = PagesDataLayer.aggregateInfo([filterConnectedPages, countResults])
@@ -58,16 +60,21 @@ exports.pageWiseData = function (req, res) {
   let dateFilterSubscribers = filterPageSubscribers
   // add the date filter(as from reqeust) in the aggregate pipeline query for subscribers page wise
   dateFilterSubscribers['$project']['pageSubscribers']['$filter']['cond'] = {$gte: ['$$pageSubscriber.datetime', new Date(startDate)]}
-  let dateFilterAggregates = filterDate
+  let dateFilterAggregates = {$match: {}}
   // add date filter for broadcasts, polls, surveys count-page wise
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
-  let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, selectPageFields ])
+  if (req.body.startDate && req.body.startDate !== '') {
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
+  console.log('dateFilterAggregates', dateFilterAggregates)
+
+  let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ])
   let numberOfBroadcast = dataLayer.aggregateForBroadcastPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfPoll = dataLayer.aggregateForPollPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfSurvey = dataLayer.aggregateForSurveyPages(dateFilterAggregates, pageWiseAggregate)
   let finalResults = Promise.all([ data, numberOfBroadcast, numberOfPoll, numberOfSurvey ])
 
   finalResults.then((results) => {
+    console.log('results[1]', results[1])
     data = results[0]
     let broadcastAggregates = results[1]
     let pollsAggregate = results[2]
@@ -87,11 +94,17 @@ exports.pageWiseData = function (req, res) {
 }
 exports.companyWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
+  console.log('req for companyWiseData startDate', JSON.stringify(req.body.startDate))
   let startDate = req.body.startDate
   let dateFilterSubscribers = filterCompanySubscribers
   dateFilterSubscribers['$project']['companysubscribers']['$filter']['cond'] = {$gte: ['$$companysubscriber.datetime', new Date(startDate)]}
-  let dateFilterAggregates = filterDate
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  let dateFilterAggregates = {$match: {}}
+  if (req.body.startDate && req.body.startDate !== '') {
+    console.log('inside if')
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
+  console.log('dateFilterAggregates new', dateFilterAggregates)
+
   let companySubscribers = CompanyUsersDataLayer.aggregateInfo([joinCompanyWithSubscribers, dateFilterSubscribers, selectCompanyFields])
   let numberOfBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, groupCompanyWiseAggregates)
   let numberOfPolls = dataLayer.aggregateForPolls(dateFilterAggregates, groupCompanyWiseAggregates)
