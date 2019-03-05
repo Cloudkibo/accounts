@@ -28,6 +28,8 @@ const UserSchema = new Schema({
   eulaAccepted: {type: Boolean, default: true},
   permissionsRevoked: {type: Boolean, default: false},
   skippedFacebookConnect: {type: Boolean, default: false},
+  showIntegrations: {type: Boolean, default: false},
+  connectFacebook: {type: Boolean, default: false},
   deleteInformation: Schema.Types.Mixed // GDPR INFO
 })
 

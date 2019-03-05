@@ -12,6 +12,7 @@ router.post('/create',
   controller.create)
 
 router.post('/query',
+  validate({body: validationSchema.queryPayload}),
   auth.isAuthenticated(),
   controller.query)
 

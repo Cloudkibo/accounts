@@ -20,6 +20,7 @@ router.delete('/:_id',
   controller.delete)
 
 router.post('/query',
+  validate({body: validationSchema.queryPayload}),
   auth.isAuthenticated(),
   controller.query)
 

@@ -110,10 +110,10 @@ exports.updatePlan = function (req, res) {
 
 exports.invite = function (req, res) {
   logger.serverLog(TAG, 'Hit the invite controller index')
-  let companyUserQuery = {domain_email: req.user.domain_email}
+  let companyUserQuery = {domain_email: req.user.domain_email, populate: 'companyId'}
 
   CompanyUserDataLayer
-    .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery, true, 'companyId')
+    .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery)
     .then(companyUser => {
       companyUser
         ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)

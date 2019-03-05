@@ -6,6 +6,7 @@ const PagesModel = require('../v1/pages/Pages.model')
 const PostsModel = require('../v1/comment_capture/comment_capture.model')
 const ReferralModel = require('../v1/pageReferrals/pageReferrals.model')
 const MenuModel = require('../v1/menu/Menu.model')
+const UserModel = require('../v1/user/user.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
@@ -140,7 +141,7 @@ function updateSubscriber (session, callback) {
 }
 
 exports.putSessionDetails = function (req, res) {
-  callApi('sessions/', 'get', {}, '', 'chatdblayer').then(sessions => {
+  callApi('sessions/', 'get', {}, '', 'kibochat').then(sessions => {
     async.each(sessions, updateSubscriber, function (err) {
       if (err) {
         res.status(500).json({status: 'failed', payload: err})
@@ -349,4 +350,34 @@ function loopOnSubMenu (submenus) {
       }
     })
   })
+}
+
+exports.normalizeForFbDisconnect = function (req, res) {
+  UserModel.find().exec()
+    .then(users => {
+      async.each(users, updateUser, function (err) {
+        if (err) {
+          res.status(500).json({status: 'failed', payload: err})
+        } else {
+          res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+function updateUser (user, callback) {
+  if (user.facebookInfo) {
+    UserModel.update({_id: user._id}, {connectFacebook: true, showIntegrations: true}).exec()
+      .then(updated => {
+        callback()
+      })
+      .catch(err => {
+        callback(err)
+      })
+  } else {
+    callback()
+  }
 }
