@@ -64,6 +64,10 @@ exports.validateAndConvert = (body) => {
         }
       })
     }
+
+    if (obj.$match && obj.$match.tags_subscriber) {
+      newBody[index].$match.tags_subscriber.$elemMatch.tagId = mongoose.Types.ObjectId(newBody[index].$match.tags_subscriber.$elemMatch.tagId)
+    }
   })
   console.log('new body new', JSON.stringify(newBody))
   return newBody
