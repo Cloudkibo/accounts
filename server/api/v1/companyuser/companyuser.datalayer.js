@@ -23,7 +23,6 @@ exports.removeOneCompanyUserObjectUsingQuery = (queryObject) => {
 }
 
 exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
-  console.log('queryObject', queryObject.populate)
   if (queryObject.populate) {
     let populateBy = queryObject.populate
     delete queryObject.populate

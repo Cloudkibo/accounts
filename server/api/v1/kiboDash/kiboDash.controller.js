@@ -5,20 +5,22 @@ const PagesDataLayer = require('../pages/pages.datalayer')
 const dataLayer = require('./datalayer')
 const logicLayer = require('./logiclayer')
 const SubscribersDataLayer = require('../subscribers/subscribers.datalayer')
-const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields, filterDate,
+const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields,
   groupCompanyWiseAggregates, companyWisePageCount, joinPageWithSubscribers, selectPageFields,
   filterCompanySubscribers, filterUserDate, pageWiseAggregate, filterPageSubscribers,
   joinAutpostingMessages, selectAutoPostingFields,
-  selectTwitterType, selectFacebookType, selectWordpressType } = require('./pipeline')
+  selectTwitterType, selectFacebookType, selectWordpressType, dateFilterAutoposting } = require('./pipeline')
 const CompanyUsersDataLayer = require('../companyuser/companyuser.datalayer')
 const mongoose = require('mongoose')
 
 exports.platformWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
-  let startDate = req.body.startDate
-  let dateFilterAggregates = filterDate
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
-
+  let startDate = ''
+  let dateFilterAggregates = {$match: {}}
+  if (req.body.startDate && req.body.startDate !== '') {
+    startDate = req.body.startDate
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
   let userDateFilter = filterUserDate
   userDateFilter['$match']['createdAt'] = { $gte: new Date(startDate) }
   let connectetPages = PagesDataLayer.aggregateInfo([filterConnectedPages, countResults])
@@ -26,8 +28,8 @@ exports.platformWiseData = function (req, res) {
   let totalUsers = UsersDataLayer.aggregateInfo([userDateFilter, countResults])
   let totalSubscribers = SubscribersDataLayer.aggregateInfo([dateFilterAggregates, countResults])
   let totalBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, countResults)
-  let totalPolls = dataLayer.aggregateForPolls(dateFilterAggregates, countResults).exec()
-  let totalSurveys = dataLayer.aggregateForSurveys(dateFilterAggregates, countResults).exec()
+  let totalPolls = dataLayer.aggregateForPolls(dateFilterAggregates, countResults)
+  let totalSurveys = dataLayer.aggregateForSurveys(dateFilterAggregates, countResults)
 
   let finalResults = Promise.all([connectetPages, totalPages, totalUsers, totalSubscribers, totalBroadcasts, totalPolls, totalSurveys])
   // logger.serverLog(TAG, `user not found for page ${JSON.stringify(finalResults)}`)
@@ -58,9 +60,13 @@ exports.pageWiseData = function (req, res) {
   let dateFilterSubscribers = filterPageSubscribers
   // add the date filter(as from reqeust) in the aggregate pipeline query for subscribers page wise
   dateFilterSubscribers['$project']['pageSubscribers']['$filter']['cond'] = {$gte: ['$$pageSubscriber.datetime', new Date(startDate)]}
-  let dateFilterAggregates = filterDate
+  let dateFilterAggregates = {$match: {}}
   // add date filter for broadcasts, polls, surveys count-page wise
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  if (req.body.startDate && req.body.startDate !== '') {
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
+  console.log('dateFilterAggregates', dateFilterAggregates)
+
   let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ])
   let numberOfBroadcast = dataLayer.aggregateForBroadcastPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfPoll = dataLayer.aggregateForPollPages(dateFilterAggregates, pageWiseAggregate)
@@ -68,13 +74,13 @@ exports.pageWiseData = function (req, res) {
   let finalResults = Promise.all([ data, numberOfBroadcast, numberOfPoll, numberOfSurvey ])
 
   finalResults.then((results) => {
+    console.log('results[1]', results[1])
     data = results[0]
     let broadcastAggregates = results[1]
     let pollsAggregate = results[2]
     let surveysAggregate = results[3]
     // set Broadcasts count
     data = logicLayer.mapData(data, broadcastAggregates, pollsAggregate, surveysAggregate)
-
     res.status(200).json({
       status: 'success',
       payload: data
@@ -88,11 +94,17 @@ exports.pageWiseData = function (req, res) {
 }
 exports.companyWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
+  console.log('req for companyWiseData startDate', JSON.stringify(req.body.startDate))
   let startDate = req.body.startDate
   let dateFilterSubscribers = filterCompanySubscribers
   dateFilterSubscribers['$project']['companysubscribers']['$filter']['cond'] = {$gte: ['$$companysubscriber.datetime', new Date(startDate)]}
-  let dateFilterAggregates = filterDate
-  dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  let dateFilterAggregates = {$match: {}}
+  if (req.body.startDate && req.body.startDate !== '') {
+    console.log('inside if')
+    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+  }
+  console.log('dateFilterAggregates new', dateFilterAggregates)
+
   let companySubscribers = CompanyUsersDataLayer.aggregateInfo([joinCompanyWithSubscribers, dateFilterSubscribers, selectCompanyFields])
   let numberOfBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, groupCompanyWiseAggregates)
   let numberOfPolls = dataLayer.aggregateForPolls(dateFilterAggregates, groupCompanyWiseAggregates)
@@ -141,47 +153,98 @@ exports.companyWiseData = function (req, res) {
 exports.getFacebookAutoposting = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash Facebook Autoposting ${JSON.stringify(req.body)}`)
   // let queries = logicLayer.getQuery(req.body)
-  dataLayer.aggregateForAutoposting(
-    selectFacebookType,
-    null,
-    joinAutpostingMessages,
-    selectAutoPostingFields)
-    .then((result) => {
-      logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
-      return res.status(200).json({status: 'success', payload: result})
-    })
-    .catch((err) => {
-      logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-      return res.status(500).json({status: 'failed', description: err})
-    })
+  if (req.body.startDate && req.body.startDate !== '') {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      dateFilterAutoposting(req.body.startDate),
+      selectAutoPostingFields,
+      selectFacebookType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  } else {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      null,
+      selectAutoPostingFields,
+      selectFacebookType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  }
 }
 exports.getTwitterAutoposting = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash Twitter ${JSON.stringify(req.body)}`)
-  dataLayer.aggregateForAutoposting(
-    selectTwitterType,
-    null,
-    joinAutpostingMessages,
-    selectAutoPostingFields)
-    .then((result) => {
-      return res.status(200).json({status: 'success', payload: result})
-    })
-    .catch((err) => {
-      logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-      return res.status(500).json({status: 'failed', description: err})
-    })
+  if (req.body.startDate && req.body.startDate !== '') {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      dateFilterAutoposting(req.body.startDate),
+      selectAutoPostingFields,
+      selectTwitterType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  } else {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      null,
+      selectAutoPostingFields,
+      selectTwitterType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  }
 }
 exports.getWordpressAutoposting = function (req, res) {
+  console.log('in wordpress')
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
-  dataLayer.aggregateForAutoposting(
-    selectWordpressType,
-    null,
-    joinAutpostingMessages,
-    selectAutoPostingFields)
-    .then((result) => {
-      return res.status(200).json({status: 'success', payload: result})
-    })
-    .catch((err) => {
-      logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-      return res.status(500).json({status: 'failed', description: err})
-    })
+  if (req.body.startDate && req.body.startDate !== '') {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      dateFilterAutoposting(req.body.startDate),
+      selectAutoPostingFields,
+      selectWordpressType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  } else {
+    dataLayer.aggregateForAutoposting(
+      joinAutpostingMessages,
+      null,
+      selectAutoPostingFields,
+      selectWordpressType)
+      .then((result) => {
+        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
+        return res.status(200).json({status: 'success', payload: result})
+      })
+      .catch((err) => {
+        logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
+        return res.status(500).json({status: 'failed', description: err})
+      })
+  }
 }
