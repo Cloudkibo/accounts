@@ -32,7 +32,7 @@ function isAuthenticated () {
         logger.serverLog(TAG, `going to validate ip`)
         isAuthorizedWebHookTrigger(req, res, next)
       } else {
-        logger.serverLog(TAG, `going to validate token`)
+        logger.serverLog(TAG, `going to validate token`, req.headers.authorization)
         // allow access_token to be passed through query parameter as well
         if (req.query && req.query.hasOwnProperty('access_token')) {
           req.headers.authorization = `Bearer ${req.query.access_token}`
