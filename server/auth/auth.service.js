@@ -148,7 +148,7 @@ function setTokenCookie (req, res) {
   logger.serverLog(TAG, `Here is the signed token: ${token}`)
   res.cookie('token', token)
   // We will change it to based on the request of project
-  return res.status(200).json({status: 'success', description: 'successfully logged in'})
+  return res.status(200).json({status: 'success', description: 'successfully logged in', token})
 }
 
 function fetchPages (url, user, req, token) {
