@@ -30,7 +30,8 @@ const UserSchema = new Schema({
   skippedFacebookConnect: {type: Boolean, default: false},
   showIntegrations: {type: Boolean, default: false},
   connectFacebook: {type: Boolean, default: false},
-  deleteInformation: Schema.Types.Mixed // GDPR INFO
+  deleteInformation: Schema.Types.Mixed, // GDPR INFO
+  platform: {type: String, default: 'messenger'}
 })
 
 /**
