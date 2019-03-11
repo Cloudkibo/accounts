@@ -182,9 +182,11 @@ exports.updateChecks = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller index')
-  let isTeam = logicLayer.isTeamAccount(req.body)
+  let body = req.body
+  body.email = req.body.email.toLowerCase()
+  let isTeam = logicLayer.isTeamAccount(body)
   logicLayer
-    .isEmailAndDomainFound(req.body)
+    .isEmailAndDomainFound(body)
     .then(result => {
       logger.serverLog(TAG, 'result')
       if (result.email) {
@@ -199,7 +201,7 @@ exports.create = function (req, res) {
         })
       } else {
         let domain = logicLayer.getRandomString()
-        let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
+        let payload = logicLayer.prepareUserPayload(body, isTeam, domain)
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
@@ -210,7 +212,7 @@ exports.create = function (req, res) {
                 let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
                 let companyprofileData = logicLayer
                   .prepareCompanyProfile(
-                    req.body, user._id, isTeam, domain,
+                    body, user._id, isTeam, domain,
                     isTeam ? defaultPlanTeam : defaultPlanIndividual)
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
@@ -255,18 +257,18 @@ exports.create = function (req, res) {
                       .then()
                       .catch(err => logger.serverLog(TAG, `New Token save : ${JSON.stringify(err)}`))
                     // Sending email using mailchimp if team account
-                    if (isTeam) logicLayer.sendEmailUsingMailChimp(req.body)
+                    if (isTeam) logicLayer.sendEmailUsingMailChimp(body)
                     // Sending email via sendgrid
                     let sendgrid = utility.getSendGridObject()
-                    let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
-                    email = logicLayer.setEmailBody(email, tokenString, req.body)
+                    let email = new sendgrid.Email(logicLayer.emailHeader(body))
+                    email = logicLayer.setEmailBody(email, tokenString, body)
                     logger.serverLog(TAG, util.inspect(email))
                     sendgrid.send(email, function (err, json) {
                       if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
                     })
                     // Sending email to sojharo and sir
-                    let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
-                    inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
+                    let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(body))
+                    inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, body)
 
                     if (config.env === 'production') {
                       sendgrid.send(inHouseEmail, function (err, json) {
@@ -295,6 +297,8 @@ exports.create = function (req, res) {
 exports.joinCompany = function (req, res) {
   logger.serverLog(TAG, 'Hit the create user controller joinCompany')
   // Never delete following variables. They are used in Promise chaining
+  let body = req.body
+  body.email = req.body.email.toLowerCase()
   let invitationToken
   let companyUser
   let user
@@ -302,7 +306,7 @@ exports.joinCompany = function (req, res) {
   let permissionSaved
   let tokenString
 
-  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
+  InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: body.token})
     .then(token => {
       invitationToken = token
       if (!invitationToken) {
@@ -325,11 +329,11 @@ exports.joinCompany = function (req, res) {
       } else {
         logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
         let accountData = {
-          name: req.body.name,
-          email: req.body.email,
+          name: body.name,
+          email: body.email,
           domain: invitationToken.domain,
-          password: req.body.password,
-          domain_email: invitationToken.domain + '' + req.body.email,
+          password: body.password,
+          domain_email: invitationToken.domain + '' + body.email,
           accountType: 'team',
           role: invitationToken.role,
           uiMode: foundUser.uiMode
@@ -373,9 +377,9 @@ exports.joinCompany = function (req, res) {
       tokenString = logicLayer.getRandomString()
       let tokenPromise = VertificationTokenDataLayer.createVerificationToken({userId: user._id, token: tokenString})
       let inviRemPromise = InvitationDataLayer
-        .deleteOneInvitationObjectUsingQuery({email: req.body.email, companyId: invitationToken.companyId})
+        .deleteOneInvitationObjectUsingQuery({email: body.email, companyId: invitationToken.companyId})
       let inviAgentTokenRemove = InviteAgentTokenDataLayer
-        .deleteOneInvitationTokenObjectUsingQuery({token: req.body.token})
+        .deleteOneInvitationTokenObjectUsingQuery({token: body.token})
 
       return Promise.all([tokenPromise, inviRemPromise, inviAgentTokenRemove])
     })
@@ -384,15 +388,15 @@ exports.joinCompany = function (req, res) {
 
       // Sending email via sendgrid
       let sendgrid = utility.getSendGridObject()
-      let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
-      email = logicLayer.setEmailBody(email, tokenString, req.body)
+      let email = new sendgrid.Email(logicLayer.emailHeader(body))
+      email = logicLayer.setEmailBody(email, tokenString, body)
       logger.serverLog(TAG, util.inspect(email))
       sendgrid.send(email, function (err, json) {
         if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
       })
       // Sending email to sojharo and sir
-      let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
-      inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
+      let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(body))
+      inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, body)
 
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {

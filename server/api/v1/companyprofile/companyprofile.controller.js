@@ -110,6 +110,7 @@ exports.updatePlan = function (req, res) {
 
 exports.invite = function (req, res) {
   logger.serverLog(TAG, 'Hit the invite controller index')
+  const email = req.body.email.toLowerCase()
   let companyUserQuery = {domain_email: req.user.domain_email, populate: 'companyId'}
 
   CompanyUserDataLayer
@@ -123,9 +124,9 @@ exports.invite = function (req, res) {
         })
 
       // Query Objects
-      let InvitationCountQuery = {email: req.body.email, companyId: companyUser.companyId._id}
-      let UserCountQuery = {email: req.body.email}
-      let UserDomainCount = {email: req.body.email, domain: req.user.domain}
+      let InvitationCountQuery = {email, companyId: companyUser.companyId._id}
+      let UserCountQuery = {email}
+      let UserDomainCount = {email, domain: req.user.domain}
       // Promise Objects
       let InvitationCountPromise = InvitationDataLayer
         .CountInvitationObjectUsingQuery(InvitationCountQuery)
@@ -162,7 +163,7 @@ exports.invite = function (req, res) {
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
             let getTokenPayload = {
-              email: req.body.email,
+              email: email,
               token: uniqueTokenId,
               companyId: companyUser.companyId._id,
               domain: req.user.domain,
@@ -171,7 +172,7 @@ exports.invite = function (req, res) {
             }
             let invitationPayload = {
               name: req.body.name,
-              email: req.body.email,
+              email: email,
               companyId: companyUser.companyId._id
             }
             let invitetokenPromise = InviteAgentTokenDataLayer
@@ -182,9 +183,9 @@ exports.invite = function (req, res) {
             Promise.all([invitetokenPromise, inviteTempDataPro])
               .then(result => {
                 let sendgrid = utility.getSendGridObject()
-                let email = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
-                email = logicLayer.setEmailBody(email, req.user, companyUser, uniqueTokenId)
-                sendgrid.send(email, (err, json) => {
+                let emailParam = new sendgrid.Email(logicLayer.getEmailParameters(email))
+                emailParam = logicLayer.setEmailBody(emailParam, req.user, companyUser, uniqueTokenId)
+                sendgrid.send(emailParam, (err, json) => {
                   logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
                     ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
