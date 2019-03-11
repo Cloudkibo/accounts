@@ -32,7 +32,7 @@ function isAuthenticated () {
         logger.serverLog(TAG, `going to validate ip`)
         isAuthorizedWebHookTrigger(req, res, next)
       } else {
-        logger.serverLog(TAG, `going to validate token`)
+        logger.serverLog(TAG, `going to validate token`, req.headers.authorization)
         // allow access_token to be passed through query parameter as well
         if (req.query && req.query.hasOwnProperty('access_token')) {
           req.headers.authorization = `Bearer ${req.query.access_token}`
@@ -148,7 +148,7 @@ function setTokenCookie (req, res) {
   logger.serverLog(TAG, `Here is the signed token: ${token}`)
   res.cookie('token', token)
   // We will change it to based on the request of project
-  return res.status(200).json({status: 'success', description: 'successfully logged in'})
+  return res.status(200).json({status: 'success', description: 'successfully logged in', token})
 }
 
 function fetchPages (url, user, req, token) {

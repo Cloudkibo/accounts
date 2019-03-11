@@ -381,3 +381,28 @@ function updateUser (user, callback) {
     callback()
   }
 }
+exports.normalizeForPlatform = function (req, res) {
+  UserModel.find().exec()
+    .then(users => {
+      async.each(users, updatePlatform, function (err) {
+        if (err) {
+          res.status(500).json({status: 'failed', payload: err})
+        } else {
+          res.status(200).json({status: 'success', payload: 'updated successfully'})
+        }
+      })
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+function updatePlatform (user, callback) {
+  UserModel.update({_id: user._id}, {platform: 'messenger'}).exec()
+    .then(updated => {
+      console.log('updated', updated)
+      callback()
+    })
+    .catch(err => {
+      callback(err)
+    })
+}
