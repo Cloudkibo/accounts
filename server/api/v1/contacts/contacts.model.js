@@ -5,6 +5,7 @@ let contacts = new Schema({
   name: {type: String},
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   number: {type: String},
+  additionalColumns: Schema.Types.Mixed,
   datetime: { type: Date, default: Date.now }
 })
 

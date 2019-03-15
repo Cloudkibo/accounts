@@ -16,4 +16,8 @@ router.post('/query',
   auth.isAuthenticated(),
   controller.query)
 
+router.post('/aggregate',
+  auth.isAuthenticated(),
+  controller.aggregate)
+
 module.exports = router

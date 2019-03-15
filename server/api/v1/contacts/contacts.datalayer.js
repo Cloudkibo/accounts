@@ -8,3 +8,7 @@ exports.findContactObjects = (query) => {
   return ContactModel.find(query)
     .exec()
 }
+exports.aggregateInfo = (query) => {
+  return ContactModel.aggregate(query)
+    .exec()
+}
