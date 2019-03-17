@@ -20,4 +20,9 @@ router.post('/aggregate',
   auth.isAuthenticated(),
   controller.aggregate)
 
+router.put('/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  controller.genericUpdate)
+
 module.exports = router

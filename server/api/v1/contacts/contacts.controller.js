@@ -34,3 +34,14 @@ exports.aggregate = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdate(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
