@@ -1,5 +1,6 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./contacts.datalayer')
+const logicLayer = require('./contacts.logiclayer')
 const TAG = '/api/v1/subscribers/subscribers.controller.js'
 
 exports.create = function (req, res) {
@@ -21,5 +22,26 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
+    })
+}
+exports.aggregate = function (req, res) {
+  let query = logicLayer.validateAndConvert(req.body)
+  dataLayer.aggregateInfo(query)
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdate(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      return res.status(200).json({status: 'success', payload: result})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
