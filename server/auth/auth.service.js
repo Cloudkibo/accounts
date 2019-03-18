@@ -28,7 +28,8 @@ function isAuthenticated () {
   return compose()
   // Validate jwt or api keys
     .use((req, res, next) => {
-      if (req.headers.hasOwnProperty('is_kibo_product')) {
+      console.log('Headers', req.headers)
+      if (req.headers.hasOwnProperty('is_kibo_product') || req.headers.hasOwnProperty('consumer_id')) {
         logger.serverLog(TAG, `going to validate ip`)
         isAuthorizedWebHookTrigger(req, res, next)
       } else {
@@ -42,62 +43,70 @@ function isAuthenticated () {
     })
     // Attach user to request
     .use((req, res, next) => {
+      console.log('Attach User Object')
+      var userId
       if (req.user) {
-        let userPromise = UserDataLayer.findOneUserObject(req.user._id)
-        let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user._id})
-        let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
-
-        Promise.all([userPromise, companyUserPromise, permissionsPromise])
-          .then(result => {
-            let user = result[0]
-            let companyUser = result[1]
-            let permissions = result[2]
-            let company
-
-            if (!user || !companyUser || !permissions) {
-              let resp = UserLogicLayer.getResponse(user, companyUser, permissions)
-              return res.status(404).json(resp)
-            }
-
-            CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
-              .then(foundCompany => {
-                company = foundCompany
-                return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
-              })
-              .then(plan => {
-                if (!plan) {
-                  return res.status(404).json({
-                    status: 'failed',
-                    description: 'Fatal Error, plan not set for this user. Please contact support'
-                  })
-                }
-                user = user.toObject()
-                user.companyId = companyUser.companyId
-                user.permissions = permissions
-                user.currentPlan = company.planId
-                user.last4 = company.stripe.last4
-                user.plan = plan
-                user.uiMode = config.uiModes[user.uiMode]
-
-                req.user = user
-                next()
-              })
-              .catch(err => {
-                logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
-                return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
-              })
-          })
-          .catch(err => {
-            logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
-            return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
-          })
+        userId = req.user
+        attachUserToRequest(req, res, next, userId)
+      } else if (req.headers.hasOwnProperty('consumer_id')) {
+        userId = req.headers.consumer_id
+        attachUserToRequest(req, res, next, userId)
       } else {
         logger.serverLog(TAG, `call from kibo product`)
         next()
       }
     })
 }
+function attachUserToRequest (req, res, next, userId) {
+  let userPromise = UserDataLayer.findOneUserObject(userId)
+  let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: userId})
+  let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: userId})
 
+  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+    .then(result => {
+      let user = result[0]
+      let companyUser = result[1]
+      let permissions = result[2]
+      let company
+
+      if (!user || !companyUser || !permissions) {
+        let resp = UserLogicLayer.getResponse(user, companyUser, permissions)
+        return res.status(404).json(resp)
+      }
+
+      CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
+        .then(foundCompany => {
+          company = foundCompany
+          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+        })
+        .then(plan => {
+          if (!plan) {
+            return res.status(404).json({
+              status: 'failed',
+              description: 'Fatal Error, plan not set for this user. Please contact support'
+            })
+          }
+          user = user.toObject()
+          user.companyId = companyUser.companyId
+          user.permissions = permissions
+          user.currentPlan = company.planId
+          user.last4 = company.stripe.last4
+          user.plan = plan
+          user.uiMode = config.uiModes[user.uiMode]
+
+          req.user = user
+          next()
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
 // eslint-disable-next-line no-unused-vars
 function isAuthorizedWebHookTrigger (req, res, next) {
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
@@ -110,7 +119,6 @@ function isAuthorizedWebHookTrigger (req, res, next) {
   if (config.allowedIps.indexOf(ip) > -1) next()
   else res.send(403)
 }
-
 /**
  * Checks if the user role meets the minimum requirements of the route
  */
