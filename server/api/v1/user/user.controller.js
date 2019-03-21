@@ -14,7 +14,7 @@ const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoke
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const auth = require('./../../../auth/auth.service')
 const TAG = '/api/v1/user/user.controller.js'
-
+const needle = require('needle')
 const util = require('util')
 const _ = require('lodash')
 const moment = require('moment')
@@ -631,5 +631,35 @@ exports.fetchGeneral = function (req, res) {
     .catch(err => {
       logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.updatePicture = function (req, res) {
+  console.log('hit the updatePicture endpoint for user')
+  let userFbId = req.user.facebookInfo.fbId
+  let userFbToken = req.user.facebookInfo.fbToken
+  console.log('userFbId', userFbId)
+  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${userFbId}/picture`)
+  needle.get(
+    `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
+    (err, resp) => {
+      if (err) {
+        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${userFbId}/picture ${JSON.stringify(err)}`)
+      }
+      if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
+        console.log('profile pic url', resp.body.picture.data.url)
+        dataLayer.genericUpdateUserObject({_id: req.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
+          .then(updated => {
+            logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.user._id}`)
+            return res.status(200).json({status: 'success', payload: updated})
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Failed to update user ${JSON.stringify(err)}`)
+            return res.status(500).json({status: 'failed', payload: err})
+          })
+      } else {
+        console.log('error resp', JSON.stringify(resp.body))
+        return res.status(500).json({status: 'failed', payload: `profile picture not found for user with _id ${req.user._id}`})
+      }
     })
 }
