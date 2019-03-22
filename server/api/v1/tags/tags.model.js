@@ -8,6 +8,7 @@ const tagSchema = new Schema({
   dateCreated: {type: Date, default: Date.now},
   pageId: {type: Schema.ObjectId, ref: 'pages'},
   labelFbId: String,
+  isList: {type: Boolean, default: false},
   defaultTag: {type: Boolean, default: false}
 })
 
