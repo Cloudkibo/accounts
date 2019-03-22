@@ -6,7 +6,7 @@ const tagSchema = new Schema({
   userId: {type: Schema.ObjectId, ref: 'users'},
   companyId: {type: Schema.ObjectId, ref: 'companyprofile'},
   dateCreated: {type: Date, default: Date.now},
-  pageId: String,
+  pageId: {type: Schema.ObjectId, ref: 'pages'},
   labelFbId: String,
   defaultTag: {type: Boolean, default: false}
 })
