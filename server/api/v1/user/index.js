@@ -57,4 +57,8 @@ router.post('/query',
   auth.isAuthenticated(),
   controller.fetchGeneral)
 
+router.get('/updatePicture',
+  auth.isAuthenticated(),
+  controller.updatePicture)
+
 module.exports = router
