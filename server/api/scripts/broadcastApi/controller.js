@@ -112,3 +112,33 @@ function createTagOnFacebook (tag, callback) {
     })
     .catch(err => callback(err))
 }
+
+exports.normalizePagesData = function (req, res) {
+  PageModel.find({connected: true}).exec()
+    .then(pages => {
+      async.each(pages, updatePage, function (err, results) {
+        if (err) {
+          return res.status(500).json({status: 'failed', payload: `failed to fetch connected pages ${err}`})
+        }
+        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+      })
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `failed to fetch connected pages ${err}`})
+    })
+}
+
+function updatePage (page, callback) {
+  needle('post', `https://graph.facebook.com/v2.11/me/broadcast_reach_estimations?access_token=${page.accessToken}`)
+    .then(reachEstimation => {
+      if (reachEstimation.body.error) {
+        callback(reachEstimation.body.error)
+      }
+      PageModel.update({_id: page._id}, {reachEstimationId: reachEstimation.body.reach_estimation_id, subscriberLimitForBatchAPI: 100}).exec()
+        .then(updated => {
+          callback(null, updated)
+        })
+        .catch(err => callback(err))
+    })
+    .catch(err => callback(err))
+}
