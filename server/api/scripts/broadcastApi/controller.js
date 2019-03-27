@@ -15,7 +15,7 @@ exports.normalizeTagsDataForPageId = function (req, res) {
         if (err) {
           return res.status(500).json({status: 'failed', payload: `Failed to insert pageId ${err}`})
         }
-        return res.status(200).json({status: 'failed', payload: 'Normalized successfully!'})
+        return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
       })
     })
     .catch(err => {
@@ -26,23 +26,27 @@ exports.normalizeTagsDataForPageId = function (req, res) {
 function insertPageId (tag, callback) {
   PageModel.find({companyId: tag.companyId}).exec()
     .then(pages => {
-      TagsModel.update({_id: tag._id}, {pageId: pages[0]._id}).exec()
-        .then(updated => {
-          for (let i = 1; i < pages.length; i++) {
-            let data = {
-              tag: tag.tag,
-              userId: tag.userId,
-              companyId: tag.companyId,
-              pageId: pages[i]._id
+      if (pages.length > 0) {
+        TagsModel.update({_id: tag._id}, {pageId: pages[0]._id, defaultTag: false, isList: false}).exec()
+          .then(updated => {
+            for (let i = 1; i < pages.length; i++) {
+              let data = {
+                tag: tag.tag,
+                userId: tag.userId,
+                companyId: tag.companyId,
+                pageId: pages[i]._id
+              }
+              const tagsPayload = new TagsModel(data)
+              tagsPayload.save()
+                .then(saved => logger.serverLog(TAG, 'tag created'))
+                .catch(err => logger.serverLog(TAG, `Failed to create tag ${err}`))
             }
-            const tagsPayload = new TagsModel(data)
-            tagsPayload.save()
-              .then(saved => logger.serverLog(TAG, 'tag created'))
-              .catch(err => logger.serverLog(TAG, `Failed to create tag ${err}`))
-          }
-          callback(null, 'success')
-        })
-        .catch(err => callback(err))
+            callback(null, 'success')
+          })
+          .catch(err => callback(err))
+      } else {
+        callback(null, 'success')
+      }
     })
     .catch(err => callback(err))
 }
@@ -54,7 +58,7 @@ exports.normalizeListsData = function (req, res) {
         if (err) {
           return res.status(500).json({status: 'failed', payload: `Failed to create tag ${err}`})
         }
-        return res.status(200).json({status: 'failed', payload: `Normalized successfully!`})
+        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
       })
     })
     .catch(err => {
@@ -90,7 +94,7 @@ exports.normalizeTagsData = function (req, res) {
         if (err) {
           return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
         }
-        return res.status(200).json({status: 'failed', payload: `Normalized successfully!`})
+        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
       })
     })
     .catch(err => {
@@ -99,20 +103,24 @@ exports.normalizeTagsData = function (req, res) {
 }
 
 function createTagOnFacebook (tag, callback) {
-  needle(
-    'post',
-    `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${tag.pageId.accessToken}`,
-    {'name': tag.tag}
-  )
-    .then(label => {
-      if (label.body.error) callback(label.body.error)
-      TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
-        .then(updated => {
-          callback(null, updated)
-        })
-        .catch(err => callback(err))
-    })
-    .catch(err => callback(err))
+  if (tag.pageId) {
+    needle(
+      'post',
+      `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${tag.pageId.accessToken}`,
+      {'name': tag.tag}
+    )
+      .then(label => {
+        if (label.body.error) callback(label.body.error)
+        TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
+          .then(updated => {
+            callback(null, updated)
+          })
+          .catch(err => callback(err))
+      })
+      .catch(err => callback(err))
+  } else {
+    callback(null, 'success')
+  }
 }
 
 exports.normalizePagesData = function (req, res) {
@@ -228,7 +236,6 @@ exports.normalizeTagSubscribersList = function (req, res) {
             SubscribersModel.find({_id: {$in: list.content}}).exec()
               .then(subscribers => {
                 assignTagToSubscribers(tag, subscribers)
-                return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
               })
               .catch(err => {
                 return res.status(500).json({status: 'failed', payload: `Faild to fetch subscribers ${err}`})
@@ -238,6 +245,7 @@ exports.normalizeTagSubscribersList = function (req, res) {
             return res.status(500).json({status: 'failed', payload: `Faild to fetch list ${err}`})
           })
       })
+      return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Faild to fetch tags ${err}`})
