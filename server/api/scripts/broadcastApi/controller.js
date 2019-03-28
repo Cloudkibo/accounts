@@ -88,63 +88,107 @@ function createTag (list, callback) {
     .catch(err => callback(err))
 }
 
+function validAccessToken (page) {
+  needle('get', `https://graph.facebook.com/v2.6/me?access_token=${page.accessToken}`)
+    .then(resp => {
+      if (resp.body.error) {
+        logger.serverLog(TAG, `Failed to validAccessToken ${resp.body.error}`)
+        return false
+      } else {
+        return true
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Failed to validAccessToken ${err}`)
+      return false
+    })
+}
+
 exports.normalizeTagsData = function (req, res) {
-  TagsModel.find({labelFbId: null}).exec()
-    .then(tags => {
-      async.each(tags, createTagOnFacebook, function (err, results) {
-        if (err) {
-          return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-        }
+  TagsModel.aggregate([
+    {$match: {labelFbId: null}},
+    {$group: {_id: '$pageId'}}
+  ]).exec()
+    .then(uniquePages => {
+      if (uniquePages.length > 0) {
+        uniquePages.forEach((up, i) => {
+          PageModel.findOne({_id: up._id}).populate('userId').exec()
+            .then(page => {
+              TagsModel.find({pageId: page._id}).exec()
+                .then(tags => {
+                  if (page && validAccessToken(page)) {
+                    async.each(tags, function (tag, callback) {
+                      createTagOnFacebook(tag, page.accessToken, callback)
+                    }, function (err, results) {
+                      if (err) {
+                        return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+                      } else if (uniquePages.length - 1 === i) {
+                        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+                      }
+                    })
+                  } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
+                    needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+                      .then(resp => {
+                        console.log('get accessToken response', util.inspect(resp))
+                        let accessToken = resp.body.accessToken
+                        async.each(tags, function (tag, callback) {
+                          createTagOnFacebook(tag, accessToken, callback)
+                        }, function (err, results) {
+                          if (err) {
+                            return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+                          } else if (uniquePages.length - 1 === i) {
+                            return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+                          }
+                        })
+                      })
+                      .catch(err => {
+                        return res.status(500).json({status: 'failed', payload: `Failed to fetch accessToken ${err}`})
+                      })
+                  } else {
+                    if (uniquePages.length - 1 === i) {
+                      return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+                    }
+                  }
+                })
+                .catch(err => {
+                  return res.status(500).json({status: 'failed', payload: `Failed to fetch tags ${err}`})
+                })
+            })
+            .catch(err => {
+              return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${err}`})
+            })
+        })
+      } else {
         return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
-      })
+      }
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch tags ${err}`})
     })
 }
 
-function createTagOnFacebook (tag, callback) {
-  PageModel.findOne({_id: tag.pageId}).populate('userId').exec()
-    .then(page => {
-      if (page && page.userId && page.userId.facebookInfo) {
-        needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
-          .then(resp => {
-            console.log('get accessToken response', util.inspect(resp))
-            let accessToken = resp.body.accessToken
-            if (!accessToken) {
-              accessToken = page.accessToken
-            }
-            needle(
-              'post',
-              `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
-              {'name': tag.tag}
-            )
-              .then(label => {
-                console.log('get label response', util.inspect(label))
-                if (label.body.error) {
-                  callback(label.body.error)
-                } else {
-                  TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
-                    .then(updated => {
-                      callback(null, updated)
-                    })
-                    .catch(err => callback(err))
-                }
-              })
-              .catch(err => {
-                console.log('get label error', util.inspect(err))
-                callback(err)
-              })
-          })
-          .catch(err => {
-            console.log('get accessToken error', util.inspect(err))
-            callback(err)
-          })
+function createTagOnFacebook (tag, accessToken, callback) {
+  needle(
+    'post',
+    `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
+    {'name': tag.tag}
+  )
+    .then(label => {
+      console.log('get label response', util.inspect(label))
+      if (label.body.error) {
+        callback(label.body.error)
       } else {
-        callback(null, 'success')
+        TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
+          .then(updated => {
+            callback(null, updated)
+          })
+          .catch(err => callback(err))
       }
     })
-    .catch(err => callback(err))
+    .catch(err => {
+      console.log('get label error', util.inspect(err))
+      callback(err)
+    })
 }
 
 exports.normalizePagesData = function (req, res) {
