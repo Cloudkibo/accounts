@@ -20,13 +20,26 @@ exports.index = function (req, res) {
 exports.create = function (req, res) {
   console.log('req.body', req.body)
   logger.serverLog(TAG, 'Hit the create list controller index')
-  dataLayer.createListObject(
-    req.body.listName, req.body.userId, req.body.companyId, req.body.content,
-    req.body.conditions, req.body.initialList, req.body.parentList,
-    req.body.parentListName
-  )
-    .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+  dataLayer.findListObjects({companyId: req.body.companyId, listName: req.body.listName})
+    .then(data => {
+      console.log('data', data)
+      if (data.length === 0) {
+        dataLayer.createListObject(
+          req.body.listName, req.body.userId, req.body.companyId, req.body.content,
+          req.body.conditions, req.body.initialList, req.body.parentList,
+          req.body.parentListName
+        )
+          .then(result => {
+            res.status(200).json({status: 'success', payload: result})
+          })
+          .catch(err => {
+            res.status(500).json({status: 'failed', payload: err})
+          })
+      }
+      else {
+        console.log('exist list with this name')
+        res.status(500).json({status: 'failed', payload: 'List is already created with this name Please choose another name'})
+      }
     })
     .catch(err => {
       res.status(500).json({status: 'failed', payload: err})
