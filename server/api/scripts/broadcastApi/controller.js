@@ -105,7 +105,7 @@ exports.normalizeTagsData = function (req, res) {
 function createTagOnFacebook (tag, callback) {
   PageModel.findOne({_id: tag.pageId}).populate('userId').exec()
     .then(page => {
-      if (page && page.userId) {
+      if (page && page.userId && page.userId.facebookInfo) {
         needle('get', `https://graph.facebook.com/v2.11/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
           .then(resp => {
             let accessToken = resp.body.accessToken
