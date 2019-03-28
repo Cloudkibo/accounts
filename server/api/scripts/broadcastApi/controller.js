@@ -7,6 +7,7 @@ const ListModel = require('../../v1/lists/Lists.model')
 const PageModel = require('../../v1/pages/Pages.model')
 const TagSubscribersModel = require('../../v1/tags_subscriber/tags_subscriber.model')
 const SubscribersModel = require('../../v1/subscribers/Subscribers.model')
+const util = require('util')
 
 exports.normalizeTagsDataForPageId = function (req, res) {
   TagsModel.find({pageId: null}).exec()
@@ -108,6 +109,7 @@ function createTagOnFacebook (tag, callback) {
       if (page && page.userId && page.userId.facebookInfo) {
         needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
           .then(resp => {
+            console.log('get accessToken response', util.inspect(resp))
             let accessToken = resp.body.accessToken
             if (!accessToken) {
               accessToken = page.accessToken
@@ -118,6 +120,7 @@ function createTagOnFacebook (tag, callback) {
               {'name': tag.tag}
             )
               .then(label => {
+                console.log('get label response', util.inspect(label))
                 if (label.body.error) {
                   callback(label.body.error)
                 } else {
@@ -128,9 +131,15 @@ function createTagOnFacebook (tag, callback) {
                     .catch(err => callback(err))
                 }
               })
-              .catch(err => callback(err))
+              .catch(err => {
+                console.log('get label error', util.inspect(err))
+                callback(err)
+              })
           })
-          .catch(err => callback(err))
+          .catch(err => {
+            console.log('get accessToken error', util.inspect(err))
+            callback(err)
+          })
       } else {
         callback(null, 'success')
       }
