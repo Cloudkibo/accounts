@@ -88,7 +88,7 @@ function createTag (list, callback) {
 }
 
 exports.normalizeTagsData = function (req, res) {
-  TagsModel.find({labelFbId: null}).populate('pageId').exec()
+  TagsModel.find({labelFbId: null}).exec()
     .then(tags => {
       async.each(tags, createTagOnFacebook, function (err, results) {
         if (err) {
@@ -103,24 +103,39 @@ exports.normalizeTagsData = function (req, res) {
 }
 
 function createTagOnFacebook (tag, callback) {
-  if (tag.pageId) {
-    needle(
-      'post',
-      `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${tag.pageId.accessToken}`,
-      {'name': tag.tag}
-    )
-      .then(label => {
-        if (label.body.error) callback(label.body.error)
-        TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
-          .then(updated => {
-            callback(null, updated)
+  PageModel.findOne({_id: tag.pageId}).populate('userId').exec()
+    .then(page => {
+      if (page) {
+        needle('get', `https://graph.facebook.com/v2.11/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+          .then(resp => {
+            let accessToken = resp.body.accessToken
+            if (!accessToken) {
+              accessToken = page.accessToken
+            }
+            needle(
+              'post',
+              `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
+              {'name': tag.tag}
+            )
+              .then(label => {
+                if (label.body.error) {
+                  callback(label.body.error)
+                } else {
+                  TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
+                    .then(updated => {
+                      callback(null, updated)
+                    })
+                    .catch(err => callback(err))
+                }
+              })
+              .catch(err => callback(err))
           })
           .catch(err => callback(err))
-      })
-      .catch(err => callback(err))
-  } else {
-    callback(null, 'success')
-  }
+      } else {
+        callback(null, 'success')
+      }
+    })
+    .catch(err => callback(err))
 }
 
 exports.normalizePagesData = function (req, res) {
