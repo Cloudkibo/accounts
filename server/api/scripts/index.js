@@ -14,5 +14,6 @@ router.get('/user/normalizeForFbDisconnect', controller.normalizeForFbDisconnect
 router.get('/user/normalizeForPlatform', controller.normalizeForPlatform)
 
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
+router.use('/pages', require('./pages'))
 
 module.exports = router
