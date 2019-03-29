@@ -104,6 +104,7 @@ exports.companyWiseData = function (req, res) {
     dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
   }
   console.log('dateFilterAggregates new', dateFilterAggregates)
+  console.log('dateFilterSubscribers new', dateFilterSubscribers)
 
   let companySubscribers = CompanyUsersDataLayer.aggregateInfo([joinCompanyWithSubscribers, dateFilterSubscribers, selectCompanyFields])
   let numberOfBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, groupCompanyWiseAggregates)
@@ -138,6 +139,7 @@ exports.companyWiseData = function (req, res) {
           }
         })
         .catch((err) => {
+          console.log('in error', err)
           return res.status(500).json({
             status: 'failed',
             description: `Internal Server Error ${JSON.stringify(err)}`})
