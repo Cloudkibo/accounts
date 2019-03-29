@@ -111,53 +111,50 @@ exports.normalizeTagsData = function (req, res) {
   ]).exec()
     .then(uniquePages => {
       if (uniquePages.length > 0) {
-        uniquePages.forEach((up, i) => {
-          PageModel.findOne({_id: up._id}).populate('userId').exec()
-            .then(page => {
-              TagsModel.find({pageId: page._id}).exec()
-                .then(tags => {
-                  if (page && validAccessToken(page)) {
-                    async.each(tags, function (tag, callback) {
-                      createTagOnFacebook(tag, page.accessToken, callback)
-                    }, function (err, results) {
-                      if (err) {
-                        return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                      } else if (uniquePages.length - 1 === i) {
-                        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
-                      }
-                    })
-                  } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
-                    needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
-                      .then(resp => {
-                        console.log('get accessToken response', util.inspect(resp))
-                        let accessToken = resp.body.access_token
-                        async.each(tags, function (tag, callback) {
-                          createTagOnFacebook(tag, accessToken, callback)
-                        }, function (err, results) {
-                          if (err) {
-                            return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                          } else if (uniquePages.length - 1 === i) {
-                            return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
-                          }
-                        })
-                      })
-                      .catch(err => {
-                        return res.status(500).json({status: 'failed', payload: `Failed to fetch accessToken ${err}`})
-                      })
-                  } else {
-                    if (uniquePages.length - 1 === i) {
+        let up = uniquePages[0]
+        PageModel.findOne({_id: up._id}).populate('userId').exec()
+          .then(page => {
+            TagsModel.find({pageId: page._id}).exec()
+              .then(tags => {
+                if (page && validAccessToken(page)) {
+                  async.each(tags, function (tag, callback) {
+                    createTagOnFacebook(tag, page.accessToken, callback)
+                  }, function (err, results) {
+                    if (err) {
+                      return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+                    } else {
                       return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
                     }
-                  }
-                })
-                .catch(err => {
-                  return res.status(500).json({status: 'failed', payload: `Failed to fetch tags ${err}`})
-                })
-            })
-            .catch(err => {
-              return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${err}`})
-            })
-        })
+                  })
+                } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
+                  needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+                    .then(resp => {
+                      console.log('get accessToken response', util.inspect(resp))
+                      let accessToken = resp.body.access_token
+                      async.each(tags, function (tag, callback) {
+                        createTagOnFacebook(tag, accessToken, callback)
+                      }, function (err, results) {
+                        if (err) {
+                          return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+                        } else {
+                          return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+                        }
+                      })
+                    })
+                    .catch(err => {
+                      return res.status(500).json({status: 'failed', payload: `Failed to fetch accessToken ${err}`})
+                    })
+                } else {
+                  return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+                }
+              })
+              .catch(err => {
+                return res.status(500).json({status: 'failed', payload: `Failed to fetch tags ${err}`})
+              })
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${err}`})
+          })
       } else {
         return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
       }
