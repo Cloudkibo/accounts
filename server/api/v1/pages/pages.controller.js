@@ -4,7 +4,7 @@ const logicLayer = require('./pages.logiclayer')
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
 const needle = require('needle')
-const { callApi } = require('../../scripts/apiCaller')
+
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -62,50 +62,13 @@ exports.delete = function (req, res) {
 
 exports.connect = function (req, res) {
   logger.serverLog(TAG, 'Hit the connecting page controller index')
-  dataLayer.findOnePageObject(req.params._id)
-    .then(page => {
-      // create default tags
-      callApi('tags/query', 'post', {purpose: 'findAll', match: {defaultTag: true, pageId: req.params._id, companyId: req.user.companyId}}, '', 'kiboengage')
-        .then(defaultTags => {
-          defaultTags = defaultTags.map((t) => t.tag)
-          if (!defaultTags.includes(`_${page.pageId}_1`)) {
-            createTag(req.user, page, `_${page.pageId}_1`)
-          }
-          if (!defaultTags.includes('male')) {
-            createTag(req.user, page, 'male')
-          }
-          if (!defaultTags.includes('female')) {
-            createTag(req.user, page, 'female')
-          }
-          if (!defaultTags.includes('other')) {
-            createTag(req.user, page, 'other')
-          }
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Error at find default tags ${util.inspect(err)}`)
-        })
-      // initiate reach estimation
-      needle('post', `https://graph.facebook.com/v2.11/me/broadcast_reach_estimations?access_token=${page.pageAccessToken}`)
-        .then(reachEstimation => {
-          if (reachEstimation.reach_estimation_id) {
-            dataLayer.updatePageObject(req.params._id, {connected: true, reachEstimationId: reachEstimation.reach_estimation_id})
-              .then(result => {
-                res.status(200).json({status: 'success', payload: result})
-              })
-              .catch(err => {
-                logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
-                res.status(500).json({status: 'failed', payload: err})
-              })
-          } else {
-            logger.serverLog(TAG, `Failed to start reach estimation`)
-          }
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Error at find page ${util.inspect(err)}`)
-        })
+
+  dataLayer.updatePageObject(req.params._id, {connected: true})
+    .then(result => {
+      res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at find page ${util.inspect(err)}`)
+      logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
       res.status(500).json({status: 'failed', payload: err})
     })
 }
@@ -309,32 +272,5 @@ exports.deleteWhitelistDomain = function (req, res) {
           return res.status(500).json({status: 'success', payload: temp})
         }
       })
-    })
-}
-
-function createTag (user, page, tag) {
-  needle('post', `https://graph.facebook.com/v2.11/me/custom_labels?accessToken=${page.pageAccessToken}`)
-    .then(label => {
-      if (label.id) {
-        let tagData = {
-          tag: tag,
-          userId: user._id,
-          companyId: user.companyId,
-          pageId: page._id,
-          labelFbId: label.id
-        }
-        callApi('tags', 'post', tagData, '', 'kiboengage')
-          .then(created => {
-            logger.serverLog(TAG, `default tag created successfully!`)
-          })
-          .catch(err => {
-            logger.serverLog(TAG, `Error at save tag ${util.inspect(err)}`)
-          })
-      } else {
-        logger.serverLog(TAG, `Error at create tag on Facebook ${util.inspect(label.error)}`)
-      }
-    })
-    .catch(err => {
-      logger.serverLog(TAG, `Error at create tag on Facebook ${util.inspect(err)}`)
     })
 }

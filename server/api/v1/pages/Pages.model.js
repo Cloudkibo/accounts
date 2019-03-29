@@ -37,10 +37,7 @@ const pageSchema = new Schema({
   gotPageSubscriptionPermission: {
     type: Boolean, default: false
   },
-  whitelist_domains: [String],
-  reachEstimationId: String,
-  subscriberLimitForBatchAPI: {type: Number, default: 100}
-
+  whitelist_domains: [String]
 })
 
 module.exports = mongoose.model('pages', pageSchema)
