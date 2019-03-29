@@ -171,7 +171,7 @@ function createTagOnFacebook (tag, accessToken, callback) {
     {'name': tag.tag}
   )
     .then(label => {
-      console.log('get label response', util.inspect(label))
+      console.log('get label response', util.inspect(label.body))
       if (label.body.error) {
         callback(label.body.error)
       } else {
