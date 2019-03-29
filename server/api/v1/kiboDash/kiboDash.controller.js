@@ -146,6 +146,7 @@ exports.companyWiseData = function (req, res) {
         })
     }
   }).catch((err) => {
+    console.log('outer catch', err)
     res.status(500).json({
       status: 'failed',
       error: err
