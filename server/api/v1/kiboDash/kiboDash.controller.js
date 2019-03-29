@@ -104,6 +104,7 @@ exports.companyWiseData = function (req, res) {
     dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
   }
   console.log('dateFilterAggregates new', dateFilterAggregates)
+  console.log('dateFilterSubscribers new', JSON.stringify(dateFilterSubscribers))
 
   let companySubscribers = CompanyUsersDataLayer.aggregateInfo([joinCompanyWithSubscribers, dateFilterSubscribers, selectCompanyFields])
   let numberOfBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, groupCompanyWiseAggregates)
@@ -138,12 +139,14 @@ exports.companyWiseData = function (req, res) {
           }
         })
         .catch((err) => {
+          console.log('in error', err)
           return res.status(500).json({
             status: 'failed',
             description: `Internal Server Error ${JSON.stringify(err)}`})
         })
     }
   }).catch((err) => {
+    console.log('outer catch', err)
     res.status(500).json({
       status: 'failed',
       error: err
@@ -160,7 +163,6 @@ exports.getFacebookAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectFacebookType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
@@ -174,7 +176,6 @@ exports.getFacebookAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectFacebookType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
@@ -192,7 +193,6 @@ exports.getTwitterAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectTwitterType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
@@ -206,7 +206,6 @@ exports.getTwitterAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectTwitterType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
@@ -225,7 +224,6 @@ exports.getWordpressAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectWordpressType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
@@ -239,7 +237,6 @@ exports.getWordpressAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectWordpressType)
       .then((result) => {
-        logger.serverLog(TAG, `Sending facebook response ${JSON.stringify(result)}`)
         return res.status(200).json({status: 'success', payload: result})
       })
       .catch((err) => {
