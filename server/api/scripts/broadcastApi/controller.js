@@ -117,12 +117,9 @@ exports.normalizeTagsData = function (req, res) {
               TagsModel.find({pageId: page._id}).exec()
                 .then(tags => {
                   if (page && validAccessToken(page)) {
-                    async.each(tags, function (tag, callback) {
-                      createTagOnFacebook(tag, page.accessToken, callback)
-                    }, function (err, results) {
-                      if (err) {
-                        return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                      } else if (uniquePages.length - 1 === i) {
+                    tags.forEach(tag => {
+                      createTagOnFacebook(tag, page.accessToken)
+                      if (uniquePages.length - 1 === i) {
                         return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
                       }
                     })
@@ -131,12 +128,9 @@ exports.normalizeTagsData = function (req, res) {
                       .then(resp => {
                         console.log('get accessToken response', util.inspect(resp))
                         let accessToken = resp.body.accessToken
-                        async.each(tags, function (tag, callback) {
-                          createTagOnFacebook(tag, accessToken, callback)
-                        }, function (err, results) {
-                          if (err) {
-                            return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                          } else if (uniquePages.length - 1 === i) {
+                        tags.forEach(tag => {
+                          createTagOnFacebook(tag, accessToken)
+                          if (uniquePages.length - 1 === i) {
                             return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
                           }
                         })
@@ -167,27 +161,25 @@ exports.normalizeTagsData = function (req, res) {
     })
 }
 
-function createTagOnFacebook (tag, accessToken, callback) {
+function createTagOnFacebook (tag, accessToken) {
   needle(
     'post',
     `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
     {'name': tag.tag}
   )
     .then(label => {
-      console.log('get label response', util.inspect(label))
       if (label.body.error) {
-        callback(label.body.error)
+        console.log('create labele error', util.inspect(label.body.error))
       } else {
         TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
           .then(updated => {
-            callback(null, updated)
+            console.log('updated tag', util.inspect(updated))
           })
-          .catch(err => callback(err))
+          .catch(err => console.log('update tag error', util.inspect(err)))
       }
     })
     .catch(err => {
-      console.log('get label error', util.inspect(err))
-      callback(err)
+      console.log('create label error', util.inspect(err))
     })
 }
 
