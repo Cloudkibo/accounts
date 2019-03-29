@@ -112,7 +112,8 @@ exports.companyWiseData = function (req, res) {
   let numberOfSurveys = dataLayer.aggregateForSurveys(dateFilterAggregates, groupCompanyWiseAggregates)
   let companyPagesCount = PagesDataLayer.aggregateInfo([companyWisePageCount])
   let companyConnectedPagesCount = PagesDataLayer.aggregateInfo([filterConnectedPages, companyWisePageCount])
-  let finalResults = Promise.all([companySubscribers])
+  let finalResults = Promise.all([companySubscribers, numberOfBroadcasts, numberOfPolls, numberOfSurveys,
+    companyPagesCount, companyConnectedPagesCount])
 
   finalResults.then(function (results) {
     let data = {}

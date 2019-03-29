@@ -76,7 +76,6 @@ exports.selectCompanyFields = {
   $project: {
     companyId: true,
     userId: true,
-    userName: '',
     numberOfSubscribers: { $size: '$companysubscribers' },
     numberOfBroadcasts: {
       $literal: 0
