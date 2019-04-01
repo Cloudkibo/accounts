@@ -444,7 +444,7 @@ exports.analyzePages = function (req, res) {
     {$lookup: {from: 'users', localField: 'userId', foreignField: '_id', as: 'userId'}},
     {$unwind: '$userId'},
     {$limit: req.body.limit},
-    {$skip: req.body.limit}
+    {$skip: req.body.skip}
   ]).exec()
     .then(pages => {
       intervalForEach(pages, 500, res)
