@@ -421,7 +421,7 @@ function intervalForEach (array, delay, res) {
       if (array[current].userId && array[current].userId.facebookInfo) {
         needle('get', `https://graph.facebook.com/v2.10/${array[current].pageId}?fields=access_token&access_token=${array[current].userId.facebookInfo.fbToken}`)
           .then(resp => {
-            if (!resp.error && !resp.access_token) {
+            if (!resp.body.error && !resp.body.access_token) {
               count++
               data.push(array[current]._id)
               current++
