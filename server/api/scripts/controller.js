@@ -424,13 +424,17 @@ function intervalForEach (array, delay, res) {
             if (!resp.error && !resp.access_token) {
               count++
               data.push(array[current]._id)
+              current++
+            } else {
+              current++
             }
           })
           .catch(err => {
             return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
           })
+      } else {
+        current++
       }
-      current++
     }
   }, delay)
 }
