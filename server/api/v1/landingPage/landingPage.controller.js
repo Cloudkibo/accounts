@@ -24,7 +24,7 @@ exports.query = function (req, res) {
       if (result.length > 0) {
         //populateSubmittedState(result)
           //.then(result => {
-            console.log('result here', result)
+            console.log('result', result)
             res.status(200).json({status: 'success', payload: result})
           //})
           // .catch(err => {
