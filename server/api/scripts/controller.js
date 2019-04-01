@@ -10,6 +10,7 @@ const UserModel = require('../v1/user/user.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
+const needle = require('needle')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
@@ -404,5 +405,31 @@ function updatePlatform (user, callback) {
     })
     .catch(err => {
       callback(err)
+    })
+}
+
+exports.analyzePages = function (req, res) {
+  PagesModel.find({}).populate('userId').exec()
+    .then(pages => {
+      let data = []
+      let count = 0
+      pages.forEach((page, i) => {
+        needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+          .then(resp => {
+            if (!resp.error && !resp.access_token) {
+              count++
+              data.push(page._id)
+            }
+            if (i === pages.length - 1) {
+              return res.status(200).json({status: 'success', payload: data, count})
+            }
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
+          })
+      })
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
     })
 }
