@@ -84,3 +84,7 @@ exports.aggregateInfo = (query) => {
   return UserModel.aggregate(query)
     .exec()
 }
+exports.distinctQuery = (query) => {
+  return UserModel.distinct(query)
+    .exec()
+}

@@ -13,6 +13,9 @@ exports.validateAndConvert = (body) => {
       if (obj.$match.companyId) {
         newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
       }
+      if (obj.$match.userId) {
+        newBody[index].$match.userId = mongoose.Types.ObjectId(newBody[index].$match.userId)
+      }
       if (obj.$match._id && !obj.$match._id.$exists) {
         newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
       }

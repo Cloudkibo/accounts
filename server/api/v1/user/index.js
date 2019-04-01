@@ -61,4 +61,12 @@ router.get('/updatePicture',
   auth.isAuthenticated(),
   controller.updatePicture)
 
+router.post('/aggregate',
+  auth.isAuthenticated(),
+  controller.aggregate)
+
+router.post('/distinct',
+  auth.isAuthenticated(),
+  controller.distinct)
+
 module.exports = router
