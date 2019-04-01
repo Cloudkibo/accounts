@@ -440,7 +440,12 @@ function intervalForEach (array, delay, res) {
 }
 
 exports.analyzePages = function (req, res) {
-  PagesModel.find({}).populate('userId').limit(req.body.limit).skip(req.body.skip).exec()
+  PagesModel.aggregate([
+    {$lookup: {from: 'users', localField: 'userId', foreignField: '_id', as: 'userId'}},
+    {$unwind: '$userId'},
+    {$limit: req.body.limit},
+    {$skip: req.body.limit}
+  ]).exec()
     .then(pages => {
       intervalForEach(pages, 500, res)
     })
