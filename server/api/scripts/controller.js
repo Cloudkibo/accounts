@@ -414,19 +414,25 @@ exports.analyzePages = function (req, res) {
       let data = []
       let count = 0
       pages.forEach((page, i) => {
-        needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
-          .then(resp => {
-            if (!resp.error && !resp.access_token) {
-              count++
-              data.push(page._id)
-            }
-            if (i === pages.length - 1) {
-              return res.status(200).json({status: 'success', payload: data, count})
-            }
-          })
-          .catch(err => {
-            return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
-          })
+        if (page.userId && page.userId.facebookInfo) {
+          needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+            .then(resp => {
+              if (!resp.error && !resp.access_token) {
+                count++
+                data.push(page._id)
+              }
+              if (i === pages.length - 1) {
+                return res.status(200).json({status: 'success', payload: data, count})
+              }
+            })
+            .catch(err => {
+              return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
+            })
+        } else {
+          if (i === pages.length - 1) {
+            return res.status(200).json({status: 'success', payload: data, count})
+          }
+        }
       })
     })
     .catch(err => {
