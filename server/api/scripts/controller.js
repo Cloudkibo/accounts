@@ -408,32 +408,37 @@ function updatePlatform (user, callback) {
     })
 }
 
+function intervalForEach (array, delay, res) {
+  let current = 0
+  let data = []
+  let count = 0
+
+  let interval = setInterval(() => {
+    if (current === array.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: data, count})
+    } else {
+      if (array[current].userId && array[current].userId.facebookInfo) {
+        needle('get', `https://graph.facebook.com/v2.10/${array[current].pageId}?fields=access_token&access_token=${array[current].userId.facebookInfo.fbToken}`)
+          .then(resp => {
+            if (!resp.error && !resp.access_token) {
+              count++
+              data.push(array[current]._id)
+            }
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
+          })
+      }
+      current++
+    }
+  }, delay)
+}
+
 exports.analyzePages = function (req, res) {
-  PagesModel.find({}).populate('userId').exec()
+  PagesModel.find({}).populate('userId').limit(req.body.limit).skip(req.body.skip).exec()
     .then(pages => {
-      let data = []
-      let count = 0
-      pages.forEach((page, i) => {
-        if (page.userId && page.userId.facebookInfo) {
-          needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
-            .then(resp => {
-              if (!resp.error && !resp.access_token) {
-                count++
-                data.push(page._id)
-              }
-              if (i === pages.length - 1) {
-                return res.status(200).json({status: 'success', payload: data, count})
-              }
-            })
-            .catch(err => {
-              return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
-            })
-        } else {
-          if (i === pages.length - 1) {
-            return res.status(200).json({status: 'success', payload: data, count})
-          }
-        }
-      })
+      intervalForEach(pages, 500, res)
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
