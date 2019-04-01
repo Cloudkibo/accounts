@@ -22,14 +22,14 @@ exports.query = function (req, res) {
   dataLayer.findLandingPages(req.body)
     .then(result => {
       if (result.length > 0) {
-        populateSubmittedState(result)
-          .then(result => {
+        //populateSubmittedState(result)
+          //.then(result => {
             console.log('result', result)
-            res.status(200).json({status: 'success', payload: result.landingPages})
-          })
-          .catch(err => {
-            res.status(500).json({status: 'failed', payload: err})
-          })
+            res.status(200).json({status: 'success', payload: result})
+          //})
+          // .catch(err => {
+          //   res.status(500).json({status: 'failed', payload: err})
+          // })
       } else {
         res.status(200).json({status: 'success', payload: []})
       }
@@ -127,7 +127,6 @@ function populateSubmittedState (result) {
                 description: result[i].submittedState.description,
                 buttonText: result[i].submittedState.buttonText,
                 state: {
-                  _id: state._id,
                   backgroundColor: state.backgroundColor,
                   titleColor: state.titleColor,
                   descriptionColor: state.descriptionColor,
