@@ -19,6 +19,28 @@ exports.validateAndConvert = (body) => {
       if (obj.$match._id && !obj.$match._id.$exists) {
         newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
       }
+      if (obj.$match && obj.$match.$and) {
+        obj.$match.$and.forEach((object, index1) => {
+          if (object.companyId) {
+            newBody[index].$match.$and[index1].companyId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].companyId)
+          }
+          if (object.pageId && !object.pageId.$exists) {
+            newBody[index].$match.$and[index1].pageId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].pageId)
+          }
+          if (object['pageId._id'] && !object['pageId._id'].$exists) {
+            newBody[index].$match.$and[index1]['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['pageId._id'])
+          }
+          if (object._id && object._id.$gt) {
+            newBody[index].$match.$and[index1]._id.$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]._id.$gt)
+          }
+          if (object._id && object._id.$lt) {
+            newBody[index].$match.$and[index1]._id.$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]._id.$lt)
+          }
+          if (object.userId) {
+            newBody[index].$match.$and[index1].userId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].userId)
+          }
+        })
+      }
     }
   })
   return newBody
