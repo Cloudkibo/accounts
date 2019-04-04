@@ -16,7 +16,8 @@ var CompanyprofileSchema = new Schema({
     enum: ['AUTOMATED_CHAT', 'HUMAN_CHAT', 'MIX_CHAT', 'DISABLE_CHAT'],
     default: 'MIX_CHAT'
   },
-  twilio: Schema.Types.Mixed
+  twilio: Schema.Types.Mixed,
+  twilioWhatsApp: Schema.Types.Mixed
 })
 
 var stripeOptions = config.stripeOptions
