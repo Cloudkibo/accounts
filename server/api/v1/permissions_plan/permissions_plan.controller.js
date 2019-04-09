@@ -3,7 +3,7 @@ const logger = require('../../../components/logger')
 const dataLayer = require('./permissions_plan.datalayer')
 const TAG = '/api/v1/permissions_plan/permissions_plan.controller.js'
 const PlanModel = require('../plans/plans.model')
-const Features = require('./permissions_plan.model')
+const Features = require('./Permissions_Plan.model')
 const util = require('util')
 
 exports.index = function (req, res) {
