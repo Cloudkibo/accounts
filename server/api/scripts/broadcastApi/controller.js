@@ -125,6 +125,8 @@ exports.normalizeTagsData = function (req, res) {
                       let accessToken = resp.body.access_token
                       if (accessToken) {
                         createTagOnFacebook(tags, accessToken, 300, res)
+                      } else {
+                        return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
                       }
                     })
                     .catch(err => {
@@ -170,6 +172,7 @@ function createTagOnFacebook (array, accessToken, delay, res) {
             TagsModel.update({_id: array[current]._id}, {labelFbId: label.body.id}).exec()
               .then(updated => {
                 console.log('updated successfully!')
+                current++
               })
               .catch(err => {
                 return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
