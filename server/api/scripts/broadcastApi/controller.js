@@ -123,7 +123,9 @@ exports.normalizeTagsData = function (req, res) {
                     .then(resp => {
                       console.log('get accessToken response', util.inspect(resp))
                       let accessToken = resp.body.access_token
-                      createTagOnFacebook(tags, accessToken, 300, res)
+                      if (accessToken) {
+                        createTagOnFacebook(tags, accessToken, 300, res)
+                      }
                     })
                     .catch(err => {
                       return res.status(500).json({status: 'failed', payload: `Failed to fetch accessToken ${err}`})
