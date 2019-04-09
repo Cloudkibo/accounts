@@ -32,6 +32,6 @@ router.post('/aggregate',
   auth.isAuthenticated(),
   controller.aggregate)
 
-// todo populate permission plan
+router.get('/populatePlanPermissions', controller.populatePlanPermissions)
 
 module.exports = router
