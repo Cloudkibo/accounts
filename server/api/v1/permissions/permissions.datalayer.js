@@ -22,7 +22,8 @@ exports.updatUserPermissionsObjectUsingQuery = (query, update, options) => {
 }
 
 exports.savePermissionObject = (object) => {
-  return object.save()
+  let obj = new RolePermissionsModel(object)
+  return obj.save()
 }
 
 exports.roleAggregate = (aggregateObject) => {
