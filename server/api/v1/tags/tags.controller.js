@@ -35,8 +35,7 @@ exports.findOne = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create point')
-  let payload = logiclayer.prepareCreatePayload(req.body)
-  datalayer.createTagObject(payload)
+  datalayer.createTagObject(req.body)
     .then(tag => {
       logger.serverLog(TAG, `created tag: ${util.inspect(tag)}`)
       res.status(200).json({status: 'success', payload: tag})
