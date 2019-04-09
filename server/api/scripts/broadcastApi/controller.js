@@ -117,29 +117,13 @@ exports.normalizeTagsData = function (req, res) {
             TagsModel.find({pageId: page._id}).exec()
               .then(tags => {
                 if (page && validAccessToken(page)) {
-                  async.each(tags, function (tag, callback) {
-                    createTagOnFacebook(tag, page.accessToken, callback)
-                  }, function (err, results) {
-                    if (err) {
-                      return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                    } else {
-                      return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
-                    }
-                  })
+                  createTagOnFacebook(tags, page.accessToken, 300, res)
                 } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
                   needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
                     .then(resp => {
                       console.log('get accessToken response', util.inspect(resp))
                       let accessToken = resp.body.access_token
-                      async.each(tags, function (tag, callback) {
-                        createTagOnFacebook(tag, accessToken, callback)
-                      }, function (err, results) {
-                        if (err) {
-                          return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
-                        } else {
-                          return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
-                        }
-                      })
+                      createTagOnFacebook(tags, accessToken, 300, res)
                     })
                     .catch(err => {
                       return res.status(500).json({status: 'failed', payload: `Failed to fetch accessToken ${err}`})
@@ -164,28 +148,37 @@ exports.normalizeTagsData = function (req, res) {
     })
 }
 
-function createTagOnFacebook (tag, accessToken, callback) {
-  needle(
-    'post',
-    `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
-    {'name': tag.tag}
-  )
-    .then(label => {
-      console.log('get label response', util.inspect(label.body))
-      if (label.body.error) {
-        callback(label.body.error)
-      } else {
-        TagsModel.update({_id: tag._id}, {labelFbId: label.body.id}).exec()
-          .then(updated => {
-            callback(null, updated)
-          })
-          .catch(err => callback(err))
-      }
-    })
-    .catch(err => {
-      console.log('get label error', util.inspect(err))
-      callback(err)
-    })
+function createTagOnFacebook (array, accessToken, delay, res) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === array.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: `Normalized successfully!`})
+    } else {
+      needle(
+        'post',
+        `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
+        {'name': array[current].tag}
+      )
+        .then(label => {
+          console.log('get label response', util.inspect(label.body))
+          if (label.body.error) {
+            return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${label.body.error}`})
+          } else {
+            TagsModel.update({_id: array[current]._id}, {labelFbId: label.body.id}).exec()
+              .then(updated => {
+                console.log('updated successfully!')
+              })
+              .catch(err => {
+                return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+              })
+          }
+        })
+        .catch(err => {
+          return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${err}`})
+        })
+    }
+  }, delay)
 }
 
 exports.normalizePagesData = function (req, res) {
