@@ -42,7 +42,11 @@ module.exports = function (app) {
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
   app.use('/api/kibodash', require('./api/v1/kiboDash'))
   app.use('/api/v1/contacts', require('./api/v1/contacts'))
+<<<<<<< HEAD
   app.use('/api/v1/sponsoredmessaging', require('./api/v1/sponsoredMessaging'))
+=======
+  app.use('/api/v1/whatsAppContacts', require('./api/v1/whatsAppContacts'))
+>>>>>>> faa6f413757c08e225f6adc2b7805d5587cf2a25
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
