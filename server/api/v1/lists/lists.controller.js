@@ -27,7 +27,7 @@ exports.create = function (req, res) {
         dataLayer.createListObject(
           req.body.listName, req.body.userId, req.body.companyId, req.body.content,
           req.body.conditions, req.body.initialList, req.body.parentList,
-          req.body.parentListName
+          req.body.parentListName, req.body.joiningCondition
         )
           .then(result => {
             res.status(200).json({status: 'success', payload: result})
@@ -35,8 +35,7 @@ exports.create = function (req, res) {
           .catch(err => {
             res.status(500).json({status: 'failed', payload: err})
           })
-      }
-      else {
+      } else {
         console.log('exist list with this name')
         res.status(500).json({status: 'failed', payload: 'List is already created with this name Please choose another name'})
       }

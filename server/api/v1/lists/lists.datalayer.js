@@ -23,16 +23,18 @@ exports.aggregateInfo = (query) => {
 }
 
 exports.createListObject = (listName, userId, companyId, content, conditions,
-  initialList, parentList, parentListName) => {
-  let payload = { listName,
+  initialList, parentList, parentListName, joiningCondition) => {
+  let payload = {
+    listName,
     userId,
     companyId,
     content,
     conditions,
     initialList,
     parentList,
-    parentListName }
-
+    parentListName,
+    joiningCondition
+  }
   let obj = new ListModel(payload)
   return obj.save()
 }
