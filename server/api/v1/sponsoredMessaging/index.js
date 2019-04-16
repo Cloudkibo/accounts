@@ -11,5 +11,10 @@ router.post('/',
   auth.isAuthenticated(),
   controller.create)
 
+  router.post('/:id',
+  validate({body: {}}),
+  auth.isAuthenticated(),
+  controller.update)
+
 
   module.exports = router
