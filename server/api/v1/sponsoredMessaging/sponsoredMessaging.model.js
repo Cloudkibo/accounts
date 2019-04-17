@@ -6,6 +6,7 @@ let sponsoredMessagesSchema = new Schema({
     message_creative_id: String,
     ad_set_payload: Schema.Types.Mixed,
     ad_id: String,
+    ad_name: String,
     campaign_name: String,
     campaign_id: String,
     status: String,
