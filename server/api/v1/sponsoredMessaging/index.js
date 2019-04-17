@@ -16,5 +16,9 @@ router.post('/',
   auth.isAuthenticated(),
   controller.update)
 
+  router.delete('/:_id',
+  auth.isAuthenticated(),
+  controller.delete)
+
 
   module.exports = router
