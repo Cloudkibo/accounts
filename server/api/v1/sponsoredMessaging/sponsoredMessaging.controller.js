@@ -29,20 +29,6 @@ exports.update = function (req, res) {
     })
 }
 
-exports.findSponsoredMessage = function(req, res){
-  let id = req.params.id
-  console.log('id here',id)
-
-    dataLayer.findSponsoredMessage(id)
-    .then(sponsoredMessage => {
-      console.log('spons', sponsoredMessage)
-      return res.status(201).json({status:'success', payload: sponsoredMessage})
-    })
-    .catch(error => {
-      return res.status(500).json({status:'failed', payload: `Couldn't fetch sponsored Messgae ${JSON.stringify(error)}`})
-    })
-  }
-
 exports.delete = function (req, res) {
   logger.serverLog(SponsoredMessage, 'Hit the delete Sponsored Messaging endpoint')
 
@@ -55,3 +41,20 @@ exports.delete = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.getAllSponsoredMessages = function(req, res){
+  let query = req.body
+  console.log('query', query)
+    dataLayer.findSponsoredMessage(query)
+    .then(sponsoredMessages => {
+      if (sponsoredMessages.length > 0) {
+        console.log('result', sponsoredMessages)
+        res.status(200).json({status: 'success', payload: sponsoredMessages})  
+      } else {
+        res.status(200).json({status: 'success', payload: []})
+      }
+    })
+    .catch(error => {
+      return res.status(500).json({status:'failed', payload: `Couldn't fetch sponsored Messges ${JSON.stringify(error)}`})
+    })
+  }

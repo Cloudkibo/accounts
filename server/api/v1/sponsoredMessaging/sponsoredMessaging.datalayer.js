@@ -11,8 +11,8 @@ exports.updateSponsoredMessage = (id,body) => {
     .exec()
 }
 
-exports.findSponsoredMessage = (id) => {
-    return sponsoredMessagingModel.findOne({_id:id})
+exports.findSponsoredMessage = (query) => {
+    return sponsoredMessagingModel.find(query)
     .exec()
 }
 
