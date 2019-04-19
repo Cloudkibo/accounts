@@ -10,3 +10,8 @@ exports.updateSponsoredMessage = (id,body) => {
     return sponsoredMessagingModel.updateOne({_id:id},body)
     .exec()
 }
+
+exports.findSponsoredMessage = (id) => {
+    return sponsoredMessagingModel.findOne({_id:id})
+    .exec()
+}

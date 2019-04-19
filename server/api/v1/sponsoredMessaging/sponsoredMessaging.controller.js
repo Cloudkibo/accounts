@@ -27,3 +27,17 @@ exports.update = function (req, res) {
       res.status(500).json({status: 'failed', payload: err})
     })
 }
+
+exports.findSponsoredMessage = function(req, res){
+  let id = req.params.id
+  console.log('id here',id)
+
+    dataLayer.findSponsoredMessage(id)
+    .then(sponsoredMessage => {
+      console.log('spons', sponsoredMessage)
+      return res.status(201).json({status:'success', payload: sponsoredMessage})
+    })
+    .catch(error => {
+      return res.status(500).json({status:'failed', payload: `Couldn't fetch sponsored Messgae ${JSON.stringify(error)}`})
+    })
+}

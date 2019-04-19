@@ -1,4 +1,4 @@
-const express = require('express')
+  const express = require('express')
 const router = express.Router()
 const validate = require('express-jsonschema').validate
 const auth = require('./../../../auth/auth.service')
@@ -15,6 +15,12 @@ router.post('/',
   validate({body: {}}),
   auth.isAuthenticated(),
   controller.update)
+
+  router.get('/query/:id',
+  validate({body: {}}),
+  auth.isAuthenticated(),
+  controller.findSponsoredMessage
+  )
 
 
   module.exports = router
