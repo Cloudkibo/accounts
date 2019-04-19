@@ -16,11 +16,12 @@ router.post('/',
   auth.isAuthenticated(),
   controller.update)
 
-  router.get('/query/:id',
+  router.get('/query',
   validate({body: {}}),
   auth.isAuthenticated(),
-  controller.findSponsoredMessage
+  controller.getAllSponsoredMessages
   )
+
   router.delete('/:_id',
   auth.isAuthenticated(),
   controller.delete)
