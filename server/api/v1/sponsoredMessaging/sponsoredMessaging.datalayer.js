@@ -15,3 +15,8 @@ exports.findSponsoredMessage = (id) => {
     return sponsoredMessagingModel.findOne({_id:id})
     .exec()
 }
+
+exports.deleteSponsoredMessage = (sponsoredMessageId) => {
+    return sponsoredMessagingModel.deleteOne({_id: sponsoredMessageId})
+      .exec()
+  }
