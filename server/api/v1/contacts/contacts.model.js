@@ -8,7 +8,8 @@ let contacts = new Schema({
   otherColumns: Schema.Types.Mixed,
   datetime: { type: Date, default: Date.now },
   last_activity_time: { type: Date },
-  hasChat: {type: Boolean, default: false}
+  hasChat: {type: Boolean, default: false},
+  isSubscribed: {type: Boolean, default: true}
 })
 
 module.exports = mongoose.model('contacts', contacts)

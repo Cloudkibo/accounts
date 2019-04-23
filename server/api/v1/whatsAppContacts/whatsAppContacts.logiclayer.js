@@ -30,5 +30,6 @@ exports.validateAndConvert = (body) => {
       })
     }
   })
+  console.log('newbody in whatsAppContacts', newBody)
   return newBody
 }
