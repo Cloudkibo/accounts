@@ -314,3 +314,215 @@ exports.normalizeTagSubscribersList = function (req, res) {
       return res.status(500).json({status: 'failed', payload: `Faild to fetch tags ${err}`})
     })
 }
+
+exports.normalizeDefaultTags = function (req, res) {
+  PageModel.aggregate([
+    {$match: {connected: true}},
+    {$group: {_id: '$userId'}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]).exec()
+    .then(uniqueUsers => {
+      if (uniqueUsers.length > 0) {
+        for (let i = 0; i < uniqueUsers.length; i++) {
+          PageModel.find({userId: uniqueUsers[i]._id, connected: true}).exec()
+            .then(pages => {
+              createDefaultTags(pages, 3000)
+              if (i === uniqueUsers.length - 1) {
+                return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
+              }
+            })
+            .catch(err => logger.serverLog(TAG, `failed to fetch pages ${err}`))
+        }
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No user found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch uniqueUsers ${err}`})
+    })
+}
+
+function createDefaultTags (pages, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === pages.length) {
+      clearInterval(interval)
+    } else {
+      needle('get', `https://graph.facebook.com/v2.11/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
+        .then(labelResp => {
+          if (labelResp.body.error) {
+            logger.serverLog(TAG, `Failed to fetch labels ${JSON.stringify(labelResp.body.error)}`)
+            current++
+          } else {
+            logger.serverLog(TAG, `Fetch labels response ${JSON.stringify(labelResp.body.data.length)}`)
+            let fblabels = labelResp.body.data
+            let fbtags = fblabels.length > 0 && fblabels.map((l) => l.name)
+            TagsModel.find({pageId: pages[current]._id, defaultTag: true}).exec()
+              .then(tags => {
+                if (tags.length > 0) {
+                  let localtags = tags.map((t) => t.tag)
+                  if (fbtags.includes(`_${pages[current].pageId}_1`) && !localtags.includes(`_${pages[current].pageId}_1`)) {
+                    createDefaultTag(`_${pages[current].pageId}_1`, pages[current], fblabels.filter((l) => l.name === `_${pages[current].pageId}_1`)[0].id)
+                  } else if (!localtags.includes(`_${pages[current].pageId}_1`)) {
+                    createDefaultTagFb(pages[current], `_${pages[current].pageId}_1`)
+                  }
+                  if (fbtags.includes('male') && !localtags.includes('male')) {
+                    createDefaultTag('male', pages[current], fblabels.filter((l) => l.name === 'male')[0].id)
+                  } else if (!localtags.includes('male')) {
+                    createDefaultTagFb(pages[current], 'male')
+                  }
+                  if (fbtags.includes('female') && !localtags.includes('female')) {
+                    createDefaultTag('female', pages[current], fblabels.filter((l) => l.name === 'female')[0].id)
+                  } else if (!localtags.includes('female')) {
+                    createDefaultTagFb(pages[current], 'female')
+                  }
+                  if (fbtags.includes('other') && !localtags.includes('other')) {
+                    createDefaultTag('other', pages[current], fblabels.filter((l) => l.name === 'other')[0].id)
+                  } else if (!localtags.includes('other')) {
+                    createDefaultTagFb(pages[current], 'other')
+                  }
+                  current++
+                } else {
+                  if (fbtags.includes(`_${pages[current].pageId}_1`)) {
+                    createDefaultTag(`_${pages[current].pageId}_1`, pages[current], fblabels.filter((l) => l.name === `_${pages[current].pageId}_1`)[0].id)
+                  } else {
+                    createDefaultTagFb(pages[current], `_${pages[current].pageId}_1`)
+                  }
+                  if (fbtags.includes('male')) {
+                    createDefaultTag('male', pages[current], fblabels.filter((l) => l.name === 'male')[0].id)
+                  } else {
+                    createDefaultTagFb(pages[current], 'male')
+                  }
+                  if (fbtags.includes('female')) {
+                    createDefaultTag('female', pages[current], fblabels.filter((l) => l.name === 'female')[0].id)
+                  } else {
+                    createDefaultTagFb(pages[current], 'female')
+                  }
+                  if (fbtags.includes('other')) {
+                    createDefaultTag('other', pages[current], fblabels.filter((l) => l.name === 'other')[0].id)
+                  } else {
+                    createDefaultTagFb(pages[current], 'other')
+                  }
+                  current++
+                }
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Failed to fetch tags ${err}`)
+                current++
+              })
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch labels ${err}`)
+          current++
+        })
+    }
+  }, delay)
+}
+
+function createDefaultTag (label, page, fbid) {
+  let tagData = {
+    isList: false,
+    defaultTag: true,
+    tag: label,
+    userId: page.userId,
+    companyId: page.companyId,
+    pageId: page._id,
+    labelFbId: fbid
+  }
+  let TagObj = new TagsModel(tagData)
+  TagObj.save()
+  logger.serverLog(TAG, `Tag ${label} created successfully!`)
+}
+
+function createDefaultTagFb (page, label) {
+  needle('post', `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${page.accessToken}`, {'name': label})
+    .then(response => {
+      if (response.body.error) {
+        logger.serverLog(TAG, `Failed to create tag on facebook ${JSON.stringify(response.body.error)}`)
+      } else {
+        createDefaultTag(label, page, response.body.id)
+      }
+    })
+    .catch(err => logger.serverLog(TAG, `Failed to create tag on facebook ${err}`))
+}
+
+exports.associateDefaultTags = function (req, res) {
+  SubscribersModel.aggregate([
+    {$skip: req.body.skip},
+    {$limit: req.body.limit},
+    {$lookup: {from: 'pages', localField: 'pageId', foreignField: '_id', as: 'pageId'}},
+    {$unwind: '$pageId'}
+  ]).exec()
+    .then(subscribers => {
+      if (subscribers.length > 0) {
+        let pages = subscribers.map((s) => s.pageId._id)
+        let uniquePages = [...new Set(pages)]
+        for (let i = 0; i < uniquePages.length; i++) {
+          TagsModel.find({pageId: uniquePages[i], defaultTag: true}).exec()
+            .then(tags => {
+              if (tags.length > 0) {
+                let subs = subscribers.filter((s) => s.pageId._id === uniquePages[i])
+                associateDefaultTag(subs, tags, 3000)
+              }
+            })
+            .catch(err => logger.serverLog(TAG, `Failed to fetch defaultTags ${err}`))
+          if (i === uniquePages.length - 1) {
+            return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
+          }
+        }
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch subscribers ${err}`})
+    })
+}
+
+function associateDefaultTag (subscribers, tags, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === subscribers.length) {
+      clearInterval(interval)
+    } else {
+      needle('get', `https://graph.facebook.com/v2.11/${subscribers[current].senderId}/custom_labels?fields=name&access_token=${subscribers[current].pageId.accessToken}&limit=50`)
+        .then(response => {
+          if (response.body.error) {
+            logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${JSON.stringify(response.body.error)}`)
+            current++
+          } else {
+            let fbtags = response.body.data
+            let assignedTags = fbtags.map((t) => t.id)
+            for (let i = 0; i < tags.length; i++) {
+              if (!assignedTags.includes(tags[i].labelFbId)) {
+                assignTag(tags[i].labelFbId, subscribers[current])
+              }
+              if (i === tags.length - 1) {
+                current++
+              }
+            }
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
+          current++
+        })
+    }
+  }, delay)
+}
+
+function assignTag (fbid, subscriber) {
+  needle('post', `https://graph.facebook.com/v2.11/${fbid}/label?access_token=${subscriber.pageId.accessToken}`, {'user': subscriber.senderId})
+    .then(response => {
+      if (response.body.error) {
+        logger.serverLog(TAG, `Failed to assign tag ${JSON.stringify(response.body.error)}`)
+      } else {
+        logger.serverLog(TAG, 'Tag assigned successfully!')
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
+    })
+}
