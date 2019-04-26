@@ -11,5 +11,6 @@ router.get('/tagSubscribersDefault', controller.normalizeTagSubscribersDefault)
 router.get('/tagSubscribersList', controller.normalizeTagSubscribersList)
 router.post('/defaultTags', controller.normalizeDefaultTags)
 router.post('/associateDefaultTags', controller.associateDefaultTags)
+router.post('/defaultTags/unsubscribe', controller.normalizeDefaultTagsUnsubscribe)
 
 module.exports = router
