@@ -636,17 +636,21 @@ function associateUnsubscribeTag (subscribers, delay) {
               if (response.body.error) {
                 logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
                 console.log(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+                current++
               } else {
                 logger.serverLog(TAG, 'unsubscribeTag assigned succssfully!')
                 console.log(TAG, 'unsubscribeTag assigned succssfully!')
+                current++
               }
             })
             .catch(err => {
               logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(err)}`)
+              current++
             })
         })
         .catch(err => {
           logger.serverLog(TAG, `Failed to fetch unsubscribe tag ${err}`)
+          current++
         })
     }
   }, delay)
