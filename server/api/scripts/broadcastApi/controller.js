@@ -613,7 +613,7 @@ exports.normalizeAssociateTagsUnsubscribe = function (req, res) {
   ]).exec()
     .then(subscribers => {
       if (subscribers.length > 0) {
-        associateUnsubscribeTag(subscribers, 3000)
+        associateUnsubscribeTag(subscribers, res, 3000)
       } else {
         return res.status(404).json({status: 'failed', payload: 'No subscribers found'})
       }
@@ -623,11 +623,12 @@ exports.normalizeAssociateTagsUnsubscribe = function (req, res) {
     })
 }
 
-function associateUnsubscribeTag (subscribers, delay) {
+function associateUnsubscribeTag (subscribers, res, delay) {
   let current = 0
   let interval = setInterval(() => {
     if (current === subscribers.length) {
       clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: 'Normalized succssfully!'})
     } else {
       TagsModel.findOne({tag: `_${subscribers[current].pageId.pageId}_unsubscribe`, companyId: subscribers[current].companyId}).exec()
         .then(tag => {
