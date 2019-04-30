@@ -602,3 +602,52 @@ function assignTag (fbid, subscriber) {
       logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
     })
 }
+
+exports.normalizeAssociateTagsUnsubscribe = function (req, res) {
+  SubscribersModel.aggregate([
+    {$match: {isSubscribed: false}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit},
+    {$lookup: {from: 'pages', localField: 'pageId', foreignField: '_id', as: 'pageId'}},
+    {$unwind: '$pageId'}
+  ]).exec()
+    .then(subscribers => {
+      if (subscribers.length > 0) {
+        associateUnsubscribeTag(subscribers, 3000)
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch subscribers ${err}`})
+    })
+}
+
+function associateUnsubscribeTag (subscribers, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === subscribers.length) {
+      clearInterval(interval)
+    } else {
+      TagsModel.findOne({tag: `_${subscribers[current].pageId.pageId}_unsubscribe`, companyId: subscribers[current].companyId}).exec()
+        .then(tag => {
+          needle('post', `https://graph.facebook.com/v2.11/${tag.labelFbId}/label?access_token=${subscribers[current].pageId.accessToken}`, {'user': subscribers[current].senderId})
+            .then(response => {
+              if (response.body.error) {
+                logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+                console.log(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+              } else {
+                logger.serverLog(TAG, 'unsubscribeTag assigned succssfully!')
+                console.log(TAG, 'unsubscribeTag assigned succssfully!')
+              }
+            })
+            .catch(err => {
+              logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(err)}`)
+            })
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch unsubscribe tag ${err}`)
+        })
+    }
+  }, delay)
+}
