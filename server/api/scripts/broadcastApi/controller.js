@@ -602,3 +602,61 @@ function assignTag (fbid, subscriber) {
       logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
     })
 }
+
+exports.normalizeAssociateTagsUnsubscribe = function (req, res) {
+  SubscribersModel.aggregate([
+    {$match: {isSubscribed: false}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit},
+    {$lookup: {from: 'pages', localField: 'pageId', foreignField: '_id', as: 'pageId'}},
+    {$unwind: '$pageId'}
+  ]).exec()
+    .then(subscribers => {
+      if (subscribers.length > 0) {
+        associateUnsubscribeTag(subscribers, res, 3000)
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch subscribers ${err}`})
+    })
+}
+
+function associateUnsubscribeTag (subscribers, res, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === subscribers.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: 'Normalized succssfully!'})
+    } else {
+      TagsModel.findOne({tag: `_${subscribers[current].pageId.pageId}_unsubscribe`, companyId: subscribers[current].companyId}).exec()
+        .then(tag => {
+          if (tag) {
+            needle('post', `https://graph.facebook.com/v2.11/${tag.labelFbId}/label?access_token=${subscribers[current].pageId.accessToken}`, {'user': subscribers[current].senderId})
+              .then(response => {
+                if (response.body.error) {
+                  logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+                  console.log(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+                  current++
+                } else {
+                  logger.serverLog(TAG, 'unsubscribeTag assigned succssfully!')
+                  console.log(TAG, 'unsubscribeTag assigned succssfully!')
+                  current++
+                }
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(err)}`)
+                current++
+              })
+          } else {
+            current++
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch unsubscribe tag ${err}`)
+          current++
+        })
+    }
+  }, delay)
+}

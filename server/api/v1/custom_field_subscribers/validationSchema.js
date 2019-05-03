@@ -38,12 +38,6 @@ exports.queryPayload = {
         '_id': {
           'type': 'string'
         },
-        'customFieldId': {
-          'type': 'string'
-        },
-        'subscriberId': {
-          'type': 'string'
-        },
         'value': {
           'type': 'string'
         }
