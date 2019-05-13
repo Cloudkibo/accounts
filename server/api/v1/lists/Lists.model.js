@@ -13,6 +13,7 @@ const listSchema = new Schema({
   conditions: {type: Schema.Types.Mixed},
   initialList: { type: Boolean, default: false },
   parentList: { type: Schema.ObjectId },
+  joiningCondition: {type: String},
   parentListName: { type: String }
 })
 

@@ -27,7 +27,8 @@ exports.create = function (req, res) {
         dataLayer.createListObject(
           req.body.listName, req.body.userId, req.body.companyId, req.body.content,
           req.body.conditions, req.body.initialList, req.body.parentList,
-          req.body.parentListName, req.body.joiningCondition
+          req.body.parentListName,
+          req.body.joiningCondition
         )
           .then(result => {
             res.status(200).json({status: 'success', payload: result})
