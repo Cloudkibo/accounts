@@ -36,8 +36,7 @@ exports.create = function (req, res) {
           .catch(err => {
             res.status(500).json({status: 'failed', payload: err})
           })
-      }
-      else {
+      } else {
         console.log('exist list with this name')
         res.status(500).json({status: 'failed', payload: 'List is already created with this name Please choose another name'})
       }
