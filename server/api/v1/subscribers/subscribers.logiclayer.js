@@ -65,8 +65,14 @@ exports.validateAndConvert = (body) => {
       })
     }
 
-    if (obj.$match && obj.$match.tags_subscriber) {
-      newBody[index].$match.tags_subscriber.$elemMatch.tagId = mongoose.Types.ObjectId(newBody[index].$match.tags_subscriber.$elemMatch.tagId)
+    if (obj.$match && obj.$match['tags_subscriber.tagId']) {
+      console.log('obj.$match.tags_subscriber', obj.$match['tags_subscriber.tagId'])
+      obj.$match['tags_subscriber.tagId'].$in.forEach((tagID, index1) => {
+        // console.log('obj.$match.tags_subscriber inside', tagID)
+        obj.$match['tags_subscriber.tagId'].$in[index1] = mongoose.Types.ObjectId(tagID)
+        // console.log('inside new body', newBody[index].$match.tags_subscriber.$elemMatch.tagId.$in)
+      })
+    //  newBody[index].$match.tags_subscriber.$elemMatch.tagId = mongoose.Types.ObjectId(newBody[index].$match.tags_subscriber.$elemMatch.tagId)
     }
   })
   console.log('new body new', JSON.stringify(newBody))
