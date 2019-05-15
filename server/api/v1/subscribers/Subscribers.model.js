@@ -54,7 +54,8 @@ const subscriberSchema = new Schema({
     default: true
   },
   status: {
-    type: String
+    type: String,
+    default: 'new'
   },
   last_activity_time: {
     type: Date
