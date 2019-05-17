@@ -7,6 +7,7 @@ const path = require('path')
 const fs = require('fs')
 let request = require('request')
 const crypto = require('crypto')
+const youtubedl = require('youtube-dl')
 
 exports.index = function (req, res) {
   console.log('in upload function', req.files)
@@ -206,4 +207,63 @@ exports.download = function (req, res) {
     res.status(404)
       .json({status: 'success', payload: 'Not Found ' + JSON.stringify(err)})
   }
+}
+
+exports.downloadYouTubeVideo = function (req, res) {
+  downloadVideo(req.body)
+    .then(video => {
+      res.status(200).json({status: 'success', payload: video})
+    })
+    .catch(err => {
+      logger.serverLog(TAG,
+        `Inside Download file, err = ${JSON.stringify(err)}`)
+      res.status(404)
+        .json({status: 'success', payload: 'Not Found ' + JSON.stringify(err)})
+    })
+}
+
+function downloadVideo (data) {
+  return new Promise((resolve, reject) => {
+    let dir = path.resolve(__dirname, '../../../../broadcastFiles/userfiles')
+    let video = youtubedl(data.url)
+    let stream
+
+    video.on('info', (info) => {
+      console.log('youtube video info', info)
+      let today = new Date()
+      let uid = crypto.randomBytes(5).toString('hex')
+      let serverPath = 'f' + uid + '' + today.getFullYear() + '' +
+        (today.getMonth() + 1) + '' + today.getDate()
+      serverPath += '' + today.getHours() + '' + today.getMinutes() + '' +
+        today.getSeconds()
+      let fext = info.filename.split('.')
+      serverPath += '.' + fext[fext.length - 1].toLowerCase()
+      logger.serverLog(TAG, 'Download started')
+      logger.serverLog(TAG, 'filename: ' + info._filename)
+      logger.serverLog(TAG, 'size: ' + info.size)
+      let size = info.size
+      if (size < 25000000) {
+        stream = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))
+        stream.on('error', (error) => {
+          stream.end()
+          reject(error)
+        })
+        stream.on('finish', () => {
+          resolve({
+            id: data.id,
+            componentType: 'video',
+            fileName: info._filename,
+            type: 'video/mp4',
+            size: info.size,
+            fileurl: {
+              id: serverPath,
+              fileName: `${info._filename}`,
+              url: `${config.domain}/api/v1/files/download/${serverPath}`
+            }})
+        })
+      } else {
+        resolve('ERR_LIMIT_REACHED')
+      }
+    })
+  })
 }
