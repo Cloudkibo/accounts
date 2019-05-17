@@ -210,11 +210,14 @@ exports.download = function (req, res) {
 }
 
 exports.downloadYouTubeVideo = function (req, res) {
+  console.log(`downloadYouTubeVideo req.body ${req.body}`)
   downloadVideo(req.body)
     .then(video => {
+      console.log('YouTube Video successfully downloaded', video)
       res.status(200).json({status: 'success', payload: video})
     })
     .catch(err => {
+      console.log('downloadYouTubeVideo error', err)
       logger.serverLog(TAG,
         `Inside Download file, err = ${JSON.stringify(err)}`)
       res.status(404)
@@ -229,14 +232,15 @@ function downloadVideo (data) {
     let stream
 
     video.on('info', (info) => {
-      console.log('youtube video info', info)
+      // console.log('youtube video info', info)
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
       let serverPath = 'f' + uid + '' + today.getFullYear() + '' +
         (today.getMonth() + 1) + '' + today.getDate()
       serverPath += '' + today.getHours() + '' + today.getMinutes() + '' +
         today.getSeconds()
-      let fext = info.filename.split('.')
+      let fext = info._filename.split('.')
+      console.log('file text', fext)
       serverPath += '.' + fext[fext.length - 1].toLowerCase()
       logger.serverLog(TAG, 'Download started')
       logger.serverLog(TAG, 'filename: ' + info._filename)
@@ -253,7 +257,7 @@ function downloadVideo (data) {
             id: data.id,
             componentType: 'video',
             fileName: info._filename,
-            type: 'video/mp4',
+            type: `video/${info.ext}`,
             size: info.size,
             fileurl: {
               id: serverPath,
