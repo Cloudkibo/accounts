@@ -6,6 +6,7 @@ const listSchema = new Schema({
     type: String
   },
   userId: { type: Schema.ObjectId, ref: 'users' },
+  joiningCondition: {type: String},
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   datetime: { type: Date, default: Date.now },
   content: {type: Schema.Types.Mixed},
