@@ -228,7 +228,7 @@ exports.downloadYouTubeVideo = function (req, res) {
 function downloadVideo (data) {
   return new Promise((resolve, reject) => {
     let dir = path.resolve(__dirname, '../../../../broadcastFiles/userfiles')
-    let video = youtubedl(data.url)
+    let video = youtubedl(data.url, ['--format=18'])
     let stream1
     let stream2
 
@@ -249,8 +249,8 @@ function downloadVideo (data) {
       logger.serverLog(TAG, 'filename: ' + info._filename)
       logger.serverLog(TAG, 'size: ' + info.size)
       let size = info.size
-      if (size < 25000000) {
-        stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`, {start: 0, end: 10000000}))
+      if (size < 10000000) {
+        stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))
         stream1.on('error', (error) => {
           stream1.end()
           reject(error)
