@@ -249,7 +249,7 @@ function downloadVideo (data) {
       logger.serverLog(TAG, 'filename: ' + info._filename)
       logger.serverLog(TAG, 'size: ' + info.size)
       let size = info.size
-      if (size < 10000000) {
+      if (size < 25000000) {
         stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))
         stream1.on('error', (error) => {
           stream1.end()
