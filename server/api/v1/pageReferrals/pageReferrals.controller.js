@@ -16,7 +16,6 @@ exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for pageReferrals')
   dataLayer.findPageReferrals(req.body)
     .then(result => {
-      console.log('result', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {

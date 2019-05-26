@@ -19,9 +19,7 @@ exports.create = function (req, res) {
     })
       .then(jsonAd => {
         response.jsonAd = jsonAd
-        console.log('jsonAd succesfully created', jsonAd)
         for (let i = 0; i < messages.length; i++) {
-          console.log('jsonAd messages', messages)
           let message = messages[i]
           requests.push(new Promise((resolve, reject) => {
             jsonAdMessagesDataLayer.create({
@@ -31,7 +29,6 @@ exports.create = function (req, res) {
               jsonAdMessageParentId: message.jsonAdMessageParentId,
               messageContent: message.messageContent
             }).then(jsonAdMessage => {
-              console.log('jsonAdMessage succesfully created', jsonAdMessage)
               response.jsonAdMessages.push(jsonAdMessage)
               resolve(jsonAdMessage)
             }).catch(err => {
@@ -45,7 +42,6 @@ exports.create = function (req, res) {
           .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
       })
       .catch(err => {
-        console.log('error', err)
         reject(err)
       })
   }))

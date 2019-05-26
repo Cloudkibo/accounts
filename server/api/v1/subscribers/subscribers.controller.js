@@ -101,7 +101,6 @@ exports.genericUpdate = function (req, res) {
 }
 
 exports.updatePicture = function (req, res) {
-  console.log('hit the updateOneSubscriberData endpoint')
   let subscriber = req.body.subscriber
   let accessToken = subscriber.pageId.accessToken
   logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken}`)
@@ -146,7 +145,6 @@ exports.updateData = function (req, res) {
                       if (err) {
                         logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
                       }
-                      console.log('resp.body', resp.body)
                       subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {})
                         .then(updated => {
                           resolve(users[i]._id)

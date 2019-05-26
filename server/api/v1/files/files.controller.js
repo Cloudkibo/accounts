@@ -10,7 +10,6 @@ const crypto = require('crypto')
 const youtubedl = require('youtube-dl')
 
 exports.index = function (req, res) {
-  console.log('in upload function', req.files)
   var today = new Date()
   var uid = crypto.randomBytes(5).toString('hex')
   var serverPath = 'f' + uid + '' + today.getFullYear() + '' +
@@ -131,11 +130,9 @@ exports.index = function (req, res) {
 
 exports.uploadForTemplate = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
-  console.log('uploadForTemplate req.body', req.body)
   if (req.body.pages && req.body.pages.length > 0) {
     pageDataLayer.findOnePageObject(req.body.pages[0])
       .then(page => {
-        console.log('page fetched', page)
         needle.get(
           `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp2) => {
@@ -158,7 +155,6 @@ exports.uploadForTemplate = function (req, res) {
               }),
               'filedata': fileReaderStream
             }
-            console.log('messageData', messageData)
             request(
               {
                 'method': 'POST',
@@ -168,7 +164,6 @@ exports.uploadForTemplate = function (req, res) {
               },
               function (err, resp) {
                 if (err) {
-                  console.log('error in uploading', err)
                   return res.status(500).json({
                     status: 'failed',
                     description: 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err)
@@ -210,14 +205,11 @@ exports.download = function (req, res) {
 }
 
 exports.downloadYouTubeVideo = function (req, res) {
-  console.log(`downloadYouTubeVideo req.body ${req.body}`)
   downloadVideo(req.body)
     .then(video => {
-      console.log('YouTube Video successfully downloaded', video)
       res.status(200).json({status: 'success', payload: video})
     })
     .catch(err => {
-      console.log('downloadYouTubeVideo error', err)
       logger.serverLog(TAG,
         `Inside Download file, err = ${JSON.stringify(err)}`)
       res.status(404)
@@ -241,10 +233,7 @@ function downloadVideo (data) {
       serverPath += '' + today.getHours() + '' + today.getMinutes() + '' +
         today.getSeconds()
       let fext = info._filename.split('.')
-      console.log('file text', fext)
       serverPath += '.' + fext[fext.length - 1].toLowerCase()
-      console.log('serverPath', serverPath)
-      console.log('url', `${config.domain}/api/v1/files/download/${serverPath}`)
       logger.serverLog(TAG, 'Download started')
       logger.serverLog(TAG, 'filename: ' + info._filename)
       logger.serverLog(TAG, 'size: ' + info.size)
