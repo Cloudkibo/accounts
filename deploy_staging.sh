@@ -3,5 +3,6 @@
 git pull origin staging
 npm install
 npm install --only=dev
-npm run stop:staging
-npm run start:staging
+forever stop server/app.js
+forever cleanlogs
+forever start server/app.js
