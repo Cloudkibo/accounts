@@ -65,7 +65,6 @@ exports.pageWiseData = function (req, res) {
   if (req.body.startDate && req.body.startDate !== '') {
     dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
   }
-  console.log('dateFilterAggregates', dateFilterAggregates)
 
   let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ])
   let numberOfBroadcast = dataLayer.aggregateForBroadcastPages(dateFilterAggregates, pageWiseAggregate)
@@ -74,7 +73,6 @@ exports.pageWiseData = function (req, res) {
   let finalResults = Promise.all([ data, numberOfBroadcast, numberOfPoll, numberOfSurvey ])
 
   finalResults.then((results) => {
-    console.log('results[1]', results[1])
     data = results[0]
     let broadcastAggregates = results[1]
     let pollsAggregate = results[2]
@@ -94,17 +92,13 @@ exports.pageWiseData = function (req, res) {
 }
 exports.companyWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
-  console.log('req for companyWiseData startDate', JSON.stringify(req.body.startDate))
   let startDate = req.body.startDate
   let dateFilterSubscribers = filterCompanySubscribers
   dateFilterSubscribers['$project']['companysubscribers']['$filter']['cond'] = {$gte: ['$$companysubscriber.datetime', new Date(startDate)]}
   let dateFilterAggregates = {$match: {}}
   if (req.body.startDate && req.body.startDate !== '') {
-    console.log('inside if')
     dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
   }
-  console.log('dateFilterAggregates new', dateFilterAggregates)
-  console.log('dateFilterSubscribers new', JSON.stringify(dateFilterSubscribers))
 
   let companySubscribers = CompanyUsersDataLayer.aggregateInfo([joinCompanyWithSubscribers, dateFilterSubscribers, selectCompanyFields])
   let numberOfBroadcasts = dataLayer.aggregateForBroadcasts(dateFilterAggregates, groupCompanyWiseAggregates)
@@ -139,14 +133,12 @@ exports.companyWiseData = function (req, res) {
           }
         })
         .catch((err) => {
-          console.log('in error', err)
           return res.status(500).json({
             status: 'failed',
             description: `Internal Server Error ${JSON.stringify(err)}`})
         })
     }
   }).catch((err) => {
-    console.log('outer catch', err)
     res.status(500).json({
       status: 'failed',
       error: err
@@ -215,7 +207,6 @@ exports.getTwitterAutoposting = function (req, res) {
   }
 }
 exports.getWordpressAutoposting = function (req, res) {
-  console.log('in wordpress')
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   if (req.body.startDate && req.body.startDate !== '') {
     dataLayer.aggregateForAutoposting(

@@ -121,7 +121,6 @@ exports.normalizeTagsData = function (req, res) {
                 } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
                   needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
                     .then(resp => {
-                      console.log('get accessToken response', util.inspect(resp))
                       let accessToken = resp.body.access_token
                       if (accessToken) {
                         createTagOnFacebook(tags, accessToken, 300, res)
@@ -165,13 +164,11 @@ function createTagOnFacebook (array, accessToken, delay, res) {
         {'name': array[current].tag}
       )
         .then(label => {
-          console.log('get label response', util.inspect(label.body))
           if (label.body.error) {
             return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${label.body.error}`})
           } else {
             TagsModel.update({_id: array[current]._id}, {labelFbId: label.body.id}).exec()
               .then(updated => {
-                console.log('updated successfully!')
                 current++
               })
               .catch(err => {
@@ -637,11 +634,9 @@ function associateUnsubscribeTag (subscribers, res, delay) {
               .then(response => {
                 if (response.body.error) {
                   logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
-                  console.log(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
                   current++
                 } else {
                   logger.serverLog(TAG, 'unsubscribeTag assigned succssfully!')
-                  console.log(TAG, 'unsubscribeTag assigned succssfully!')
                   current++
                 }
               })

@@ -139,9 +139,6 @@ exports.change = function (req, res) {
   let userId = req.user._id
   let oldPass = String(req.body.old_password)
   let newPass = String(req.body.new_password)
-console.log('userId',userId)
-console.log('oldPass',oldPass)
-console.log('newPass',newPass)
 
 
   userDataLayer

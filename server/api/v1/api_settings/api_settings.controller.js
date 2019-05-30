@@ -29,7 +29,6 @@ exports.enable = function (req, res) {
 
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
-      console.log('settings', settings)
       if (!settings) {
         let payload = logicLayer.getSettingsPayload(req.body.company_id)
         dataLayer.createApiObject(payload)
@@ -85,7 +84,6 @@ exports.disable = function (req, res) {
 
 exports.reset = function (req, res) {
   logger.serverLog(TAG, 'Hit the reset index', req.body)
-  console.log('Hit the reset index', req.body)
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
       if (!settings) {
@@ -113,7 +111,6 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findOneApiObject(req.body)
     .then(result => {
-      console.log('Settings Result', result)
       return res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {

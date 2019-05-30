@@ -220,13 +220,10 @@ function updatePayload (payloads) {
 exports.normalizePageUrls = function (req, res) {
   PagesModel.find({})
     .then(pages => {
-      console.log('broadcast found')
       pages.forEach((page, index) => {
         updatePayload(page.welcomeMessage)
           .then(payload => {
-            console.log('payload', payload)
             PagesModel.updateOne({_id: page._id}, {welcomeMessage: payload}).then(updated => {
-              console.log('updated', updated)
             })
           })
         if (index === pages.length - 1) {
@@ -242,9 +239,7 @@ exports.normalizeCommentUrls = function (req, res) {
       posts.forEach((post, index) => {
         updatePaylodForComments(post.payload)
           .then(payload => {
-            console.log('payload', payload)
             PostsModel.updateOne({_id: post._id}, {payload: payload}).then(updated => {
-              console.log('updated', updated)
             })
           })
         if (index === posts.length - 1) {
@@ -274,13 +269,10 @@ function updatePaylodForComments (payloads) {
 exports.normalizeReferralUrls = function (req, res) {
   ReferralModel.find({})
     .then(referrals => {
-      console.log('broadcast found')
       referrals.forEach((referral, index) => {
         updatePayload(referral.reply)
           .then(payload => {
-            console.log('payload', payload)
             ReferralModel.updateOne({_id: referral._id}, {reply: payload}).then(updated => {
-              console.log('updated', updated)
             })
           })
         if (index === referrals.length - 1) {
@@ -295,9 +287,7 @@ exports.normalizePersistentMenu = function (req, res) {
       menus.forEach((menu, index) => {
         updatePaylodForMenu(menu.jsonStructure)
           .then(jsonStructure => {
-            console.log('jsonStructure', jsonStructure)
             MenuModel.updateOne({_id: menu._id}, {jsonStructure: jsonStructure}).then(updated => {
-              console.log('updated', updated)
             })
           })
         if (index === menus.length - 1) {
@@ -312,7 +302,6 @@ function updatePaylodForMenu (jsonStructures) {
       if (jsonStructure.payload) {
         updatePayload(JSON.parse(jsonStructure.payload))
           .then(payload => {
-            console.log('updated payload', JSON.stringify(payload))
             jsonStructure.payload = JSON.stringify(payload)
           })
       } else if (jsonStructure.submenu && jsonStructure.submenu.length > 0) {
@@ -329,10 +318,8 @@ function updatePaylodForMenu (jsonStructures) {
 }
 
 function loopOnSubMenu (submenus) {
-  console.log('loop on submenu')
   return new Promise(function (resolve, reject) {
     submenus.forEach((submenu, index) => {
-      console.log('submenu', submenu)
       if (submenu.payload) {
         updatePayload(JSON.parse(submenu.payload))
           .then(payload => {
@@ -340,7 +327,6 @@ function loopOnSubMenu (submenus) {
           })
       }
       if (submenu.submenu && submenu.submenu.length > 0) {
-        console.log('in if', submenu)
         loopOnSubMenu(submenu.submenu)
           .then(submenu => {
             submenu.submenu = submenu
@@ -400,7 +386,6 @@ exports.normalizeForPlatform = function (req, res) {
 function updatePlatform (user, callback) {
   UserModel.update({_id: user._id}, {platform: 'messenger'}).exec()
     .then(updated => {
-      console.log('updated', updated)
       callback()
     })
     .catch(err => {
