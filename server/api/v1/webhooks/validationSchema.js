@@ -18,10 +18,10 @@ exports.webhookPayload = {
       'type': 'string'
     },
     'isEnabled': {
-      'type': 'string'
+      'type': 'boolean'
     },
     'optIn': {
-      'type': 'string'
+      'type': 'object'
     },
     'pageId': {
       'type': 'string'
@@ -31,7 +31,6 @@ exports.webhookPayload = {
     'webhook_url',
     'companyId',
     'userId',
-    'isEnabled',
     'optIn',
     'pageId'
   ]
@@ -44,20 +43,11 @@ exports.updateWebhookPayload = {
     'webhook_url': {
       'type': 'string'
     },
-    'companyId': {
-      'type': 'string'
-    },
-    'userId': {
-      'type': 'string'
-    },
     'isEnabled': {
-      'type': 'string'
+      'type': 'boolean'
     },
     'optIn': {
-      'type': 'string'
-    },
-    'pageId': {
-      'type': 'string'
+      'type': 'object'
     }
   }
 }

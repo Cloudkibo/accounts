@@ -23,7 +23,6 @@ router.put('/',
   controller.update)
 router.delete('/',
   auth.isAuthenticated(() => {
-    console.log('reached')
   }),
   validate({ body: validationSchema.deletePayload }),
   controller.delete)

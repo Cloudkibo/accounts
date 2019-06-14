@@ -4,7 +4,6 @@ exports.validateAndConvert = (body) => {
   let newBody = body
 
   body.forEach((obj, index) => {
-    console.log('PageId', obj.$match)
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
@@ -30,6 +29,5 @@ exports.validateAndConvert = (body) => {
       })
     }
   })
-  console.log('newbody in whatsAppContacts', newBody)
   return newBody
 }

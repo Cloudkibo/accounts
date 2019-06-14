@@ -57,6 +57,9 @@ module.exports = function (app) {
   app.options('/uploadTemplate', cors(corsOptions))
   app.post('/uploadTemplate', cors(), controller.uploadForTemplate)
 
+  app.options('/downloadYouTubeVideo', cors(corsOptions))
+  app.post('/downloadYouTubeVideo', cors(), controller.downloadYouTubeVideo)
+
   // index page
   app.get('/', function (req, res) {
     res.render('layouts/index', {

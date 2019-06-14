@@ -29,8 +29,11 @@ exports.index = function (req, res) {
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
     .then(result => {
       let user = result[0]
+      console.log('user fetched', user)
       let companyUser = result[1]
+      console.log('companyUser fetched', companyUser)
       let permissions = result[2]
+      console.log('permissions fetched', permissions)
       let company
 
       if (!user || !companyUser || !permissions) {
@@ -41,9 +44,11 @@ exports.index = function (req, res) {
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
         .then(foundCompany => {
           company = foundCompany
+          console.log('company fetched', company)
           return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
         })
         .then(plan => {
+          console.log('plan fetched', plan)
           if (!plan) {
             return res.status(404).json({
               status: 'failed',
@@ -513,12 +518,10 @@ exports.addAccountType = function (req, res) {
 }
 
 exports.enableDelete = function (req, res) {
-  console.log('Enabling GDPR Delete', req.body)
 
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
   dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
-      console.log('updateUserObject', updatedUser)
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
       // let sendgrid = utility.getSendGridObject()
@@ -566,7 +569,6 @@ exports.cancelDeletion = function (req, res) {
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
-      console.log('updateUserObject', updatedUser)
       // let sendgrid = utility.getSendGridObject()
       let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
@@ -625,7 +627,6 @@ exports.fetchGeneral = function (req, res) {
 
   dataLayer.findAllUserObjectsUsingQuery(req.body)
     .then(users => {
-      console.log('USers', users)
       return res.status(200).json({status: 'success', payload: users})
     })
     .catch(err => {
@@ -635,10 +636,8 @@ exports.fetchGeneral = function (req, res) {
 }
 
 exports.updatePicture = function (req, res) {
-  console.log('hit the updatePicture endpoint for user')
   let userFbId = req.user.facebookInfo.fbId
   let userFbToken = req.user.facebookInfo.fbToken
-  console.log('userFbId', userFbId)
   logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${userFbId}/picture`)
   needle.get(
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
@@ -647,7 +646,6 @@ exports.updatePicture = function (req, res) {
         logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${userFbId}/picture ${JSON.stringify(err)}`)
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
-        console.log('profile pic url', resp.body.picture.data.url)
         dataLayer.genericUpdateUserObject({_id: req.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
           .then(updated => {
             logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.user._id}`)
@@ -658,7 +656,6 @@ exports.updatePicture = function (req, res) {
             return res.status(500).json({status: 'failed', payload: err})
           })
       } else {
-        console.log('error resp', JSON.stringify(resp.body))
         return res.status(500).json({status: 'failed', payload: `profile picture not found for user with _id ${req.user._id}`})
       }
     })

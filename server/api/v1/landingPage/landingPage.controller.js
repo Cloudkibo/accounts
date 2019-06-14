@@ -6,10 +6,8 @@ const TAG = '/api/v1/landingPage/landingPage.controller.js'
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create landing page controller', req.body)
-  console.log('req.body', req.body)
   dataLayer.createLandingPage(req.body)
     .then(result => {
-      console.log('result', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
@@ -24,7 +22,6 @@ exports.query = function (req, res) {
       if (result.length > 0) {
         //populateSubmittedState(result)
           //.then(result => {
-            console.log('result', result)
             res.status(200).json({status: 'success', payload: result})
           //})
           // .catch(err => {
@@ -66,7 +63,6 @@ exports.createLandingPageState = function (req, res) {
   logger.serverLog(TAG, 'Hit the create landing page state controller', req.body)
   landingPageStateDataLayer.createLandingPageState(req.body)
     .then(result => {
-      console.log('result', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
@@ -75,10 +71,8 @@ exports.createLandingPageState = function (req, res) {
 }
 
 exports.updateLandingPageState = function (req, res) {
-  console.log('Hit the update landing page state controller', req.body)
   landingPageStateDataLayer.updateLandingPageState(req.params._id, req.body)
     .then(result => {
-      console.log('result of updateLandingPageState', result)
       res.status(200).json({status: 'success', payload: result})
     })
     .catch(err => {
@@ -101,12 +95,9 @@ function populateSubmittedState (result) {
   return new Promise(function (resolve, reject) {
     let landingPages = []
     for (let i = 0; i < result.length; i++) {
-      console.log('result', result[i])
-      console.log('result[i].submittedState.actionType', result[i].submittedState.actionType)
       if (result[i].submittedState.actionType === 'SHOW_NEW_MESSAGE' && result[i].submittedState.state) {
         dataLayerState.findOneLandingPageState(result[i].submittedState.state)
           .then(state => {
-            console.log('inside if state', state)
             landingPages.push({
               initialState: {
                 _id: result[i].initialState._id,
@@ -150,7 +141,6 @@ function populateSubmittedState (result) {
             }
           })
           .catch(err => {
-            console.log('failed to fetch landing page state', err)
           })
       } else {
         landingPages.push({

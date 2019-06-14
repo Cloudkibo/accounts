@@ -121,7 +121,6 @@ exports.normalizeTagsData = function (req, res) {
                 } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
                   needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
                     .then(resp => {
-                      console.log('get accessToken response', util.inspect(resp))
                       let accessToken = resp.body.access_token
                       if (accessToken) {
                         createTagOnFacebook(tags, accessToken, 300, res)
@@ -165,13 +164,11 @@ function createTagOnFacebook (array, accessToken, delay, res) {
         {'name': array[current].tag}
       )
         .then(label => {
-          console.log('get label response', util.inspect(label.body))
           if (label.body.error) {
             return res.status(500).json({status: 'failed', payload: `Failed to create tag on facebook ${label.body.error}`})
           } else {
             TagsModel.update({_id: array[current]._id}, {labelFbId: label.body.id}).exec()
               .then(updated => {
-                console.log('updated successfully!')
                 current++
               })
               .catch(err => {
@@ -313,6 +310,82 @@ exports.normalizeTagSubscribersList = function (req, res) {
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Faild to fetch tags ${err}`})
     })
+}
+
+exports.normalizeDefaultTagsUnsubscribe = function (req, res) {
+  PageModel.aggregate([
+    {$match: {connected: true}},
+    {$group: {_id: '$userId'}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]).exec()
+    .then(uniqueUsers => {
+      if (uniqueUsers.length > 0) {
+        for (let i = 0; i < uniqueUsers.length; i++) {
+          PageModel.find({userId: uniqueUsers[i]._id, connected: true}).exec()
+            .then(pages => {
+              createDefaultTagUnsubscribe(pages, 3000)
+              if (i === uniqueUsers.length - 1) {
+                return res.status(200).json({status: 'success', payload: 'Normalized successfully!'})
+              }
+            })
+            .catch(err => logger.serverLog(TAG, `failed to fetch pages ${err}`))
+        }
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No user found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch uniqueUsers ${err}`})
+    })
+}
+
+function createDefaultTagUnsubscribe (pages, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === pages.length) {
+      clearInterval(interval)
+    } else {
+      needle('get', `https://graph.facebook.com/v2.11/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
+        .then(labelResp => {
+          if (labelResp.body.error) {
+            logger.serverLog(TAG, `Failed to fetch labels ${JSON.stringify(labelResp.body.error)}`)
+            current++
+          } else {
+            logger.serverLog(TAG, `Fetch labels response ${JSON.stringify(labelResp.body.data.length)}`)
+            let fblabels = labelResp.body.data
+            let fbtags = fblabels.length > 0 && fblabels.map((l) => l.name)
+            TagsModel.find({pageId: pages[current]._id, defaultTag: true}).exec()
+              .then(tags => {
+                if (tags.length > 0) {
+                  let localtags = tags.map((t) => t.tag)
+                  if (fbtags.includes(`_${pages[current].pageId}_unsubscribe`) && !localtags.includes(`_${pages[current].pageId}_unsubscribe`)) {
+                    createDefaultTag(`_${pages[current].pageId}_unsubscribe`, pages[current], fblabels.filter((l) => l.name === `_${pages[current].pageId}_unsubscribe`)[0].id)
+                  } else if (!localtags.includes(`_${pages[current].pageId}_unsubscribe`)) {
+                    createDefaultTagFb(pages[current], `_${pages[current].pageId}_unsubscribe`)
+                  }
+                  current++
+                } else {
+                  if (fbtags.includes(`_${pages[current].pageId}_unsubscribe`)) {
+                    createDefaultTag(`_${pages[current].pageId}_unsubscribe`, pages[current], fblabels.filter((l) => l.name === `_${pages[current].pageId}_unsubscribe`)[0].id)
+                  } else {
+                    createDefaultTagFb(pages[current], `_${pages[current].pageId}_unsubscribe`)
+                  }
+                  current++
+                }
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Failed to fetch tags ${err}`)
+                current++
+              })
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch labels ${err}`)
+          current++
+        })
+    }
+  }, delay)
 }
 
 exports.normalizeDefaultTags = function (req, res) {
@@ -525,4 +598,60 @@ function assignTag (fbid, subscriber) {
     .catch(err => {
       logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
     })
+}
+
+exports.normalizeAssociateTagsUnsubscribe = function (req, res) {
+  SubscribersModel.aggregate([
+    {$match: {isSubscribed: false}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit},
+    {$lookup: {from: 'pages', localField: 'pageId', foreignField: '_id', as: 'pageId'}},
+    {$unwind: '$pageId'}
+  ]).exec()
+    .then(subscribers => {
+      if (subscribers.length > 0) {
+        associateUnsubscribeTag(subscribers, res, 3000)
+      } else {
+        return res.status(404).json({status: 'failed', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Faild to fetch subscribers ${err}`})
+    })
+}
+
+function associateUnsubscribeTag (subscribers, res, delay) {
+  let current = 0
+  let interval = setInterval(() => {
+    if (current === subscribers.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: 'Normalized succssfully!'})
+    } else {
+      TagsModel.findOne({tag: `_${subscribers[current].pageId.pageId}_unsubscribe`, companyId: subscribers[current].companyId}).exec()
+        .then(tag => {
+          if (tag) {
+            needle('post', `https://graph.facebook.com/v2.11/${tag.labelFbId}/label?access_token=${subscribers[current].pageId.accessToken}`, {'user': subscribers[current].senderId})
+              .then(response => {
+                if (response.body.error) {
+                  logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
+                  current++
+                } else {
+                  logger.serverLog(TAG, 'unsubscribeTag assigned succssfully!')
+                  current++
+                }
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(err)}`)
+                current++
+              })
+          } else {
+            current++
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Failed to fetch unsubscribe tag ${err}`)
+          current++
+        })
+    }
+  }, delay)
 }

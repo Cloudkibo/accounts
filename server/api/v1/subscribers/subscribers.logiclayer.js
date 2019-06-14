@@ -20,21 +20,18 @@ exports.validateAndConvert = (body) => {
   let newBody = body
 
   body.forEach((obj, index) => {
-    console.log('PageId', obj.$match)
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
     if (obj.$match && obj.$match.pageId && !obj.$match.pageId.$exists) {
       if (obj.$match.pageId.$in) {
         let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
-        console.log('pageIds', pageIds)
         newBody[index].$match.pageId.$in = pageIds
       } else {
         newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
       }
     }
     if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
-      console.log('in pageId if')
       newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
     }
     if (obj.$match && obj.$match.datetime) {
@@ -65,10 +62,14 @@ exports.validateAndConvert = (body) => {
       })
     }
 
-    if (obj.$match && obj.$match.tags_subscriber) {
-      newBody[index].$match.tags_subscriber.$elemMatch.tagId = mongoose.Types.ObjectId(newBody[index].$match.tags_subscriber.$elemMatch.tagId)
+    if (obj.$match && obj.$match['tags_subscriber.tagId']) {
+      obj.$match['tags_subscriber.tagId'].$in.forEach((tagID, index1) => {
+        // console.log('obj.$match.tags_subscriber inside', tagID)
+        obj.$match['tags_subscriber.tagId'].$in[index1] = mongoose.Types.ObjectId(tagID)
+        // console.log('inside new body', newBody[index].$match.tags_subscriber.$elemMatch.tagId.$in)
+      })
+    //  newBody[index].$match.tags_subscriber.$elemMatch.tagId = mongoose.Types.ObjectId(newBody[index].$match.tags_subscriber.$elemMatch.tagId)
     }
   })
-  console.log('new body new', JSON.stringify(newBody))
   return newBody
 }

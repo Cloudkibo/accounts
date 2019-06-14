@@ -54,12 +54,21 @@ const subscriberSchema = new Schema({
     default: true
   },
   status: {
-    type: String
+    type: String,
+    default: 'new'
   },
   last_activity_time: {
     type: Date
   },
-  datetime: { type: Date, default: Date.now }
+  userRefIdForCheckBox: {
+    type: String
+  },
+  datetime: { type: Date, default: Date.now },
+  assigned_to: { type: Schema.Types.Mixed },
+  is_assigned: {
+    type: Boolean,
+    default: false
+  }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
