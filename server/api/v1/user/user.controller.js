@@ -29,8 +29,11 @@ exports.index = function (req, res) {
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
     .then(result => {
       let user = result[0]
+      console.log('user fetched', user)
       let companyUser = result[1]
+      console.log('companyUser fetched', companyUser)
       let permissions = result[2]
+      console.log('permissions fetched', permissions)
       let company
 
       if (!user || !companyUser || !permissions) {
@@ -41,9 +44,11 @@ exports.index = function (req, res) {
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
         .then(foundCompany => {
           company = foundCompany
+          console.log('company fetched', company)
           return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
         })
         .then(plan => {
+          console.log('plan fetched', plan)
           if (!plan) {
             return res.status(404).json({
               status: 'failed',
