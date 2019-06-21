@@ -16,12 +16,6 @@ exports.prepareUpdateUserPayload = (name, password, email, uiMode) => {
   return temp
 }
 
-exports.convertPageID = (body) => {
-  if (!Array.isArray(body.pageId)) {
-    body.pageId = mongoose.Types.ObjectId(body.pageId)
-  }
-}
-
 exports.validateAndConvert = (body) => {
   let newBody = body
 
