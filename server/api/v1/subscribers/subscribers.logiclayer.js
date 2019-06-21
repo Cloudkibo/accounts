@@ -18,7 +18,6 @@ exports.prepareUpdateUserPayload = (name, password, email, uiMode) => {
 
 exports.validateAndConvert = (body) => {
   let newBody = body
-  console.log('body in validateAndConvert', JSON.stringify(body))
   body.forEach((obj, index) => {
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
