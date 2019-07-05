@@ -69,7 +69,7 @@
     "stripe": "^6.1.1",
     "stripe-webhook-middleware": "^0.2.0",
     "winston": "^3.0.0",
-    "youtube-dl": "^1.13.1"
+    "youtube-dl": "^2.0.0"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
