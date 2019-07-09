@@ -1,18 +1,13 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development' // production
 
-console.log('process1', process.memoryUsage())
-
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('./config/environment/index')
-
-console.log('process2', process.memoryUsage())
 
 const app = express()
 const httpApp = express()
 
 const appObj = (config.env === 'production' || config.env === 'staging') ? app : httpApp
-console.log('process3', process.memoryUsage())
 
 if (config.env === 'production' || config.env === 'staging') {
   const Raven = require('raven')
@@ -23,20 +18,12 @@ if (config.env === 'production' || config.env === 'staging') {
   appObj.use(Raven.requestHandler())
 }
 
-console.log('process4', process.memoryUsage())
 mongoose.connect(config.mongo.uri, config.mongo.options)
-
-console.log('process5', process.memoryUsage())
 
 require('./config/express')(appObj)
 require('./config/setup')(app, httpApp, config)
 require('./routes')(appObj)
 
-console.log('process6', process.memoryUsage())
-
 process.on('uncaughtException', function (exception) {
   console.log('asad catch:', exception)
 })
-
-
-console.log('process7', process.memoryUsage())
