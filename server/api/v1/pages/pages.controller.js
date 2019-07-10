@@ -215,6 +215,7 @@ exports.fetchWhitelistedDomains = function (req, res) {
   }
 }
 exports.whitelistDomain = function (req, res) {
+  console.log('req.user inside', req.user)
   needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
     (err, resp) => {
       console.log('resp1', resp.body)
