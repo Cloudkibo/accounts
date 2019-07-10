@@ -65,6 +65,7 @@ function attachUserToRequest (req, res, next, userId) {
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
     .then(result => {
       let user = result[0]
+      console.log('user found', user)
       let companyUser = result[1]
       let permissions = result[2]
       let company
@@ -95,6 +96,7 @@ function attachUserToRequest (req, res, next, userId) {
           user.uiMode = config.uiModes[user.uiMode]
 
           req.user = user
+          console.log('req.user', req.user)
           next()
         })
         .catch(err => {
