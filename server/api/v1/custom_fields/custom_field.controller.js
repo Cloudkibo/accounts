@@ -66,7 +66,7 @@ exports.update = function (req, res) {
     purpose: 'findOne',
     match: {
       name: req.body.updated.name,
-      companyId: req.user.companyId
+      companyId: req.body.updated.companyId
     }
   }
   DataLayer.findCustomFieldsUsingQuery(query)
