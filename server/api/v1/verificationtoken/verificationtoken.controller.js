@@ -83,7 +83,7 @@ exports.resend = function (req, res) {
 
   let tokenString = UserLogicLayer.getRandomString()
   datalayer.createVerificationToken({ userId: req.user._id, token: tokenString })
-    .then(tokenString => {
+    .then(result => {
       let sendgrid = utility.getSendGridObject()
       let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
       logiclayer.getResendEmailBody(email, tokenString)
