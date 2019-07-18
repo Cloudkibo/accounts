@@ -3,15 +3,16 @@ const dataLayer = require('./landingPage.datalayer')
 const dataLayerState = require('./landingPageState.datalayer')
 const landingPageStateDataLayer = require('./landingPageState.datalayer')
 const TAG = '/api/v1/landingPage/landingPage.controller.js'
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create landing page controller', req.body)
   dataLayer.createLandingPage(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -20,19 +21,19 @@ exports.query = function (req, res) {
   dataLayer.findLandingPages(req.body)
     .then(result => {
       if (result.length > 0) {
-        //populateSubmittedState(result)
-          //.then(result => {
-            res.status(200).json({status: 'success', payload: result})
-          //})
-          // .catch(err => {
-          //   res.status(500).json({status: 'failed', payload: err})
-          // })
+      //populateSubmittedState(result)
+        //.then(result => {
+        sendSuccessResponse(res, 200, result)
+        //})
+        // .catch(err => {
+        //   res.status(500).json({status: 'failed', payload: err})
+        // })
       } else {
-        res.status(200).json({status: 'success', payload: []})
+        sendSuccessResponse(res, 200, [])
       }
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -40,10 +41,10 @@ exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update landing page controller')
   dataLayer.updateLandingPage(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -52,10 +53,10 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteLandingPage(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -63,20 +64,20 @@ exports.createLandingPageState = function (req, res) {
   logger.serverLog(TAG, 'Hit the create landing page state controller', req.body)
   landingPageStateDataLayer.createLandingPageState(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updateLandingPageState = function (req, res) {
   landingPageStateDataLayer.updateLandingPageState(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -85,10 +86,10 @@ exports.deleteLandingPageState = function (req, res) {
 
   landingPageStateDataLayer.deleteLandingPageState(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 function populateSubmittedState (result) {

@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./teams.logiclayer')
 const dataLayer = require('./teams.datalayer')
 const TAG = '/api/v1/test/index.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -11,10 +11,10 @@ exports.index = function (req, res) {
   dataLayer
     .findAllTeamObjects()
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -24,10 +24,10 @@ exports.findOne = function (req, res) {
   dataLayer
     .findOneTeamObject(req.params.id)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -43,10 +43,10 @@ exports.create = function (req, res) {
       req.body.teamPages,
       req.body.teamPagesIds)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -57,15 +57,15 @@ exports.update = function (req, res) {
   if (Object.keys(payload).length > 0) {
     dataLayer.updateTeamObject(req.params.id, payload)
       .then(result => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch(err => {
         logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
-        return res.status(500).json({status: 'failed', payload: err})
+        sendErrorResponse(res, 500, err)
       })
   } else {
     logger.serverLog(TAG, `No field provided to update`)
-    return res.status(500).json({status: 'failed', payload: 'Provide field to update'})
+    sendErrorResponse(res, 400, 'Provide field to update')
   }
 }
 
@@ -74,11 +74,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteTeamObject(req.params.id)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendErrorResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -87,11 +87,11 @@ exports.genericTeamFetch = function (req, res) {
   dataLayer
     .findAllTeamObjectsUsingQuery(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -100,11 +100,11 @@ exports.aggregateTeamFetch = function (req, res) {
   dataLayer
     .findTeamObjectUsingAggregate(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -113,10 +113,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateTeamObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

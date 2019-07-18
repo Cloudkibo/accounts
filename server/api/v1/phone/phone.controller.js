@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./phone.logiclayer')
 const dataLayer = require('./phone.datalayer')
 const TAG = '/api/v1/phone/phone.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -10,10 +10,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOnePhoneObject(req.params._id)
     .then(phoneObject => {
-      res.status(200).json({status: 'success', payload: phoneObject})
+      sendSuccessResponse(res, 200, phoneObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -21,10 +21,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create phone controller index')
   dataLayer.createPhoneObject(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -33,11 +33,11 @@ exports.update = function (req, res) {
 
   dataLayer.updatePhoneObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update phone ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -46,11 +46,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deletePhoneObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete phone ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -59,11 +59,11 @@ exports.query = function (req, res) {
 
   dataLayer.findPhoneObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying phone ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -72,11 +72,11 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate phone ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -85,10 +85,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdatePhoneObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

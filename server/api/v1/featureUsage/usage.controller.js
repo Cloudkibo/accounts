@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./usage.logiclayer')
 const dataLayer = require('./usage.datalayer')
 const TAG = '/api/v1/featureusuage/featureusuage.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -10,30 +10,30 @@ exports.index = function (req, res) {
 
   dataLayer.findOnePlanUsage(req.params.id)
     .then(usage => {
-      return res.status(200).json({status: 'success', payload: usage})
+      sendSuccessResponse(res, 200, usage)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.createPlanUsage = function (req, res) {
   logger.serverLog(TAG, 'Hit the create usage controller index')
   dataLayer.createPlanUsage(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: 'Usage item has been added successfully!'})
+      sendSuccessResponse(res, 200, 'Usage item has been added successfully!')
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.createCompanyUsage = function (req, res) {
   logger.serverLog(TAG, 'Hit the create usage controller index')
   dataLayer.createCompanyUsage(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: 'Usage item has been added successfully!'})
+      sendSuccessResponse(res, 200, 'Usage item has been added successfully!')
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.update = function (req, res) {
@@ -41,21 +41,21 @@ exports.update = function (req, res) {
 
   dataLayer.updateUsage(req.params.id, logicLayer.prepareUpdateUsagePayload(req.body))
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.populatePlanUsage = function (req, res) {
   dataLayer.populatePlan(req, res)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -64,11 +64,11 @@ exports.fetchGeneralPlanUsage = function (req, res) {
 
   dataLayer.findAllPlanUsageObjects(req.body)
     .then(users => {
-      return res.status(200).json({status: 'success', payload: users})
+      sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
       logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -77,11 +77,11 @@ exports.fetchGeneralCompanyUsage = function (req, res) {
 
   dataLayer.findAllCompanyUsageObjects(req.body)
     .then(users => {
-      return res.status(200).json({status: 'success', payload: users})
+      sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
       logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -91,21 +91,21 @@ exports.genericUpdateCompany = function (req, res) {
   dataLayer.genericUpdateCUsageObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(result)}`)
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.populateCompanyUsage = function (req, res) {
   dataLayer.populateCompany(req, res)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
