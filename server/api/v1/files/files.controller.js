@@ -8,6 +8,7 @@ const fs = require('fs')
 let request = require('request')
 const crypto = require('crypto')
 const youtubedl = require('youtube-dl')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   var today = new Date()
@@ -22,10 +23,7 @@ exports.index = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
 
   if (req.files.file.size === 0) {
-    return res.status(400).json({
-      status: 'failed',
-      description: 'No file submitted'
-    })
+    sendErrorResponse(res, 400, '', 'No file submitted')
   }
   logger.serverLog(TAG,
     `req.files.file ${JSON.stringify(req.files.file.path)}`)
@@ -40,10 +38,7 @@ exports.index = function (req, res) {
     dir + '/userfiles/' + serverPath,
     err => {
       if (err) {
-        return res.status(500).json({
-          status: 'failed',
-          description: 'internal server error' + JSON.stringify(err)
-        })
+        sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
       // saving this file to send files with its original name
       // it will be deleted once it is successfully sent
@@ -64,10 +59,7 @@ exports.index = function (req, res) {
               `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
               (err, resp2) => {
                 if (err) {
-                  return res.status(500).json({
-                    status: 'failed',
-                    description: 'unable to get page access_token: ' + JSON.stringify(err)
-                  })
+                  sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
                 }
                 let pageAccessToken = resp2.body.access_token
                 let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.files.file.name)
@@ -91,38 +83,31 @@ exports.index = function (req, res) {
                   },
                   function (err, resp) {
                     if (err) {
-                      return res.status(500).json({
-                        status: 'failed',
-                        description: 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err)
-                      })
+                      sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
                       logger.serverLog(TAG,
                         `file uploaded on Facebook index ${JSON.stringify(resp.body)}`)
-                      return res.status(201).json({
-                        status: 'success',
-                        payload: {
-                          id: serverPath,
-                          attachment_id: resp.body.attachment_id,
-                          name: req.files.file.name,
-                          url: `${config.domain}/api/v1/files/download/${serverPath}`
-                        }
-                      })
+                      let payload = {
+                        id: serverPath,
+                        attachment_id: resp.body.attachment_id,
+                        name: req.files.file.name,
+                        url: `${config.domain}/api/v1/files/download/${serverPath}`
+                      }
+                      sendSuccessResponse(res, 200, payload)
                     }
                   })
               })
           })
           .catch(error => {
-            return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${JSON.stringify(error)}`})
+            sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
           })
       } else {
-        return res.status(201).json({
-          status: 'success',
-          payload: {
-            id: serverPath,
-            name: req.files.file.name,
-            url: `${config.domain}/api/v1/files/download/${serverPath}`
-          }
-        })
+        let payload = {
+          id: serverPath,
+          name: req.files.file.name,
+          url: `${config.domain}/api/v1/files/download/${serverPath}`
+        }
+        sendSuccessResponse(res, 200, payload)
       }
     }
   )
@@ -137,10 +122,7 @@ exports.uploadForTemplate = function (req, res) {
           `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp2) => {
             if (err) {
-              return res.status(500).json({
-                status: 'failed',
-                description: 'unable to get page access_token: ' + JSON.stringify(err)
-              })
+              sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
             }
             let pageAccessToken = resp2.body.access_token
             let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
@@ -164,31 +146,26 @@ exports.uploadForTemplate = function (req, res) {
               },
               function (err, resp) {
                 if (err) {
-                  return res.status(500).json({
-                    status: 'failed',
-                    description: 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err)
-                  })
+                  sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                 } else {
                   logger.serverLog(TAG,
                     `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
-                  return res.status(201).json({
-                    status: 'success',
-                    payload: {
-                      id: req.body.id,
-                      attachment_id: resp.body.attachment_id,
-                      name: req.body.name,
-                      url: req.body.url
-                    }
-                  })
+                  let payload = {
+                    id: req.body.id,
+                    attachment_id: resp.body.attachment_id,
+                    name: req.body.name,
+                    url: req.body.url
+                  }
+                  sendSuccessResponse(res, 200, payload)
                 }
               })
           })
       })
       .catch(error => {
-        return res.status(500).json({status: 'failed', payload: `Failed to fetch page ${JSON.stringify(error)}`})
+        sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
       })
   } else {
-    return res.status(500).json({status: 'failed', payload: `Failed to upload`})
+    sendErrorResponse(res, 500, `Failed to upload`)
   }
 }
 
@@ -199,21 +176,19 @@ exports.download = function (req, res) {
   } catch (err) {
     logger.serverLog(TAG,
       `Inside Download file, err = ${JSON.stringify(err)}`)
-    res.status(404)
-      .json({status: 'success', payload: 'Not Found ' + JSON.stringify(err)})
+    sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
   }
 }
 
 exports.downloadYouTubeVideo = function (req, res) {
   downloadVideo(req.body)
     .then(video => {
-      res.status(200).json({status: 'success', payload: video})
+      sendSuccessResponse(res, 200, video)
     })
     .catch(err => {
       logger.serverLog(TAG,
         `Inside Download file, err = ${JSON.stringify(err)}`)
-      res.status(404)
-        .json({status: 'success', payload: 'Not Found ' + JSON.stringify(err)})
+      sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
     })
 }
 

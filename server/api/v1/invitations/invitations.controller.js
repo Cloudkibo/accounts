@@ -4,6 +4,7 @@ const datalayer = require('./invitations.datalayer')
 const util = require('util')
 const logger = require('./../../../components/logger')
 const TAG = 'api/v1/inviteagenttoken/inviteagenttoken.controller.js'
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the index point')
@@ -11,27 +12,22 @@ exports.index = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'The user account does not belong to any company. Please contact support'
-        })
+        sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 
       datalayer
         .findAllInvitationsObjectUsingQuery({companyId: companyUser.companyId})
         .then(invitations => {
-          res.status(200).json({status: 'success', payload: invitations})
+          sendSuccessResponse(res, 200, invitations)
         })
         .catch(err => {
           logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-          return res.status(500)
-            .json({status: 'failed', description: 'Internal Server Error'})
+          sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-      return res.status(500)
-        .json({status: 'failed', description: 'Internal Server Error'})
+      sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }
 
@@ -41,10 +37,7 @@ exports.cancel = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'The user account does not belong to any company. Please contact support'
-        })
+        sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 
       let removeInvitation = datalayer
@@ -57,20 +50,15 @@ exports.cancel = function (req, res) {
           companyId: companyUser.companyId})
       Promise.all([removeInvitation, removeInitationToken])
         .then(result => {
-          res.status(200).json({
-            status: 'success',
-            description: 'Invitation has been cancelled.'
-          })
+          sendSuccessResponse(res, 200, 'Invitation has been cancelled.')
         })
         .catch(err => {
           logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-          return res.status(500)
-            .json({status: 'failed', description: 'Internal Server Error'})
+          sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-      return res.status(500)
-        .json({status: 'failed', description: 'Internal Server Error'})
+      sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }

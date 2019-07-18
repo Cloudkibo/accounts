@@ -3,7 +3,7 @@ const logicLayer = require('./comment_capture.logiclayer')
 const dataLayer = require('./comment_capture.datalayer')
 const TAG = '/api/v1/comment_capture/comment_capture.controller.js'
 const needle = require('needle')
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -11,10 +11,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOnePostObjectUsingQuery({_id: req.params.id})
     .then(post => {
-      return res.status(200).json({status: 'success', payload: post})
+      sendSuccessResponse(res, 200, post)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -22,10 +22,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create post controller index')
   dataLayer.createPostObject(logicLayer.preparePostPayload(req.body))
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -33,11 +33,11 @@ exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update post controller index')
   dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -53,11 +53,11 @@ exports.delete = function (req, res) {
       return dataLayer.deletePostObject(req.params.id)
     })
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -67,11 +67,11 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findAllPostObjectsUsingQuery(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -81,11 +81,11 @@ exports.aggregateFetch = function (req, res) {
   dataLayer
     .findPostObjectUsingAggregate(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -94,10 +94,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

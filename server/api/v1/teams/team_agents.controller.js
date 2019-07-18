@@ -1,7 +1,7 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./teams.datalayer')
 const TAG = '/api/v1/teams/team_agents.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -10,10 +10,10 @@ exports.index = function (req, res) {
   dataLayer
     .findAllAgentObjects()
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -26,10 +26,10 @@ exports.create = function (req, res) {
       req.body.companyId,
       req.body.agentId)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.deleteAgent = function (req, res) {
@@ -40,13 +40,12 @@ exports.deleteAgent = function (req, res) {
       req.body.companyId,
       req.body.agentId)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
-
 
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete agent index')
@@ -56,11 +55,11 @@ exports.delete = function (req, res) {
     req.body.companyId,
     req.body.agentId)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -70,11 +69,11 @@ exports.genericAgentsFetch = function (req, res) {
   dataLayer
     .findAllAgentObjectsUsingQuery(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -84,11 +83,11 @@ exports.distinctAgentsFetch = function (req, res) {
   dataLayer
     .findAllAgentObjectsUsingQuery(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -97,11 +96,11 @@ exports.aggregateAgentsFetch = function (req, res) {
   dataLayer
     .findAgentObjectUsingAggregate(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -110,10 +109,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateAgentObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

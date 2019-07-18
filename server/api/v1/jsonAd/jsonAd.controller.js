@@ -3,6 +3,7 @@ const jsonAdMessagesDataLayer = require('./jsonAdMessages.datalayer')
 const JsonAdDataLayer = require('./jsonAd.datalayer')
 const TAG = '/api/v1/menu/menu.controller.js'
 const mongoose = require('mongoose')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create json ad endpoint')
@@ -38,8 +39,8 @@ exports.create = function (req, res) {
         }
         resolve(jsonAd)
         Promise.all(requests)
-          .then((responses) => res.status(200).json({status: 'success', payload: response}))
-          .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+          .then((responses) => sendSuccessResponse(res, 200, responses))
+          .catch((err) => sendErrorResponse(res, 500, '', err))
       })
       .catch(err => {
         reject(err)
@@ -89,8 +90,8 @@ exports.edit = function (req, res) {
                             resolve(jsonAdMessage)
                             if (messages.length - 1 === i) {
                               Promise.all(requests)
-                                .then((responses) => res.status(200).json({status: 'success', payload: response}))
-                                .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+                                .then((responses) => sendSuccessResponse(res, 200, responses))
+                                .catch((err) => sendErrorResponse(res, 500, '', err))
                             }
                           }).catch(err => {
                             reject(err)
@@ -116,17 +117,17 @@ exports.edit = function (req, res) {
       }))
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+      sendErrorResponse(res, 500, '', err)
     })
 }
 
 exports.getAll = function (req, res) {
   JsonAdDataLayer.findAllUsingQuery({userId: req.user.userId})
     .then(response => {
-      res.status(200).json({status: 'success', payload: response})
+      sendSuccessResponse(res, 200, response)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, '', err)
     })
 }
 
@@ -138,14 +139,14 @@ exports.getJsonAdResponse = function (req, res) {
       jsonAdMessagesDataLayer.findAllUsingQuery({jsonAdId: req.params.id})
         .then(jsonAdMessages => {
           response.jsonAdMessages = jsonAdMessages
-          res.status(200).json({status: 'success', payload: response})
+          sendSuccessResponse(res, 200, response)
         })
         .catch(err => {
-          res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, '', err)
     })
 }
 
@@ -157,24 +158,24 @@ exports.getOne = function (req, res) {
       jsonAdMessagesDataLayer.findAllUsingQuery({jsonAdId: req.params.id})
         .then(jsonAdMessages => {
           response.jsonAdMessages = jsonAdMessages
-          res.status(200).json({status: 'success', payload: response})
+          sendSuccessResponse(res, 200, response)
         })
         .catch(err => {
-          res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.getJsonAdResponse = function (req, res) {
   jsonAdMessagesDataLayer.findOneUsingQuery({_id: req.params.id})
     .then(jsonAdMessage => {
-      res.status(200).json({status: 'success', payload: jsonAdMessage})
+      sendSuccessResponse(res, 200, jsonAdMessage)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -183,22 +184,22 @@ exports.deleteOne = function (req, res) {
     .then(deletedAd => {
       jsonAdMessagesDataLayer.deleteUsingQuery({jsonAdId: req.params.id})
         .then(deletedMessages => {
-          res.status(200).json({status: 'success'})
+          sendSuccessResponse(res, 200)
         })
         .catch(err => {
-          res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.query = function (req, res) {
   JsonAdDataLayer.findAllUsingQuery(req.body)
     .then(response => {
-      res.status(200).json({status: 'success', payload: response})
+      sendSuccessResponse(res, 200, response)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

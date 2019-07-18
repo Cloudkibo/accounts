@@ -3,9 +3,10 @@ const logger = require('./../../../components/logger')
 const datalayer = require('./inviteagenttoken.datalayer')
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const util = require('util')
-const path = require('path')
+// const path = require('path')
 // eslint-disable-next-line no-unused-vars
 const TAG = 'api/v1/inviteagenttoken/inviteagenttoken.controller.js'
+const { sendErrorResponse } = require('../../global/response')
 
 exports.verify = function (req, res) {
   datalayer
@@ -38,14 +39,12 @@ exports.verify = function (req, res) {
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-            return res.status(500)
-              .json({status: 'failed', description: 'Internal Server Error'})
+            sendErrorResponse(res, 500, '', 'Internal Server Error')
           })
       }
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-      return res.status(500)
-        .json({status: 'failed', description: 'Internal Server Error'})
+      sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }

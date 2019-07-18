@@ -18,6 +18,7 @@ const needle = require('needle')
 const util = require('util')
 const _ = require('lodash')
 const moment = require('moment')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
@@ -29,31 +30,23 @@ exports.index = function (req, res) {
   Promise.all([userPromise, companyUserPromise, permissionsPromise])
     .then(result => {
       let user = result[0]
-      console.log('user fetched', user)
       let companyUser = result[1]
-      console.log('companyUser fetched', companyUser)
       let permissions = result[2]
-      console.log('permissions fetched', permissions)
       let company
 
       if (!user || !companyUser || !permissions) {
         let resp = logicLayer.getResponse(user, companyUser, permissions)
-        return res.status(404).json(resp)
+        sendErrorResponse(res, 404, resp)
       }
 
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
         .then(foundCompany => {
           company = foundCompany
-          console.log('company fetched', company)
           return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
         })
         .then(plan => {
-          console.log('plan fetched', plan)
           if (!plan) {
-            return res.status(404).json({
-              status: 'failed',
-              description: 'Fatal Error, plan not set for this user. Please contact support'
-            })
+            sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
           }
           user = user.toObject()
           user.companyId = companyUser.companyId
@@ -64,16 +57,16 @@ exports.index = function (req, res) {
           user.uiMode = config.uiModes[user.uiMode]
 
           logger.serverLog(TAG, `find index controller user ${util.inspect(user)}`)
-          res.status(200).json({status: 'success', payload: user})
+          sendSuccessResponse(res, 200, user)
         })
         .catch(err => {
           logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
-          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -95,7 +88,7 @@ exports.updateMode = function (req, res) {
       permissions = result[2]
       if (!user || !companyUser || !permissions) {
         let resp = logicLayer.getResponse(user, companyUser, permissions)
-        return res.status(404).json(resp)
+        sendErrorResponse(res, 404, resp)
       }
       user.advancedMode = req.body.advancedMode
       return dataLayer.saveUserObject(user)
@@ -109,10 +102,7 @@ exports.updateMode = function (req, res) {
     })
     .then(plan => {
       if (!plan) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'Fatal Error, plan not set for this user. Please contact support'
-        })
+        sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
       }
       user = user.toObject()
       user.companyId = companyUser.companyId
@@ -122,11 +112,11 @@ exports.updateMode = function (req, res) {
       user.plan = plan
       user.uiMode = config.uiModes[user.uiMode]
 
-      res.status(200).json({status: 'success', payload: user})
+      sendSuccessResponse(res, 200, user)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -136,17 +126,17 @@ exports.updateSkipConnect = function (req, res) {
   dataLayer.findOneAndUpdateUsingQuery({_id: req.user._id}, {skippedFacebookConnect: true}, {new: true})
     .then(user => {
       logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
-      return res.status(200).json({status: 'success', payload: user})
+      sendSuccessResponse(res, 200, user)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update skip connect: ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.fbAppId = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller fbAppId')
-  res.status(200).json({status: 'success', payload: config.facebook.clientID})
+  sendSuccessResponse(res, 200, config.facebook.clientID)
 }
 
 exports.updateChecks = function (req, res) {
@@ -155,7 +145,7 @@ exports.updateChecks = function (req, res) {
   dataLayer.findOneUserObject(req.user._id)
     .then(user => {
       // return if user not found
-      if (!user) return res.status(404).json({status: 'failed', description: 'User not found'})
+      if (!user) sendErrorResponse(res, 404, 'User not found')
 
       if (req.body.getStartedSeen) user.getStartedSeen = req.body.getStartedSeen
       if (req.body.dashboardTourSeen) user.dashboardTourSeen = req.body.dashboardTourSeen
@@ -173,15 +163,12 @@ exports.updateChecks = function (req, res) {
 
       dataLayer.saveUserObject(user).then(result => {
         logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
-        return res.status(200).json({status: 'success', payload: user})
+        sendSuccessResponse(res, 200, user)
       })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at User find: ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: 'internal server error' + JSON.stringify(err)
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -195,15 +182,9 @@ exports.create = function (req, res) {
     .then(result => {
       logger.serverLog(TAG, 'result')
       if (result.email) {
-        return res.status(422).json({
-          status: 'failed',
-          description: 'This email address already has an account on KiboPush. Contact support for more information.'
-        })
+        sendErrorResponse(res, 422, 'This email address already has an account on KiboPush. Contact support for more information.')
       } else if (result.domain) {
-        return res.status(422).json({
-          status: 'failed',
-          description: 'This workspace name already has an account on KiboPush. Contact support for more information.'
-        })
+        sendErrorResponse(res, 422, 'This workspace name already has an account on KiboPush. Contact support for more information.')
       } else {
         let domain = logicLayer.getRandomString()
         let payload = logicLayer.prepareUserPayload(body, isTeam, domain)
@@ -228,7 +209,7 @@ exports.create = function (req, res) {
                       .then()
                       .catch(err => {
                         logger.serverLog(TAG, `Error at: ${err}`)
-                        return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                        sendErrorResponse(res, 500, err)
                       })
                     // Create customer on stripe
                     logicLayer.createCustomerOnStripe(req.body.email, req.body.name, companySaved)
@@ -249,12 +230,12 @@ exports.create = function (req, res) {
                           })
                           .catch(err => {
                             logger.serverLog(TAG, `Error at: ${err}`)
-                            return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                            sendErrorResponse(res, 500, err)
                           })
                       })
                       .catch(err => {
                         logger.serverLog(TAG, `Error at: ${err}`)
-                        return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                        sendErrorResponse(res, 500, err)
                       })
                     let tokenString = logicLayer.getRandomString()
                     VertificationTokenDataLayer
@@ -283,17 +264,17 @@ exports.create = function (req, res) {
                   })
                   .catch(err => {
                     logger.serverLog(TAG, `Error at: ${err}`)
-                    return res.status(500).json({status: 'failed', description: `err: ${err}`})
+                    sendErrorResponse(res, 500, err)
                   })
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at: ${err}`)
-                return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
+                sendErrorResponse(res, 500, err)
               })
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at: ${err}`)
-            return res.status(500).json({status: 'failed', description: `${JSON.stringify(err)}`})
+            sendErrorResponse(res, 500, err)
           })
       }
     })
@@ -315,10 +296,7 @@ exports.joinCompany = function (req, res) {
     .then(token => {
       invitationToken = token
       if (!invitationToken) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'Invitation token invalid or expired. Please contact admin to invite you again.'
-        })
+        sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
       }
       return CompanyUserDataLayer
         .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
@@ -330,7 +308,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
-        res.status(404).json({status: 'failed', description: 'user or company user not found'})
+        sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
         logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
         let accountData = {
@@ -377,7 +355,7 @@ exports.joinCompany = function (req, res) {
       res.clearCookie('name')
       res.cookie('token', token)
       res.cookie('userid', user._id)
-      res.status(201).json({status: 'success', token: token})
+      sendSuccessResponse(res, 201, token)
 
       tokenString = logicLayer.getRandomString()
       let tokenPromise = VertificationTokenDataLayer.createVerificationToken({userId: user._id, token: tokenString})
@@ -411,7 +389,7 @@ exports.joinCompany = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -421,7 +399,7 @@ exports.update = function (req, res) {
   let id
   req.params._id
     ? id = req.params._id
-    : res.status(500).json({status: 'failed', payload: 'ID is not provided'})
+    : sendErrorResponse(res, 400, 'ID is not provided')
 
   let name = req.body.name ? req.body.name : false
   let email = req.body.email ? req.body.email : false
@@ -431,15 +409,15 @@ exports.update = function (req, res) {
   if (Object.keys(payload).length > 0) {
     dataLayer.updateUserObject(id, payload)
       .then(result => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch(err => {
         logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
-        return res.status(500).json({status: 'failed', payload: err})
+        sendErrorResponse(res, 500, err)
       })
   } else {
     logger.serverLog(TAG, `No field provided to update`)
-    return res.status(500).json({status: 'failed', payload: 'Provide field to update'})
+    sendErrorResponse(res, 400, 'Provide field to update')
   }
 }
 
@@ -449,15 +427,15 @@ exports.delete = function (req, res) {
   let id
   req.params._id
     ? id = req.params._id
-    : res.status(500).json({status: 'failed', payload: 'ID is not provided'})
+    : sendErrorResponse(res, 500, '', 'ID is not provided')
 
   dataLayer.deleteUserObject(id)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -468,14 +446,14 @@ exports.authenticatePassword = function (req, res) {
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {
-        return res.status(200).json({status: 'failed', description: 'Incorrect password'})
+        sendErrorResponse(res, 500, '', 'Incorrect password')
       } else {
-        return res.status(200).json({status: 'success', description: 'Authenticated'})
+        sendSuccessResponse(res, 200, '', 'Authenticated')
       }
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at authenticatePassword user ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -504,21 +482,20 @@ exports.addAccountType = function (req, res) {
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at company addAccountType: ${util.inspect(err)}`)
-            return res.status(500).json({status: 'failed', payload: err})
+            sendErrorResponse(res, 500, err)
           })
         if (index === (users.length - 1)) {
-          return res.status(200).json({ status: 'success', description: 'Successfuly added!' })
+          sendSuccessResponse(res, 200, 'Successfuly added!')
         }
       })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at addAccountType: ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.enableDelete = function (req, res) {
-
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
   dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
@@ -555,11 +532,11 @@ exports.enableDelete = function (req, res) {
         }
       })
       emailAdmin = logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
-      return res.status(200).json({status: 'success', payload: updatedUser})
+      sendSuccessResponse(res, 20, updatedUser)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -601,11 +578,11 @@ exports.cancelDeletion = function (req, res) {
               err)}`)
         }
       })
-      return res.status(200).json({status: 'success', payload: updatedUser})
+      sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -614,11 +591,11 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateUserObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -627,11 +604,11 @@ exports.fetchGeneral = function (req, res) {
 
   dataLayer.findAllUserObjectsUsingQuery(req.body)
     .then(users => {
-      return res.status(200).json({status: 'success', payload: users})
+      sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
       logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -649,14 +626,14 @@ exports.updatePicture = function (req, res) {
         dataLayer.genericUpdateUserObject({_id: req.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
           .then(updated => {
             logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.user._id}`)
-            return res.status(200).json({status: 'success', payload: updated})
+            sendSuccessResponse(res, 200, updated)
           })
           .catch(err => {
             logger.serverLog(TAG, `Failed to update user ${JSON.stringify(err)}`)
-            return res.status(500).json({status: 'failed', payload: err})
+            sendErrorResponse(res, 500, err)
           })
       } else {
-        return res.status(500).json({status: 'failed', payload: `profile picture not found for user with _id ${req.user._id}`})
+        sendErrorResponse(res, 500, `profile picture not found for user with _id ${req.user._id}`)
       }
     })
 }
@@ -669,19 +646,19 @@ exports.aggregate = function (req, res) {
   dataLayer.aggregateInfo(query)
     .then(result => {
       logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate subscriber ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 exports.distinct = function (req, res) {
   dataLayer.distinctQuery(req.body.distinct)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

@@ -5,16 +5,17 @@ const TAG = '/api/v1/permissions_plan/permissions_plan.controller.js'
 const PlanModel = require('../plans/plans.model')
 const Features = require('./Permissions_Plan.model')
 const util = require('util')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find permissionPlan controller index')
 
   dataLayer.findOnePermissionsPlanObject(req.params._id)
     .then(permissionPlanObject => {
-      res.status(200).json({status: 'success', payload: permissionPlanObject})
+      sendSuccessResponse(res, 200, permissionPlanObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -22,10 +23,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create permissionPlan controller index')
   dataLayer.createPermissionsPlanObject(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -34,11 +35,11 @@ exports.update = function (req, res) {
 
   dataLayer.updatePermissionsPlanObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update permissionPlan ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -47,11 +48,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deletePermissionsPlanObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete permissionPlan ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -60,11 +61,11 @@ exports.query = function (req, res) {
 
   dataLayer.findallPermissionsPlanObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying permissionPlan ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -73,21 +74,18 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate permissionPlan ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.populatePlanPermissions = function (req, res) {
   PlanModel.find({}, (err, plans) => {
     if (err) {
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     }
     plans.forEach((plan, index) => {
       if (plan.unique_ID === 'plan_A') {
@@ -131,8 +129,7 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
-            return res.status(500)
-              .json({status: 'failed', description: 'Failed to insert record1'})
+            sendErrorResponse(res, 500, 'Failed to insert record1')
           }
         })
       } else if (plan.unique_ID === 'plan_B') {
@@ -176,8 +173,7 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
-            return res.status(500)
-              .json({status: 'failed', description: 'Failed to insert record2'})
+            sendErrorResponse(res, 500, 'Failed to insert record2')
           }
         })
       } if (plan.unique_ID === 'plan_C') {
@@ -221,8 +217,7 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
-            return res.status(500)
-              .json({status: 'failed', description: 'Failed to insert record3'})
+            sendErrorResponse(res, 500, 'Failed to insert record3')
           }
         })
       } if (plan.unique_ID === 'plan_D') {
@@ -266,16 +261,12 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
-            return res.status(500)
-              .json({status: 'failed', description: 'Failed to insert record4'})
+            sendErrorResponse(res, 500, 'Failed to insert record4')
           }
         })
       }
       if (index === (plans.length - 1)) {
-        return res.status(200).json({
-          status: 'success',
-          description: 'Successfuly populated!'
-        })
+        sendSuccessResponse(res, 200, '', 'Successfuly populated!')
       }
     })
   })
