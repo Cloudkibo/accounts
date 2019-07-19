@@ -1,7 +1,7 @@
 const logger = require('../../../components/logger')
 const dataLayer = require('./webhooks.datalayer')
 const TAG = '/api/v1/webhooks/webhooks.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -9,10 +9,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOneWebhookObject(req.params._id)
     .then(webhookObject => {
-      res.status(200).json({status: 'success', payload: webhookObject})
+      sendSuccessResponse(res, 200, webhookObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -20,10 +20,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create webhook controller index')
   dataLayer.createWebhookObject(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -32,11 +32,11 @@ exports.update = function (req, res) {
 
   dataLayer.updateWebhookObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update webhook ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -45,11 +45,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteWebhookObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete webhook ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -58,11 +58,11 @@ exports.query = function (req, res) {
 
   dataLayer.findWebhookObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying webhook ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -71,10 +71,10 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate webhook ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

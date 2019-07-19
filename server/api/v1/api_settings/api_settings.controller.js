@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./api_settings.logiclayer')
 const dataLayer = require('./api_settings.datalayer')
 const TAG = '/api/v1/api_settings/index.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const crypto = require('crypto')
 
 exports.index = function (req, res) {
@@ -11,16 +11,13 @@ exports.index = function (req, res) {
     .then(settings => {
       if (!settings) {
         logger.serverLog(TAG, `Did not found api settings: ${settings}`)
-        return res.status(404).json({
-          status: 'failed',
-          description: 'API settings not initialized or invalid user. Call enable API to initialize them.'
-        })
+        sendErrorResponse(res, 500, '', 'API settings not initialized or invalid user. Call enable API to initialize them.')
       }
-      res.status(200).json({ status: 'success', payload: settings })
+      sendSuccessResponse(res, 200, settings)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at index: ${err}`)
-      return res.status(500).json({status: 'failed', description: 'API query failed'})
+      sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
 
@@ -33,26 +30,26 @@ exports.enable = function (req, res) {
         let payload = logicLayer.getSettingsPayload(req.body.company_id)
         dataLayer.createApiObject(payload)
           .then(savedSettings => {
-            res.status(201).json({ status: 'success', payload: savedSettings })
+            sendSuccessResponse(res, 200, savedSettings)
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at enable: ${err}`)
-            return res.status(500).json({status: 'failed', description: 'API query failed'})
+            sendErrorResponse(res, 500, '', 'API query failed')
           })
       } else {
         dataLayer.UpdateOneApiObject({_id: settings._id}, {enabled: true}, {new: true})
           .then(savedSettings => {
-            res.status(201).json({ status: 'success', payload: savedSettings })
+            sendSuccessResponse(res, 200, savedSettings)
           })
           .catch(err => {
             logger.serverLog(TAG, `Error at enable: ${err}`)
-            return res.status(500).json({status: 'failed', description: 'API query failed'})
+            sendErrorResponse(res, 500, '', 'API query failed')
           })
       }
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enable: ${err}`)
-      return res.status(500).json({status: 'failed', description: 'API query failed'})
+      sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
 
@@ -62,23 +59,20 @@ exports.disable = function (req, res) {
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
       if (!settings) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'API settings not initialized. Call enable API to initialize them.'
-        })
+        sendErrorResponse(res, 500, '', 'API settings not initialized. Call enable API to initialize them.')
       }
       dataLayer.UpdateOneApiObject({_id: settings._id}, {enabled: false}, {new: true})
         .then(savedSettings => {
-          res.status(201).json({ status: 'success', payload: savedSettings })
+          sendSuccessResponse(res, 200, savedSettings)
         })
         .catch(err => {
           logger.serverLog(TAG, `Error at enable: ${err}`)
-          return res.status(500).json({status: 'failed', description: 'API query failed'})
+          sendErrorResponse(res, 500, '', 'API query failed')
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enable: ${err}`)
-      return res.status(500).json({status: 'failed', description: 'API query failed'})
+      sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
 
@@ -88,21 +82,18 @@ exports.reset = function (req, res) {
     .then(settings => {
       if (!settings) {
         logger.serverLog(TAG, `Did not found api settings: ${settings}`)
-        return res.status(404).json({
-          status: 'failed',
-          description: 'API settings not initialized or invalid user. Call enable API to initialize them.'
-        })
+        sendErrorResponse(res, 500, '', 'API settings not initialized or invalid user. Call enable API to initialize them.')
       }
       let uid = crypto.randomBytes(10).toString('hex')
       let pwd = crypto.randomBytes(18).toString('hex')
       return dataLayer.UpdateOneApiObject({_id: settings._id}, {app_id: uid, app_secret: pwd}, {new: true})
     })
     .then(updatedSettings => {
-      res.status(200).json({ status: 'success', payload: updatedSettings })
+      sendSuccessResponse(res, 200, updatedSettings)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at index: ${err}`)
-      return res.status(500).json({status: 'failed', description: 'API query failed'})
+      sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
 exports.genericFetch = function (req, res) {
@@ -111,10 +102,10 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findOneApiObject(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${err}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, '', 'API query failed')
     })
 }

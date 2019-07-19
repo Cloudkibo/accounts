@@ -12,6 +12,7 @@ const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCo
   selectTwitterType, selectFacebookType, selectWordpressType, dateFilterAutoposting } = require('./pipeline')
 const CompanyUsersDataLayer = require('../companyuser/companyuser.datalayer')
 const mongoose = require('mongoose')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.platformWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
@@ -43,15 +44,9 @@ exports.platformWiseData = function (req, res) {
       totalPolls: (results[5].length === 0) ? 0 : results[5][0].count,
       totalSurveys: (results[6].length === 0) ? 0 : results[6][0].count
     }
-    res.status(200).json({
-      status: 'success',
-      payload: data
-    })
+    sendSuccessResponse(res, 200, data)
   }).catch((err) => {
-    res.status(500).json({
-      status: 'failed',
-      error: err
-    })
+    sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.pageWiseData = function (req, res) {
@@ -79,15 +74,9 @@ exports.pageWiseData = function (req, res) {
     let surveysAggregate = results[3]
     // set Broadcasts count
     data = logicLayer.mapData(data, broadcastAggregates, pollsAggregate, surveysAggregate)
-    res.status(200).json({
-      status: 'success',
-      payload: data
-    })
+    sendSuccessResponse(res, 200, data)
   }).catch((err) => {
-    return res.status(500).json({
-      status: 'failed',
-      error: err
-    })
+    sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.companyWiseData = function (req, res) {
@@ -126,23 +115,15 @@ exports.companyWiseData = function (req, res) {
             logicLayer.setTotalPagesCount(results, data)
             logicLayer.setConnectedPagesCount(results, data)
 
-            res.status(200).json({
-              status: 'success',
-              payload: data
-            })
+            sendSuccessResponse(res, 200, data)
           }
         })
         .catch((err) => {
-          return res.status(500).json({
-            status: 'failed',
-            description: `Internal Server Error ${JSON.stringify(err)}`})
+          sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
         })
     }
   }).catch((err) => {
-    res.status(500).json({
-      status: 'failed',
-      error: err
-    })
+    sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.getFacebookAutoposting = function (req, res) {
@@ -155,11 +136,11 @@ exports.getFacebookAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectFacebookType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   } else {
     dataLayer.aggregateForAutoposting(
@@ -168,11 +149,11 @@ exports.getFacebookAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectFacebookType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   }
 }
@@ -185,11 +166,11 @@ exports.getTwitterAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectTwitterType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   } else {
     dataLayer.aggregateForAutoposting(
@@ -198,11 +179,11 @@ exports.getTwitterAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectTwitterType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   }
 }
@@ -215,11 +196,11 @@ exports.getWordpressAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectWordpressType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   } else {
     dataLayer.aggregateForAutoposting(
@@ -228,11 +209,11 @@ exports.getWordpressAutoposting = function (req, res) {
       selectAutoPostingFields,
       selectWordpressType)
       .then((result) => {
-        return res.status(200).json({status: 'success', payload: result})
+        sendSuccessResponse(res, 200, result)
       })
       .catch((err) => {
         logger.serverLog(TAG, `Some error occured in getting autoposting ${JSON.stringify(err)}`)
-        return res.status(500).json({status: 'failed', description: err})
+        sendErrorResponse(res, 500, '', err)
       })
   }
 }

@@ -3,7 +3,7 @@ const logicLayer = require('./m_code.logiclayer')
 const analyticsDataLayer = require('./m_code.datalayer')
 const pageDataLayer = require('./../pages/pages.datalayer')
 const TAG = '/api/v1/menu/menu.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const rp = require('request-promise')
 const util = require('util')
 
@@ -37,7 +37,7 @@ exports.createCode = function (req, res) {
         return rp(options)
       } else {
         // Page not found --- null
-        res.status(404).json({status: 'failed', payload: 'Page Not Found'})
+        sendErrorResponse(res, 404, 'Page Not Found')
       }
     })
     .then(responseFromFacebook => {
@@ -52,16 +52,16 @@ exports.createCode = function (req, res) {
       let payload = logicLayer.prepareAnalyticsPayload(currentPage, req.user, company, ref)
       analyticsDataLayer.createCodeAnalyticsObject(payload)
         .then(result => {
-          res.status(200).json({status: 'success', payload: facebookResponse})
+          sendSuccessResponse(res, 200, facebookResponse)
         })
         .catch(err => {
           logger.serverLog(TAG, `Error at creating analytics payload ${util.inspect(err)}`)
-          res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error found at finding page with pageId ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -82,10 +82,10 @@ exports.handleWebhookNotification = function (req, res) {
       return analyticsDataLayer.saveObject(analytics)
     })
     .then(result => {
-      res.status(200).json({status: 'success'})
+      sendSuccessResponse(res, 200)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at updating analytics object ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed'})
+      sendErrorResponse(res, 500)
     })
 }

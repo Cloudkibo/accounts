@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./lists.logiclayer')
 const dataLayer = require('./lists.datalayer')
 const TAG = '/api/v1/lists/lists.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -10,10 +10,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOneListObject(req.params._id)
     .then(listObject => {
-      res.status(200).json({status: 'success', payload: listObject})
+      sendSuccessResponse(res, 200, listObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -29,17 +29,17 @@ exports.create = function (req, res) {
           req.body.joiningCondition
         )
           .then(result => {
-            res.status(200).json({status: 'success', payload: result})
+            sendSuccessResponse(res, 200, result)
           })
           .catch(err => {
-            res.status(500).json({status: 'failed', payload: err})
+            sendErrorResponse(res, 500, err)
           })
       } else {
-        res.status(500).json({status: 'failed', payload: 'List is already created with this name Please choose another name'})
+        sendErrorResponse(res, 400, 'List is already created with this name Please choose another name')
       }
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -47,11 +47,11 @@ exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update list controller index')
   dataLayer.updateListObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update list ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -60,11 +60,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteListObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete list ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -73,11 +73,11 @@ exports.query = function (req, res) {
 
   dataLayer.findListObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying list ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -87,11 +87,11 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(query)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate list ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -100,10 +100,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateListObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

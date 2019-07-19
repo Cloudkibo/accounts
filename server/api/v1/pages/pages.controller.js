@@ -6,16 +6,17 @@ const TAG = '/api/v1/pages/pages.controller.js'
 const needle = require('needle')
 const { callApi } = require('../../scripts/apiCaller')
 const util = require('util')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find page controller index')
 
   dataLayer.findOnePageObject(req.params._id)
     .then(pageObject => {
-      res.status(200).json({status: 'success', payload: pageObject})
+      sendSuccessResponse(res, 200, pageObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -27,10 +28,10 @@ exports.create = function (req, res) {
     req.body.gotPageSubscriptionPermission
   )
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -39,11 +40,11 @@ exports.update = function (req, res) {
 
   dataLayer.updatePageObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -52,11 +53,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deletePageObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -90,11 +91,11 @@ exports.connect = function (req, res) {
           if (reachEstimation.reach_estimation_id) {
             dataLayer.updatePageObject(req.params._id, {connected: true, reachEstimationId: reachEstimation.reach_estimation_id})
               .then(result => {
-                res.status(200).json({status: 'success', payload: result})
+                sendSuccessResponse(res, 200, result)
               })
               .catch(err => {
                 logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
-                res.status(500).json({status: 'failed', payload: err})
+                sendErrorResponse(res, 500, err)
               })
           } else {
             logger.serverLog(TAG, `Failed to start reach estimation`)
@@ -106,7 +107,7 @@ exports.connect = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at find page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -115,21 +116,21 @@ exports.disconnect = function (req, res) {
 
   dataLayer.updatePageObject(req.params._id, {connected: false})
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.getGreetingText = function (req, res) {
   dataLayer.findOnePageObject(req.params._id)
     .then(pageObject => {
-      res.status(200).json({status: 'success', payload: pageObject.greetingText})
+      sendSuccessResponse(res, 200, pageObject.greetingText)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -143,11 +144,11 @@ exports.setGreetingText = function (req, res) {
       return dataLayer.updatePageObjectUsingQuery(query, updated, {multi: true})
     })
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at updated greetingText ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -156,11 +157,11 @@ exports.query = function (req, res) {
 
   dataLayer.findPageObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -170,11 +171,11 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(query)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate page ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -195,23 +196,23 @@ exports.fetchWhitelistedDomains = function (req, res) {
     needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
       (err, resp) => {
         if (err) {
-          return res.status(200).json({status: 'failed', description: 'Error in getting accessToken'})
+          sendErrorResponse(res, 500, '', 'Error in getting accessToken')
         }
         var accessToken = resp.body.access_token
         needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
           if (err) {
-            return res.status(200).json({status: 'failed', description: 'Error in getting whitelisted_domains'})
+            sendErrorResponse(res, 500, '', 'Error in getting whitelisted_domains')
           }
           var whitelistDomains = []
           var body = JSON.parse(JSON.stringify(resp.body))
           if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
             whitelistDomains = body.data[0].whitelisted_domains
           }
-          return res.status(200).json({status: 'success', payload: whitelistDomains})
+          sendSuccessResponse(res, 200, whitelistDomains)
         })
       })
   } else {
-    return res.status(200).json({status: 'success', payload: []})
+    sendSuccessResponse(res, 200, [])
   }
 }
 exports.whitelistDomain = function (req, res) {
@@ -239,9 +240,9 @@ exports.whitelistDomain = function (req, res) {
           if (err) {
           }
           if (resp.body.result === 'success') {
-            return res.status(200).json({status: 'success', payload: temp})
+            sendSuccessResponse(res, 200, temp)
           } else {
-            return res.status(500).json({status: 'failed', payload: resp.body})
+            sendErrorResponse(res, 500, resp.body)
           }
         })
       })
@@ -278,9 +279,9 @@ exports.deleteWhitelistDomain = function (req, res) {
               }
               var response = JSON.parse(JSON.stringify(resp.body))
               if (response.result === 'success') {
-                return res.status(200).json({status: 'success', payload: temp})
+                sendSuccessResponse(res, 200, temp)
               } else {
-                return res.status(200).json({status: 'failed', description: `Unable to delete whitelist domain ${response}`})
+                sendErrorResponse(res, 500, '', `Unable to delete whitelist domain ${response}`)
               }
             })
           } else {
@@ -289,12 +290,12 @@ exports.deleteWhitelistDomain = function (req, res) {
               if (err) {
               }
               if (resp.body.result === 'success') {
-                return res.status(200).json({status: 'success', payload: temp})
+                sendSuccessResponse(res, 200, temp)
               }
             })
           }
         } else {
-          return res.status(500).json({status: 'success', payload: temp})
+          sendSuccessResponse(res, 200, temp)
         }
       })
     })

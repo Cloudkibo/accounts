@@ -11,7 +11,7 @@ const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
 const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 /*
@@ -31,22 +31,19 @@ exports.index = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'The user account does not belong to any company. Please contact support'
-        })
+        sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       dataLayer
         .findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(companyProfile => {
-          return res.status(200).json({status: 'success', payload: companyProfile})
+          sendSuccessResponse(res, 200, companyProfile)
         })
         .catch(err => {
-          return res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -55,31 +52,25 @@ exports.setCard = function (req, res) {
 
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
-      if (!profile) { return res.status(404).json({status: 'failed', description: 'Company not found'}) }
+      if (!profile) { sendErrorResponse(res, 404, '', 'Company not found') }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
       let result = logicLayer.setCard(profile, req.body.stripeToken)
-      if (result.status === 'failed') res.status(500).json(result)
-      else if (result.status === 'success') res.status(200).json(result)
+      if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
+      else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in set Card ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatePlan controller index')
   if (req.user.plan.unique_ID === req.body.plan) {
-    return res.status(500).json({
-      status: 'failed',
-      description: `The selected plan is the same as the current plan.`
-    })
+    sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
   }
   if (!req.user.last4 && !req.body.stripeToken) {
-    return res.status(500).json({
-      status: 'failed',
-      description: `Please add a card to your account before choosing a plan.`
-    })
+    sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
     .then(plan => {
@@ -91,20 +82,20 @@ exports.updatePlan = function (req, res) {
 
       dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
         .then(company => {
-          if (!company) return res.status(404).json({status: 'failed', description: 'Company not found'})
+          if (!company) sendErrorResponse(res, 500, '', 'Company not found')
 
           let result = logicLayer.setPlan(company, req.body.stripeToken, plan)
-          if (result.status === 'failed') res.status(500).json(result)
-          else if (result.status === 'success') res.status(200).json(result)
+          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
+          else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
         })
         .catch(err => {
           logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
-          return res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -117,10 +108,7 @@ exports.invite = function (req, res) {
     .then(companyUser => {
       companyUser
         ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
-        : res.status(404).json({
-          status: 'failed',
-          payload: 'The user account logged in does not belong to any company. Please contact support'
-        })
+        : sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
 
       // Query Objects
       let InvitationCountQuery = {email: req.body.email, companyId: companyUser.companyId._id}
@@ -143,22 +131,13 @@ exports.invite = function (req, res) {
           let gotCountAgent = results[2] ? results[2] : null
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
-            res.status(400).json({
-              status: 'failed',
-              payload: `${req.body.name} is already invited.`
-            })
+            sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
           } else if (gotCountAgentWithEmail > 0) {
             logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
-            res.status(400).json({
-              status: 'failed',
-              payload: `${req.body.name} is already on KiboPush.`
-            })
+            sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
-            res.status(400).json({
-              status: 'failed',
-              payload: `${req.body.name} is already a member.`
-            })
+            sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
             let getTokenPayload = {
@@ -191,12 +170,8 @@ exports.invite = function (req, res) {
                     : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
 
                   json
-                    ? res.status(200).json(
-                      {status: 'success', payload: 'Email has been sent'})
-                    : res.status(500).json({
-                      status: 'failed',
-                      payload: `Internal Server Error ${JSON.stringify(err)}`
-                    })
+                    ? sendSuccessResponse(res, 200, 'Email has been sent')
+                    : sendErrorResponse(res, 500, err)
                 })
               })
               .catch(err => {
@@ -206,18 +181,12 @@ exports.invite = function (req, res) {
         })
         .catch(err => {
           logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
-          return res.status(500).json({
-            status: 'failed',
-            payload: `Internal Server Error ${JSON.stringify(err)}`
-          })
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        payload: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -225,13 +194,11 @@ exports.updateRole = function (req, res) {
   logger.serverLog(TAG, 'Hit the updateRole controller index')
 
   if (config.userRoles.indexOf(req.user.role) > 1) {
-    return res.status(401).json(
-      {status: 'failed', description: 'Unauthorised to perform this action.'})
+    sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
 
   if (config.userRoles.indexOf(req.body.role) < 0) {
-    return res.status(404)
-      .json({status: 'failed', description: 'Invalid role.'})
+    sendErrorResponse(res, 404, '', 'Invalid role')
   }
 
   let query = {domain_email: req.body.domain_email}
@@ -255,35 +222,26 @@ exports.updateRole = function (req, res) {
 
       Promise.all([promiseUser, promiseCompanyUser, permissionPromise])
         .then(result => {
-          return res.status(200)
-            .json({status: 'success', payload: {savedUser: result[0], savedUserCompany: result[1]}})
+          sendSuccessResponse(res, 200, {savedUser: result[0], savedUserCompany: result[1]})
         })
         .catch(err => {
           logger.serverLog(TAG, `Error in getting promise all update role ${util.inspect(err)}`)
-          return res.status(500).json({
-            status: 'failed',
-            description: `Internal Server Error ${JSON.stringify(err)}`
-          })
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting promise all update role ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.removeMember = function (req, res) {
   logger.serverLog(TAG, 'Hit the removeMember controller index')
   if (config.userRoles.indexOf(req.user.role) > 1) {
-    return res.status(401).json(
-      {status: 'failed', description: 'Unauthorised to perform this action.'})
+    sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
   if (config.userRoles.indexOf(req.body.role) < 0) {
-    return res.status(404)
-      .json({status: 'failed', description: 'Invalid role.'})
+    sendErrorResponse(res, 404, '', 'Invalid role')
   }
 
   let query = {domain_email: req.body.domain_email}
@@ -292,14 +250,11 @@ exports.removeMember = function (req, res) {
 
   Promise.all([companyUserRemove, userRemove])
     .then(result => {
-      return res.status(200).json({status: 'success', description: 'Account removed.'})
+      sendSuccessResponse(res, 200, '', 'Account removed')
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting promise all remove member ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -313,15 +268,12 @@ exports.members = function (req, res) {
       CompanyUserDataLayer
         .findAllCompanyUserObjectUsingQuery({companyId: companyUser.companyId})
         .then(members => {
-          res.status(200).json({status: 'success', payload: members})
+          sendSuccessResponse(res, 200, members)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting company User members ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -332,10 +284,7 @@ exports.updateAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'The user account does not belong to any company. Please contact support'
-        })
+        sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       let query = {_id: companyUser.companyId}
       let update = {automated_options: req.body.automated_options}
@@ -343,15 +292,12 @@ exports.updateAutomatedOptions = function (req, res) {
       dataLayer
         .findOneProfileAndUpdate(query, update, options)
         .then(updatedProfile => {
-          res.status(200).json({status: 'success', payload: updatedProfile})
+          sendSuccessResponse(res, 200, updatedProfile)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Internal Server Error ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -362,24 +308,18 @@ exports.getAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        return res.status(404).json({
-          status: 'failed',
-          description: 'The user account does not belong to any company. Please contact support'
-        })
+        sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 
       dataLayer
         .findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(company => {
-          res.status(200).json({status: 'success', payload: company})
+          sendSuccessResponse(res, 200, company)
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Internal Server Error ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -389,11 +329,11 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findOneCPWithPlanPop(req.body, true, 'planId')
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -403,11 +343,11 @@ exports.aggregateFetch = function (req, res) {
   dataLayer
     .findPostObjectUsingAggregate(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -416,11 +356,11 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 

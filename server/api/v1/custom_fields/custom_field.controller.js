@@ -2,18 +2,18 @@
 const logger = require('../../../components/logger')
 const DataLayer = require('./custom_field.datalayer')
 const CUSTOMFIELD = '/api/v1/kiboengage/tags/custom_field.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
   logger.serverLog(CUSTOMFIELD, `Index endpoint is hit:`)
   DataLayer.findAllCustomFieldObjects()
     .then(foundObjects => {
-      res.status(200).json({ status: 'success', payload: foundObjects })
+      sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
       logger.serverLog(CUSTOMFIELD, `Error found Index Controller : ${util.inspect(err)}`)
-      res.status(500).json({ status: 'failed', payload: err.toString() })
+      sendErrorResponse(res, 500, err.toString())
     })
 }
 
@@ -29,21 +29,21 @@ exports.create = function (req, res) {
   DataLayer.findCustomFieldsUsingQuery(query)
     .then(foundCustomFields => {
       if (foundCustomFields) {
-        res.status(201).json({ status: 'failed', payload: `${req.body.name} custom field already exists` })
+        sendErrorResponse(res, 400, `${req.body.name} custom field already exists`)
       } else {
         DataLayer.createOneCustomFieldObject(req.body)
           .then(createdObject => {
-            res.status(208).json({ status: 'success', payload: createdObject })
+            sendSuccessResponse(res, 200, createdObject)
           })
           .catch(err => {
             logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
-            res.status(500).json({ status: 'failed', payload: err.toString() })
+            sendErrorResponse(res, 500, err.toString())
           })
       }
     })
     .catch(err => {
       logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
-      res.status(500).json({ status: 'failed', payload: err.toString() })
+      sendErrorResponse(res, 500, err.toString())
     })
 }
 
@@ -52,11 +52,11 @@ exports.query = function (req, res) {
 
   DataLayer.findCustomFieldsUsingQuery(req.body)
     .then(foundObjects => {
-      res.status(200).json({ status: 'success', payload: foundObjects })
+      sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
       logger.serverLog(CUSTOMFIELD, `Error found Query Controller : ${util.inspect(err)}`)
-      res.status(500).json({ status: 'failed', payload: err.toString() })
+      sendErrorResponse(res, 500, err.toString())
     })
 }
 
@@ -72,21 +72,21 @@ exports.update = function (req, res) {
   DataLayer.findCustomFieldsUsingQuery(query)
     .then(foundCustomField => {
       if (foundCustomField) {
-        res.status(208).json({ status: 'failed', payload: `${req.body.updated.name} custom field already exists` })
+        sendErrorResponse(res, 400, `${req.body.updated.name} custom field already exists`)
       } else {
         DataLayer.updateCustomField(req.body)
           .then(foundObjects => {
-            res.status(200).json({ status: 'success', payload: foundObjects })
+            sendSuccessResponse(res, 200, foundObjects)
           })
           .catch(err => {
             logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
-            res.status(500).json({ status: 'failed', payload: err.toString() })
+            sendErrorResponse(res, 500, err.toString())
           })
       }
     })
     .catch(err => {
       logger.serverLog(CUSTOMFIELD, `Error found update Controller : ${util.inspect(err)}`)
-      res.status(500).json({ status: 'failed', payload: err.toString() })
+      sendErrorResponse(res, 500, err.toString())
     })
 }
 
@@ -94,10 +94,10 @@ exports.delete = function (req, res) {
   logger.serverLog(CUSTOMFIELD, `Delete endpoint is hit:`)
   DataLayer.deleteCustomField(req.body)
     .then(result => {
-      res.status(200).json({ status: 'success', payload: result })
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(CUSTOMFIELD, `Error found Delete Controller : ${util.inspect(err)}`)
-      res.status(500).json({ status: 'failed', payload: err.toString() })
+      sendErrorResponse(res, 500, err.toString())
     })
 }

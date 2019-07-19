@@ -2,7 +2,7 @@ const logger = require('../../../components/logger')
 const logicLayer = require('./menu.logiclayer')
 const dataLayer = require('./menu.datalayer')
 const TAG = '/api/v1/menu/menu.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -10,10 +10,10 @@ exports.index = function (req, res) {
 
   dataLayer.findOneMenuObject(req.params._id)
     .then(menuObject => {
-      res.status(200).json({status: 'success', payload: menuObject})
+      sendSuccessResponse(res, 200, menuObject)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -21,10 +21,10 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create menu controller index')
   dataLayer.createMenuObject(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -33,11 +33,11 @@ exports.update = function (req, res) {
 
   dataLayer.updateMenuObject(req.params._id, req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at update menu ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -46,11 +46,11 @@ exports.delete = function (req, res) {
 
   dataLayer.deleteMenuObject(req.params._id)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at delete menu ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -59,11 +59,11 @@ exports.query = function (req, res) {
 
   dataLayer.findMenuObjects(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at querying menu ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -72,11 +72,11 @@ exports.aggregate = function (req, res) {
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
-      res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at aggregate menu ${util.inspect(err)}`)
-      res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -85,10 +85,10 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateMenuObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

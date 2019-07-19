@@ -3,16 +3,17 @@ const logicLayer = require('./permissions.logiclayer')
 const dataLayer = require('./permissions.datalayer')
 const TAG = '/api/v1/permissions/permissions.controller.js'
 const utility = require('../../../components/utility.js')
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the permissions controller index to get role permissions')
 
   dataLayer.findOneRolePermissionObject(req.params.role)
     .then(permissions => {
-      return res.status(200).json({status: 'success', payload: permissions})
+      sendSuccessResponse(res, 200, permissions)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -24,14 +25,14 @@ exports.update = function (req, res) {
       permissions = utility.prepareUpdatePayload(permissions, req.body, 'role')
       dataLayer.savePermissionObject(permissions)
         .then(updatedPermission => {
-          return res.status(200).json({status: 'success', payload: 'Permissions have been updated successfully!'})
+          sendSuccessResponse(res, 200, 'Permissions have been updated successfully!')
         })
         .catch(err => {
-          return res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -41,14 +42,14 @@ exports.create = function (req, res) {
     .then(RolePermissions => {
       dataLayer.aggregate([{$addFields: query}, {$out: 'permissions'}])
         .then(permissions => {
-          return res.status(200).json({status: 'success', payload: 'Permission has been added successfully!'})
+          sendSuccessResponse(res, 200, 'Permission has been added successfully!')
         })
         .catch(err => {
-          return res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -62,37 +63,37 @@ exports.populateRolePermissions = function (req, res) {
           let agentPermissions = logicLayer.getAgentPermissionsPayload()
           dataLayer.savePermissionObject(agentPermissions)
             .then(savedAgentPermissions => {
-              return res.status(200).json({status: 'success', payload: 'Successfuly populated!'})
+              sendSuccessResponse(res, 200, 'Successfuly populated!')
             })
             .catch(err => {
-              return res.status(500).json({status: 'failed', payload: err})
+              sendErrorResponse(res, 500, err)
             })
         })
         .catch(err => {
-          return res.status(500).json({status: 'failed', payload: err})
+          sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.genericFind = function (req, res) {
   dataLayer.genericFindUserPermissions(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updatePermissions = function (req, res) {
   dataLayer.updateUserPermissionsObject({_id: req.params.id}, req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

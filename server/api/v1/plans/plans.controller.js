@@ -7,7 +7,7 @@ const stripeOptions = config.stripeOptions
 const Stripe = require('stripe')
 const stripe = Stripe(stripeOptions.apiKey)
 const TAG = '/api/v1/plans/plans.controller.js'
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 
 exports.index = function (req, res) {
@@ -29,24 +29,18 @@ exports.index = function (req, res) {
             respPayload.push(plan)
             if (respPayload.length === plans.length) {
               logger.serverLog(TAG, `Sending Payload ${util.inspect(respPayload)}`)
-              res.status(200).json({ status: 'success', payload: respPayload })
+              sendSuccessResponse(res, 200, respPayload)
             }
           })
           .catch(err => {
             logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
-            return res.status(404).json({
-              status: 'failed',
-              description: `Error in getting companies count ${JSON.stringify(err)}`
-            })
+            sendErrorResponse(res, 500, '', `Error in getting companies count ${JSON.stringify(err)}`)
           })
       })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -66,25 +60,16 @@ exports.create = function (req, res) {
           stripe.plans.create(stripePayload, (err, plan) => {
             if (err) {
               logger.serverLog(TAG, `Error creating plan on stripe ${util.inspect(err)}`)
-              return res.status(500).json({
-                status: 'failed',
-                description: `Failed to create plan on stripe ${JSON.stringify(err)}`
-              })
+              sendErrorResponse(res, 500, '', `Failed to create plan on stripe ${JSON.stringify(err)}`)
             }
             logger.serverLog(TAG, 'plan has been created on stripe as well.')
-            res.status(200).json({
-              status: 'success',
-              description: 'Plan has been created successfully!'
-            })
+            sendSuccessResponse(res, 200, '', 'Plan has been created successfully!')
           })
         })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -108,22 +93,13 @@ exports.update = function (req, res) {
           : logger.serverLog(TAG, `updated plan on stripe. ${util.inspect(plan)}`)
 
         plan
-          ? res.status(200).json({
-            status: 'success',
-            description: 'Plan has been updated successfully!'
-          })
-          : res.status(500).json({
-            status: 'failed',
-            description: `Failed to update plan on stripe ${util.inspect(err)}`
-          })
+          ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
+          : sendErrorResponse(res, 500, '', `Failed to update plan on stripe ${util.inspect(err)}`)
       })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -139,22 +115,13 @@ exports.delete = function (req, res) {
           : logger.serverLog(TAG, `delete plan on stripe. ${util.inspect(confirmation)}`)
 
         confirmation
-          ? res.status(200).json({
-            status: 'success',
-            description: 'Plan has been updated successfully!'
-          })
-          : res.status(500).json({
-            status: 'failed',
-            description: `Failed to update plan on stripe ${util.inspect(err)}`
-          })
+          ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
+          : sendErrorResponse(res, 500, '', `Failed to update plan on stripe ${util.inspect(err)}`)
       })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -180,17 +147,11 @@ exports.changeDefaultPlan = function (req, res) {
 
   Promise.all([prevDefaultPromise, createNewDefault])
     .then(result => {
-      res.status(200).json({
-        status: 'success',
-        description: 'Default plan changed successfully!'
-      })
+      sendSuccessResponse(res, 200, '', 'Default plan changed successfully!')
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in changing default Plan ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -222,13 +183,10 @@ exports.migrateCompanies = function (req, res) {
             },
             (err2, subscription) => {
               if (err2) {
-                return res.status(500).json({ status: 'failed', description: err2 })
+                sendErrorResponse(res, 500, '', err2)
               }
               if (index === (subscriptions.data.length - 1)) {
-                return res.status(200).json({
-                  status: 'success',
-                  description: 'Migrated successfuly!'
-                })
+                sendSuccessResponse(res, 200, '', 'Migrated successfuly!')
               }
             })
         })
@@ -236,10 +194,7 @@ exports.migrateCompanies = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in migrating Plans ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -254,14 +209,11 @@ exports.populatePlan = function (req, res) {
   Promise.all([promisePlanA, promisePlanB, promisePlanC, promisePlanD])
     .then(result => {
       logger.serverLog(TAG, `Error in changing default Plan ${util.inspect(result)}`)
-      return res.status(200).json({ status: 'success', description: 'Successfuly populated!' })
+      sendSuccessResponse(res, 200, '', 'Successfuly populated!')
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in populate Plan Promise All ${util.inspect(err)}`)
-      return res.status(500).json({
-        status: 'failed',
-        description: `Internal Server Error ${JSON.stringify(err)}`
-      })
+      sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
@@ -270,11 +222,11 @@ exports.fetchAll = function (req, res) {
 
   dataLayer.findAllPlanObject()
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }
 
@@ -284,10 +236,10 @@ exports.genericFetch = function (req, res) {
   dataLayer
     .findAllPlanObjectsUsingQuery(req.body)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
-      return res.status(500).json({status: 'failed', payload: err})
+      sendErrorResponse(res, 500, err)
     })
 }

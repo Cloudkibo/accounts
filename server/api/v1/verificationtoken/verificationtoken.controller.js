@@ -6,7 +6,7 @@ let CompanyProfileDataLayer = require('./../companyprofile/companyprofile.datala
 let CompanyUsersDataLayer = require('./../companyuser/companyuser.datalayer')
 let config = require('./../../../config/environment/index')
 let path = require('path')
-
+const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const logger = require('../../../components/logger')
 const utility = require('./../../../components/utility')
 
@@ -70,11 +70,11 @@ exports.verify = function (req, res) {
           }
         })
         .catch(err => {
-          return res.status(500).json({status: 'failed', description: `Err: ${err}`})
+          sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
-      return res.status(500).json({status: 'failed', description: `Err: ${err}`})
+      sendErrorResponse(res, 500, '', err)
     })
 }
 
@@ -90,8 +90,8 @@ exports.resend = function (req, res) {
       sendgrid.send(email, (err) => {
         if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
         logger.serverLog(TAG, `verification email resent: ${JSON.stringify(email)}`)
-        return res.status(200).json({ status: 'success', description: 'Verification email has been sent' })
+        sendSuccessResponse(res, 200, 'Verification email has been sent')
       })
     })
-    .catch(err => { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) })
+    .catch(err => { sendErrorResponse(res, 500, '', err) })
 }
