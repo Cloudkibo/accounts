@@ -45,7 +45,7 @@ exports.setTeamBuyerEmailBody = (emailConfirm, user) => {
                   '<p style="color: #ffffff">Welcome to KiboPush</p> </td></tr> </table> </td> </tr> </table> ' +
                   '<!-- END: Social Icons --> </td> </tr> </table> </td> </tr> </table> ' +
                   '<!-- END: Header Container --> </td> </tr> </table> <!-- END: Header --> <!-- BEGIN: Content --> <table class="container content" align="center"> <tr> <td> <table class="row note"> ' +
-                  '<tr> <td class="wrapper last"> <p> Hello, <br> ' + user.name + '<br> Thank you for signing up with KiboPush, your account has been verified. Following is you account information:' +
+                  '<tr> <td class="wrapper last"> <p> Hello ' + user.name + ',<br> Thank you for signing up with KiboPush, your account has been verified. Following is you account information:' +
                   '<p> <ul> <li>Name: ' + user.name + '</li> ' +
                   '<li>Workspace name: ' + user.domain + ' </li>' +
                   ' <li>Email Address: ' + user.email + '</li></ul> </p> ' +
@@ -62,7 +62,7 @@ exports.setTeamAgentEmailBody = (emailConfirm, user) => {
   '<p style="color: #ffffff">Welcome to KiboPush</p> </td></tr> </table> </td> </tr> </table> ' +
   '<!-- END: Social Icons --> </td> </tr> </table> </td> </tr> </table> ' +
   '<!-- END: Header Container --> </td> </tr> </table> <!-- END: Header --> <!-- BEGIN: Content --> <table class="container content" align="center"> <tr> <td> <table class="row note"> ' +
-  '<tr> <td class="wrapper last"> <p> Hello <br> ' + user.name + ',<br> Thank you for joining us, your account has been verified. Following is your account information:' +
+  '<tr> <td class="wrapper last"> <p> Hello ' + user.name + ',<br> Thank you for joining us, your account has been verified. Following is your account information:' +
   '<p> <ul> <li>Name: ' + user.name + '</li> ' +
   '<li>Workspace Name: ' + user.domain + ' </li>' +
   ' <li>Email Address: ' + user.email + '</li><</ul> </p> ' +
@@ -79,7 +79,7 @@ exports.setIndividualEmailBody = (emailConfirm, user) => {
   '<p style="color: #ffffff">Welcome to KiboPush</p> </td></tr> </table> </td> </tr> </table> ' +
   '<!-- END: Social Icons --> </td> </tr> </table> </td> </tr> </table> ' +
   '<!-- END: Header Container --> </td> </tr> </table> <!-- END: Header --> <!-- BEGIN: Content --> <table class="container content" align="center"> <tr> <td> <table class="row note"> ' +
-  '<tr> <td class="wrapper last"> <p> Hello, <br> ' + user.name + '<br> Thank you for signing up with KiboPush, your account has been verified. Following is you account information:' +
+  '<tr> <td class="wrapper last"> <p> Hello ' + user.name + ',<br> Thank you for signing up with KiboPush, your account has been verified. Following is you account information:' +
   '<p> <ul> <li>Name: ' + user.name + '</li> ' +
   ' <li>Email Address: ' + user.email + '</li></ul> </p> ' +
   '<br><span class="devider" style="border-bottom: 1px solid #eee;margin: 15px -15px;display: block;"></span> <!-- END: Disscount Content --> </td> </tr> </table> </td> </tr> </table>' +
