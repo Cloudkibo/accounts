@@ -171,7 +171,7 @@ const setEmailBody = (email, tokenString, body) => {
     '<p style="color: #ffffff">Verify your account</p> </td></tr> </table> </td> </tr> </table> ' +
     '<!-- END: Social Icons --> </td> </tr> </table> </td> </tr> </table> ' +
     '<!-- END: Header Container --> </td> </tr> </table> <!-- END: Header --> <!-- BEGIN: Content --> <table class="container content" align="center"> <tr> <td> <table class="row note"> ' +
-    '<tr> <td class="wrapper last"> <p> Hello,' + body.name + '<br> Thank you for joining KiboPush. <br>Use the following link to verify your account <br>  </p> <p>To accept invitation please click the following URL to activate your account:</p> <!-- BEGIN: Note Panel --> <table class="twelve columns" style="margin-bottom: 10px"> ' +
+    '<tr> <td class="wrapper last"> <p> Hello ' + body.name + ',<br> Thank you for joining KiboPush. <br>Use the following link to verify your account <br>  </p> <p>To accept invitation please click the following URL to activate your account:</p> <!-- BEGIN: Note Panel --> <table class="twelve columns" style="margin-bottom: 10px"> ' +
     '<tr> <td class="panel" style="background: #ECF8FF;border: 0;padding: 10px !important;"> <a href="' +
     config.domain + '/api/v1/verificationtoken/verify/' +
     tokenString +
