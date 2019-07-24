@@ -10,6 +10,7 @@ const UserModel = require('../v1/user/user.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
+const needle = require('needle')
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
@@ -389,5 +390,51 @@ function updatePlatform (user, callback) {
     })
     .catch(err => {
       callback(err)
+    })
+}
+
+function intervalForEach (array, delay, res) {
+  let current = 0
+  let data = []
+  let count = 0
+
+  let interval = setInterval(() => {
+    if (current === array.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: data, count})
+    } else {
+      if (array[current].userId && array[current].userId.facebookInfo) {
+        needle('get', `https://graph.facebook.com/v2.10/${array[current].pageId}?fields=access_token&access_token=${array[current].userId.facebookInfo.fbToken}`)
+          .then(resp => {
+            if (!resp.body.error && !resp.body.access_token) {
+              count++
+              data.push(array[current]._id)
+              current++
+            } else {
+              current++
+            }
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: `Failed to fetch accesstoken ${err}`})
+          })
+      } else {
+        current++
+      }
+    }
+  }, delay)
+}
+
+exports.analyzePages = function (req, res) {
+  PagesModel.aggregate([
+    {$lookup: {from: 'users', localField: 'userId', foreignField: '_id', as: 'userId'}},
+    {$unwind: '$userId'},
+    {$limit: req.body.limit},
+    {$skip: req.body.skip}
+  ]).exec()
+    .then(pages => {
+      intervalForEach(pages, 500, res)
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
     })
 }
