@@ -162,7 +162,7 @@ exports.invite = function (req, res) {
               .then(result => {
                 let sendgrid = utility.getSendGridObject()
 
-                let emailParam = new sendgrid.Email(logicLayer.getEmailParameters(email))
+                let emailParam = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
                 emailParam = logicLayer.setEmailBody(emailParam, req.user, companyUser, uniqueTokenId, req.body.role)
                 sendgrid.send(emailParam, (err, json) => {
 
