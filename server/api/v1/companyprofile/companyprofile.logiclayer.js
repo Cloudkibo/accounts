@@ -68,7 +68,7 @@ exports.setPlan = (company, stripeToken, plan) => {
   })
 }
 
-exports.setEmailBody = (emailObj, user, companyUser, uniqueTokenId) => {
+exports.setEmailBody = (emailObj, user, companyUser, uniqueTokenId, role) => {
   emailObj.setHtml(
     '<body style="min-width: 80%;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin: 0;padding: 0;direction: ltr;background: #f6f8f1;width: 80% !important;"><table class="body", style="width:100%"> ' +
     '<tr> <td class="center" align="center" valign="top"> <!-- BEGIN: Header --> <table class="page-header" align="center" style="width: 100%;background: #1f1f1f;"> <tr> <td class="center" align="center"> ' +
@@ -80,7 +80,7 @@ exports.setEmailBody = (emailObj, user, companyUser, uniqueTokenId) => {
     '<tr> <td class="wrapper last"> <p> Hello, <br> ' +
     user.name + ' has invited you to join ' +
     companyUser.companyId.companyName +
-    ' as a Support Agent.</p> <p> <ul> <li>Company Name: ' +
+    ' as a Support ' + role + '.</p> <p> <ul> <li>Company Name: ' +
     companyUser.companyId.companyName + '</li> ' +
     '<li>Workspace name: ' + user.domain +
     ' </li> </ul> </p> <p>To accept invitation please click the following URL to activate your account:</p> <!-- BEGIN: Note Panel --> <table class="twelve columns" style="margin-bottom: 10px"> ' +
