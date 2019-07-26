@@ -37,6 +37,7 @@ const pageSchema = new Schema({
   gotPageSubscriptionPermission: {
     type: Boolean, default: false
   },
+  isApproved: {type: Boolean, default: true},
   whitelist_domains: [String],
   reachEstimationId: String,
   subscriberLimitForBatchAPI: {type: Number, default: 100}
