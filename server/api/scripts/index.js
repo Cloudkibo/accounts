@@ -13,6 +13,7 @@ router.get('/normalizePersistentMenu', controller.normalizePersistentMenu)
 router.get('/user/normalizeForFbDisconnect', controller.normalizeForFbDisconnect)
 router.get('/user/normalizeForPlatform', controller.normalizeForPlatform)
 router.post('/analyzePages', controller.analyzePages)
+router.get('/deleteUnapprovedPages', controller.deleteUnapprovedPages)
 
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
