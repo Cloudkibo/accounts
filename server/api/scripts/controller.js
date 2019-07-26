@@ -438,3 +438,22 @@ exports.analyzePages = function (req, res) {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
     })
 }
+exports.deleteUnapprovedPages = function (req, res) {
+  let errorMessage = `permission must be granted`
+  PagesModel.find({}).exec()
+    .then(pages => {
+      for (let i = 0; i < pages.length; i++) {
+        needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
+          .then(response => {
+            if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
+              PagesModel.remove({_id: pages[i]._id}).exec().then(deleted => {
+              })
+            }
+          })
+      }
+      res.status(200).json({status: 'success', payload: 'updated successfully'})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
+    })
+}
