@@ -17,5 +17,6 @@ router.get('/deleteUnapprovedPages', controller.deleteUnapprovedPages)
 
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
+router.use('/tags/normalize', require('./tags'))
 
 module.exports = router
