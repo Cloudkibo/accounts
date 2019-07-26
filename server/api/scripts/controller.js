@@ -446,7 +446,7 @@ exports.deleteUnapprovedPages = function (req, res) {
         needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
           .then(response => {
             if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
-              PagesModel.remove({_id: pages[i]._id}).exec().then(deleted => {
+              PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
               })
             }
           })
