@@ -22,6 +22,7 @@ exports.getAssignedTagInfo = (req, res) => {
             pageId: uniquePages[i],
             subscribers: pageSubscribers,
             permissionErrors: [],
+            incorrectSubscribers: [],
             incorrectTagRecords: 0,
             incorrectPermissionRecords: 0
           }
@@ -135,6 +136,7 @@ function _fetchAssignedTags (data, next) {
               (!assignedTagNames.includes(`_${data.pageId}_1`))
             ) {
               data.incorrectTagRecords += 1
+              data.incorrectSubscribers.push(data.subscribers[current]._id)
               current++
             } else {
               current++
