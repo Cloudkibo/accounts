@@ -37,6 +37,7 @@ exports.getAssignedTagInfo = (req, res) => {
                 let payload = {
                   permissionErrors: data.permissionErrors,
                   incorrectTagRecords: data.incorrectTagRecords,
+                  incorrectSubscribers: data.incorrectSubscribers,
                   incorrectPermissionRecords: data.incorrectPermissionRecords
                 }
                 return res.status(200).json({status: 'success', payload})
@@ -117,6 +118,7 @@ function _fetchAssignedTags (data, next) {
         .then(response => {
           if (response.body.error) {
             data.permissionErrors.push({error: response.body.error, subscriberId: data.subscribers[current]._id})
+            console.log('permission subscriber', data.subscribers[current]._id)
             data.incorrectPermissionRecords += 1
             current++
           } else {
@@ -131,11 +133,12 @@ function _fetchAssignedTags (data, next) {
               incorrectGender = 'male'
             }
             if (
-              (assignedTagNames.inludes(incorrectGender) || assignedTagNames.includes('other')) ||
+              (assignedTagNames.includes(incorrectGender) || assignedTagNames.includes('other')) ||
               (!assignedTagNames.includes(data.subscribers[current].gender)) ||
               (!assignedTagNames.includes(`_${data.pageId}_1`))
             ) {
               data.incorrectTagRecords += 1
+              console.log('incorrect subscriber', data.subscribers[current]._id)
               data.incorrectSubscribers.push(data.subscribers[current]._id)
               current++
             } else {
@@ -174,7 +177,7 @@ function _correctAssignedTags (data, next) {
             } else {
               incorrectGender = 'male'
             }
-            if (assignedTagNames.inludes(incorrectGender)) {
+            if (assignedTagNames.includes(incorrectGender)) {
               let index = localTagNames.indexOf(incorrectGender)
               let id = data.tags[index].labelFbId
               _unassignTag(id, data.subscribers[current])
