@@ -23,7 +23,7 @@ mongoose.connect(config.mongo.uri, config.mongo.options)
 require('./config/express')(appObj)
 require('./config/setup')(app, httpApp, config)
 require('./routes')(appObj)
-require('./api/scripts/cpuProfiler')()
+// require('./api/scripts/cpuProfiler')()
 
 process.on('uncaughtException', function (exception) {
   console.log('asad catch:', exception)
