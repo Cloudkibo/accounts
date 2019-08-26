@@ -10,6 +10,7 @@ exports.create = function (req, res) {
   let messages = req.body.jsonAdMessages
   let requests = []
   let response = {
+    jsonAd: {},
     jsonAdMessages: []
   }
   requests.push(new Promise((resolve, reject) => {
@@ -22,25 +23,31 @@ exports.create = function (req, res) {
         response.jsonAd = jsonAd
         for (let i = 0; i < messages.length; i++) {
           let message = messages[i]
-          requests.push(new Promise((resolve, reject) => {
-            jsonAdMessagesDataLayer.create({
-              jsonAdId: jsonAd._id,
-              title: message.title,
-              jsonAdMessageId: message.jsonAdMessageId,
-              jsonAdMessageParentId: message.jsonAdMessageParentId,
-              messageContent: message.messageContent
-            }).then(jsonAdMessage => {
-              response.jsonAdMessages.push(jsonAdMessage)
-              resolve(jsonAdMessage)
-            }).catch(err => {
-              reject(err)
-            })
-          }))
+          jsonAdMessagesDataLayer.create({
+            jsonAdId: jsonAd._id,
+            title: message.title,
+            jsonAdMessageId: message.jsonAdMessageId,
+            jsonAdMessageParentId: message.jsonAdMessageParentId,
+            messageContent: message.messageContent
+          }).then(jsonAdMessage => {
+            response.jsonAdMessages.push(jsonAdMessage)
+            resolve(jsonAdMessage)
+            if (messages.length - 1 === i) {
+              Promise.all(requests)
+                .then((responses) => {
+                  responses = {
+                    jsonAd: responses[0],
+                    jsonAdMessages: response.jsonAdMessages
+                  }
+                  sendSuccessResponse(res, 200, responses)
+                })
+                .catch((err) => sendErrorResponse(res, 500, '', err))
+            }
+          }).catch(err => {
+            reject(err)
+          })
         }
         resolve(jsonAd)
-        Promise.all(requests)
-          .then((responses) => sendSuccessResponse(res, 200, responses))
-          .catch((err) => sendErrorResponse(res, 500, '', err))
       })
       .catch(err => {
         reject(err)
@@ -77,26 +84,30 @@ exports.edit = function (req, res) {
                       response.jsonAd = createdJsonAd
                       for (let i = 0; i < messages.length; i++) {
                         let message = messages[i]
-                        requests.push(new Promise((resolve, reject) => {
-                          jsonAdMessagesDataLayer.create({
-                            _id: mongoose.Types.ObjectId(message._id),
-                            jsonAdId: createdJsonAd._id,
-                            jsonAdMessageId: message.jsonAdMessageId,
-                            title: message.title,
-                            jsonAdMessageParentId: message.jsonAdMessageParentId,
-                            messageContent: message.messageContent
-                          }).then(jsonAdMessage => {
-                            response.jsonAdMessages.push(jsonAdMessage)
-                            resolve(jsonAdMessage)
-                            if (messages.length - 1 === i) {
-                              Promise.all(requests)
-                                .then((responses) => sendSuccessResponse(res, 200, responses))
-                                .catch((err) => sendErrorResponse(res, 500, '', err))
-                            }
-                          }).catch(err => {
-                            reject(err)
-                          })
-                        }))
+                        jsonAdMessagesDataLayer.create({
+                          _id: mongoose.Types.ObjectId(message._id),
+                          jsonAdId: createdJsonAd._id,
+                          jsonAdMessageId: message.jsonAdMessageId,
+                          title: message.title,
+                          jsonAdMessageParentId: message.jsonAdMessageParentId,
+                          messageContent: message.messageContent
+                        }).then(jsonAdMessage => {
+                          response.jsonAdMessages.push(jsonAdMessage)
+                          resolve(jsonAdMessage)
+                          if (messages.length - 1 === i) {
+                            Promise.all(requests)
+                              .then((responses) => {
+                                responses = {
+                                  jsonAd: responses[0],
+                                  jsonAdMessages: response.jsonAdMessages
+                                }
+                                sendSuccessResponse(res, 200, responses)
+                              })
+                              .catch((err) => sendErrorResponse(res, 500, '', err))
+                          }
+                        }).catch(err => {
+                          reject(err)
+                        })
                       }
                       resolve(createdJsonAd)
                     })
