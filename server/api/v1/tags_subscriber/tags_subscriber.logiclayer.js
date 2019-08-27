@@ -36,11 +36,11 @@ exports.validateAndConvert = (body) => {
         // if (object['pageId._id'] && !object['pageId._id'].$exists) {
         //   newBody[index].$match.$and[index1]['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['pageId._id'])
         // }
-        if (object._id && object._id.$gt) {
-          newBody[index].$match.$and[index1].Subscribers._id.$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].Subscribers._id.$gt)
+        if (object['Subscribers._id'] && object['Subscribers._id'].$gt) {
+          newBody[index].$match.$and[index1]['Subscribers._id'].$gt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['Subscribers._id'].$gt)
         }
-        if (object._id && object._id.$lt) {
-          newBody[index].$match.$and[index1].Subscribers._id.$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].Subscribers._id.$lt)
+        if (object['Subscribers._id'] && object['Subscribers._id'].$lt) {
+          newBody[index].$match.$and[index1]['Subscribers._id'].$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['Subscribers._id'].$lt)
         }
       })
     }
