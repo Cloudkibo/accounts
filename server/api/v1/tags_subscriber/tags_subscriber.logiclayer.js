@@ -21,6 +21,10 @@ exports.validateAndConvert = (body) => {
   let newBody = body
 
   body.forEach((obj, index) => {
+    if (obj.$match.Subscribers.pageId && !obj.$match.Subscribers.pageId.$exists) {
+      console.log('newBody[index].$match.Subscribers.pageId', newBody[index].$match.Subscribers.pageId)
+      newBody[index].$match.Subscribers.pageId = mongoose.Types.ObjectId(newBody[index].$match.Subscribers.pageId)
+    }
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
         if (object.companyId) {
