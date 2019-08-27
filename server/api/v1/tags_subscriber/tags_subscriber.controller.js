@@ -92,6 +92,7 @@ exports.query = function (req, res) {
 
 exports.aggregate = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
+  console.log('countCriteria', req.body)
   let query = logiclayer.validateAndConvert(req.body)
   logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
   datalayer.findTagSubObjectUsingAggregate(req.body)
