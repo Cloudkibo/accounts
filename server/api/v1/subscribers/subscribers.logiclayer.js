@@ -30,7 +30,7 @@ exports.validateAndConvert = (body) => {
         newBody[index].$match.pageId = mongoose.Types.ObjectId(newBody[index].$match.pageId)
       }
     }
-    if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists && !obj.$match['pageId._id'].$in) {
+    if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
       newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
     }
     if (obj.$match && obj.$match.datetime) {
