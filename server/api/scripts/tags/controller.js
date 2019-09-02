@@ -3,6 +3,7 @@ const TAG = '/api/scripts/tags/controller.js'
 const async = require('async')
 const needle = require('needle')
 const TagsModel = require('../../v1//tags/tags.model')
+const TagSubscribersModel = require('../../v1//tags_subscriber/tags_subscriber.model')
 const SubscribersModel = require('../../v1/subscribers/Subscribers.model')
 
 exports.getAssignedTagInfo = (req, res) => {
@@ -52,6 +53,31 @@ exports.getAssignedTagInfo = (req, res) => {
         })
       } else {
         return res.status(200).json({status: 'success', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'success', payload: err})
+    })
+}
+
+exports.removeDefaultTagSubscribers = (req, res) => {
+  TagsModel.aggregate([
+    {$match: {defaultTag: true}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]).exec()
+    .then(tags => {
+      if (tags.length > 0) {
+        let tagIds = tags.map((t) => t._id)
+        TagSubscribersModel.deleteMany({tagId: {$in: tagIds}})
+          .then(result => {
+            return res.status(200).json({status: 'success', payload: 'Deleted successfully!'})
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'success', payload: err})
+          })
+      } else {
+        return res.status(200).json({status: 'success', payload: 'No default tags found!'})
       }
     })
     .catch(err => {
