@@ -3,6 +3,7 @@ const TAG = '/api/scripts/tags/controller.js'
 const async = require('async')
 const needle = require('needle')
 const TagsModel = require('../../v1//tags/tags.model')
+const TagSubscribersModel = require('../../v1//tags_subscriber/tags_subscriber.model')
 const SubscribersModel = require('../../v1/subscribers/Subscribers.model')
 
 exports.getAssignedTagInfo = (req, res) => {
@@ -14,38 +15,69 @@ exports.getAssignedTagInfo = (req, res) => {
   ]).exec()
     .then(subscribers => {
       if (subscribers.length > 0) {
-        let pages = subscribers.map((s) => s.pageId._id)
-        let uniquePages = [...new Set(pages)]
-        for (let i = 0; i < uniquePages.length; i++) {
-          let pageSubscribers = subscribers.filter((s) => s.pageId._id === uniquePages[i])
-          let data = {
-            pageId: uniquePages[i],
-            subscribers: pageSubscribers,
-            permissionErrors: [],
-            incorrectSubscribers: [],
-            incorrectTagRecords: 0,
-            incorrectPermissionRecords: 0
-          }
+        let pages = subscribers.map((s) => s.pageId._id.toString())
+        pages = [...new Set(pages)]
+        let data = {
+          permissionErrors: [],
+          incorrectSubscribers: [],
+          incorrectTagRecords: 0,
+          incorrectPermissionRecords: 0
+        }
+        async.eachSeries(pages, function (page, cb) {
+          console.log('in async each', subscribers.length)
+          data.subscribers = subscribers.filter((s) => s.pageId._id.toString() === page)
+          console.log('subscribers length after filter', data.subscribers.length)
+          data.pageId = page
           async.series([
             _fetchTags.bind(null, data),
             _fetchAssignedTags.bind(null, data)
           ], function (err) {
             if (err) {
-              logger.serverLog(TAG, err, 'error')
+              cb(err)
             } else {
-              if (i === uniquePages.length - 1) {
-                let payload = {
-                  permissionErrors: data.permissionErrors,
-                  incorrectTagRecords: data.incorrectTagRecords,
-                  incorrectPermissionRecords: data.incorrectPermissionRecords
-                }
-                return res.status(200).json({status: 'success', payload})
-              }
+              cb()
             }
           })
-        }
+        }, function (err) {
+          if (err) {
+            logger.serverLog(TAG, err, 'error')
+          } else {
+            let payload = {
+              permissionErrors: data.permissionErrors,
+              incorrectTagRecords: data.incorrectTagRecords,
+              incorrectSubscribers: data.incorrectSubscribers,
+              incorrectPermissionRecords: data.incorrectPermissionRecords
+            }
+            return res.status(200).json({status: 'success', payload})
+          }
+        })
       } else {
         return res.status(200).json({status: 'success', payload: 'No subscribers found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'success', payload: err})
+    })
+}
+
+exports.removeDefaultTagSubscribers = (req, res) => {
+  TagsModel.aggregate([
+    {$match: {defaultTag: true}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]).exec()
+    .then(tags => {
+      if (tags.length > 0) {
+        let tagIds = tags.map((t) => t._id)
+        TagSubscribersModel.deleteMany({tagId: {$in: tagIds}})
+          .then(result => {
+            return res.status(200).json({status: 'success', payload: 'Deleted successfully!'})
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'success', payload: err})
+          })
+      } else {
+        return res.status(200).json({status: 'success', payload: 'No default tags found!'})
       }
     })
     .catch(err => {
@@ -62,27 +94,30 @@ exports.correctAssignedTags = (req, res) => {
   ]).exec()
     .then(subscribers => {
       if (subscribers.length > 0) {
-        let pages = subscribers.map((s) => s.pageId._id)
+        let pages = subscribers.map((s) => s.pageId._id.toString())
         let uniquePages = [...new Set(pages)]
-        for (let i = 0; i < uniquePages.length; i++) {
-          let pageSubscribers = subscribers.filter((s) => s.pageId._id === uniquePages[i])
+        async.eachSeries(uniquePages, function (page, cb) {
           let data = {
-            pageId: uniquePages[i],
-            subscribers: pageSubscribers
+            subscribers: subscribers.filter((s) => s.pageId._id.toString() === page),
+            pageId: page
           }
           async.series([
             _fetchTags.bind(null, data),
             _correctAssignedTags.bind(null, data)
           ], function (err) {
             if (err) {
-              logger.serverLog(TAG, err, 'error')
+              cb(err)
             } else {
-              if (i === uniquePages.length - 1) {
-                return res.status(200).json({status: 'success'})
-              }
+              cb()
             }
           })
-        }
+        }, function (err) {
+          if (err) {
+            logger.serverLog(TAG, err, 'error')
+          } else {
+            return res.status(200).json({status: 'success'})
+          }
+        })
       } else {
         return res.status(200).json({status: 'success', payload: 'No subscribers found'})
       }
@@ -107,6 +142,7 @@ function _fetchTags (data, next) {
 }
 
 function _fetchAssignedTags (data, next) {
+  console.log('in _fetchAssignedTags', data.subscribers.length)
   let current = 0
   let interval = setInterval(() => {
     if (current === data.subscribers.length) {
@@ -130,10 +166,14 @@ function _fetchAssignedTags (data, next) {
             } else {
               incorrectGender = 'male'
             }
+            console.log('assignedTagNames', JSON.stringify(assignedTagNames))
+            console.log('current', current)
+            console.log(data.subscribers[current].gender)
+            console.log(`_${data.subscribers[current].pageId.pageId}_1`)
             if (
-              (assignedTagNames.inludes(incorrectGender) || assignedTagNames.includes('other')) ||
+              (assignedTagNames.includes(incorrectGender) || assignedTagNames.includes('other')) ||
               (!assignedTagNames.includes(data.subscribers[current].gender)) ||
-              (!assignedTagNames.includes(`_${data.pageId}_1`))
+              (!assignedTagNames.includes(`_${data.subscribers[current].pageId.pageId}_1`))
             ) {
               data.incorrectTagRecords += 1
               data.incorrectSubscribers.push(data.subscribers[current]._id)
@@ -174,25 +214,35 @@ function _correctAssignedTags (data, next) {
             } else {
               incorrectGender = 'male'
             }
-            if (assignedTagNames.inludes(incorrectGender)) {
+            console.log('assignedTagNames', JSON.stringify(assignedTagNames))
+            console.log('localTagNames', JSON.stringify(localTagNames))
+            if (assignedTagNames.includes(incorrectGender)) {
               let index = localTagNames.indexOf(incorrectGender)
-              let id = data.tags[index].labelFbId
-              _unassignTag(id, data.subscribers[current])
+              if (index !== -1) {
+                let id = data.tags[index].labelFbId
+                _unassignTag(id, data.subscribers[current])
+              }
             }
             if (assignedTagNames.includes('other')) {
               let index = localTagNames.indexOf('other')
-              let id = data.tags[index].labelFbId
-              _unassignTag(id, data.subscribers[current])
+              if (index !== -1) {
+                let id = data.tags[index].labelFbId
+                _unassignTag(id, data.subscribers[current])
+              }
             }
             if (!assignedTagNames.includes(data.subscribers[current].gender)) {
               let index = localTagNames.indexOf(data.subscribers[current].gender)
-              let id = data.tags[index].labelFbId
-              _assignTag(id, data.subscribers[current])
+              if (index !== -1) {
+                let id = data.tags[index].labelFbId
+                _assignTag(id, data.subscribers[current])
+              }
             }
-            if (!assignedTagNames.includes(`_${data.pageId}_1`)) {
-              let index = localTagNames.indexOf(`_${data.pageId}_1`)
-              let id = data.tags[index].labelFbId
-              _assignTag(id, data.subscribers[current])
+            if (!assignedTagNames.includes(`_${data.subscribers[current].pageId.pageId}_1`)) {
+              let index = localTagNames.indexOf(`_${data.subscribers[current].pageId.pageId}_1`)
+              if (index !== -1) {
+                let id = data.tags[index].labelFbId
+                _assignTag(id, data.subscribers[current])
+              }
             }
             current++
           }
