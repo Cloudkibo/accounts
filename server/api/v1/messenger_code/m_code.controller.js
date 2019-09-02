@@ -42,14 +42,13 @@ exports.createCode = function (req, res) {
     })
     .then(responseFromFacebook => {
       facebookResponse = responseFromFacebook
-      // Promised chained with rp
-      return logicLayer.findCompanyFromUser(req.user)
+      return logicLayer.findCompanyFromUser(currentPage.userId)
     })
     .then(company => {
       // promise chained with company from user
       // Poppulate the analytics table
       let ref = req.body.data ? req.body.data.ref ? req.body.data.ref : null : null
-      let payload = logicLayer.prepareAnalyticsPayload(currentPage, req.user, company, ref)
+      let payload = logicLayer.prepareAnalyticsPayload(currentPage, currentPage.userId, company, ref)
       analyticsDataLayer.createCodeAnalyticsObject(payload)
         .then(result => {
           sendSuccessResponse(res, 200, facebookResponse)

@@ -68,6 +68,10 @@ const subscriberSchema = new Schema({
   is_assigned: {
     type: Boolean,
     default: false
+  },
+  pendingResponse: {
+    type: Boolean,
+    default: true
   }
 })
 
