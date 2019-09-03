@@ -19,6 +19,10 @@ router.delete('/:id',
   auth.isAuthenticated(),
   controller.delete)
 
+router.post('/deleteLocally',
+  auth.isAuthenticated(),
+  controller.deleteLocally)
+
 router.post('/query',
   auth.isAuthenticated(), controller.genericFetch)
 
