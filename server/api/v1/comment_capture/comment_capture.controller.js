@@ -5,6 +5,11 @@ const TAG = '/api/v1/comment_capture/comment_capture.controller.js'
 const needle = require('needle')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
+const config = require('./../../../config/environment/index')
+const path = require('path')
+const fs = require('fs')
+const crypto = require('crypto')
+var https = require('https')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find post controller index')
@@ -115,4 +120,27 @@ exports.genericUpdate = function (req, res) {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
       sendErrorResponse(res, 500, err)
     })
+}
+exports.upload = function (req, res) {
+  var today = new Date()
+  var uid = crypto.randomBytes(5).toString('hex')
+  var serverPath = 'f' + uid + '' + today.getFullYear() + '' +
+    (today.getMonth() + 1) + '' + today.getDate()
+  serverPath += '' + today.getHours() + '' + today.getMinutes() + '' +
+    today.getSeconds()
+
+  let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
+  var file = fs.createWriteStream(dir + '/userfiles/' + serverPath)
+  var request = https.get(req.body.url, function (response) {
+    let stream = response.pipe(file)
+    stream.on('finish', () => {
+      console.log('finished writing')
+      let payload = {
+        id: serverPath,
+        name: serverPath,
+        url: `${config.domain}/api/v1/files/download/${serverPath}`
+      }
+      sendSuccessResponse(res, 200, payload)
+    })
+  })
 }

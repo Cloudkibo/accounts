@@ -31,5 +31,8 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
+router.post('/upload',
+  auth.isAuthenticated(),
+  controller.upload)
 
 module.exports = router
