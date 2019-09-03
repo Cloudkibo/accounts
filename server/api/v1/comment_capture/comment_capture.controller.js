@@ -61,6 +61,21 @@ exports.delete = function (req, res) {
     })
 }
 
+//This is only to delete from our database, not facebook
+exports.deleteLocally = function (req, res) {
+  logger.serverLog(TAG, 'Hit the delete post locally controller index')
+
+  // delete post from database
+    dataLayer.deleteOneUsingQuery(req.body.post_id)
+    .then(result => {
+      sendSuccessResponse(res, 200, result)
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}
+
 exports.genericFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
