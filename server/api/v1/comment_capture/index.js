@@ -19,6 +19,10 @@ router.delete('/:id',
   auth.isAuthenticated(),
   controller.delete)
 
+router.post('/deleteLocally',
+  auth.isAuthenticated(),
+  controller.deleteLocally)
+
 router.post('/query',
   auth.isAuthenticated(), controller.genericFetch)
 
@@ -27,5 +31,8 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
+router.post('/upload',
+  auth.isAuthenticated(),
+  controller.upload)
 
 module.exports = router
