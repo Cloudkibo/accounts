@@ -40,7 +40,8 @@ const pageSchema = new Schema({
   isApproved: {type: Boolean, default: true},
   whitelist_domains: [String],
   reachEstimationId: String,
-  subscriberLimitForBatchAPI: {type: Number, default: 100}
+  subscriberLimitForBatchAPI: {type: Number, default: 100},
+  connectedFacebook: {type: Boolean, default: false}
 
 })
 
