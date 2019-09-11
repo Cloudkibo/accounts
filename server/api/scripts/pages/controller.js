@@ -36,32 +36,42 @@ exports.addConnectedFacebook = function (req, res) {
       'pageId': '$_id',
       'pageName': 1,
       accessToken: 1
-    }}
+    }},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
   ]
   PageModel.aggregate(query).exec()
     .then(pages => {
-      for (let i = 0; i < pages.length; i++) {
-        needle('get', `https://graph.facebook.com/v2.6/${pages[i].pageId}/subscribed_apps?access_token=${pages[i].accessToken}`)
-          .then(resp => {
-            logger.serverLog(TAG, `response from facebook ${resp.body}`)
-            updateConnectedFacebook(resp.body.data)
-              .then(connectedFacebook => {
-                logger.serverLog(TAG, `connected facebook ${resp.body}`)
-                PageModel.update({pageId: pages[i].pageId}, {$set: {connectedFacebook: connectedFacebook}}, {multi: true}).exec()
-                  .then(updated => {
-                    if (i === pages.length - 1) {
-                      return res.status(200).json({status: 'success', payload: 'Updated successfully!'})
-                    }
-                  })
-                  .catch(err => {
-                    logger.serverLog(TAG, `Failed to update page ${err}`)
-                  })
-              })
-          })
-          .catch(err => {
-            logger.serverLog(TAG, `Failed to fetch subscribed_apps ${err}`)
-          })
-      }
+      console.log('pages.length', pages.length)
+      let current = 0
+      let interval = setInterval(() => {
+        console.log('current', current)
+        if (current === pages.length) {
+          clearInterval(interval)
+          return res.status(200).json({status: 'success', payload: 'Updated successfully!'})
+        } else {
+          needle('get', `https://graph.facebook.com/v2.6/${pages[current].pageId}/subscribed_apps?access_token=${pages[current].accessToken}`)
+            .then(resp => {
+              logger.serverLog(TAG, `response from facebook ${resp.body}`)
+              updateConnectedFacebook(resp.body.data)
+                .then(connectedFacebook => {
+                  logger.serverLog(TAG, `connected facebook ${resp.body}`)
+                  PageModel.update({pageId: pages[current].pageId}, {$set: {connectedFacebook: connectedFacebook}}, {multi: true}).exec()
+                    .then(updated => {
+                      current++
+                    })
+                    .catch(err => {
+                      logger.serverLog(TAG, `Failed to update page ${err}`)
+                      current++
+                    })
+                })
+            })
+            .catch(err => {
+              logger.serverLog(TAG, `Failed to fetch subscribed_apps ${err}`)
+              current++
+            })
+        }
+      }, 3000)
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
