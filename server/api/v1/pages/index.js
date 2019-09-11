@@ -50,7 +50,7 @@ router.post('/aggregate',
   auth.isAuthenticated(),
   controller.aggregate)
 
-router.put('/update',
+router.post('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
