@@ -69,4 +69,6 @@ router.post('/deleteWhitelistDomain',
   validate({body: validationSchema.deleteWhitelistDomain}),
   controller.deleteWhitelistDomain)
 
+router.get('/script/updatePageNames', controller.updatePageNames)
+
 module.exports = router

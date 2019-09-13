@@ -248,6 +248,7 @@ exports.whitelistDomain = function (req, res) {
       })
     })
 }
+
 exports.deleteWhitelistDomain = function (req, res) {
   needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
     (err, resp) => {
@@ -298,6 +299,77 @@ exports.deleteWhitelistDomain = function (req, res) {
           sendSuccessResponse(res, 200, temp)
         }
       })
+    })
+}
+
+exports.updatePageNames = function (req, res) {
+  logger.serverLog(TAG, 'Script to update null page names')
+  dataLayer.findPageObjects({pageName: null})
+    .then(userPages => {
+      logger.serverLog(TAG,
+        `No.of user page records with Null page names ${userPages.length}`, 'info')
+      if (userPages.length < 1) {
+        sendSuccessResponse(res, 200, {}, 'There are no records with null Page Names')
+      }
+      userPages.forEach((page, index) => {
+        logger.serverLog(TAG,
+          `Page#${index} user access token - ${page.userId.facebookInfo.fbToken}`, 'info')
+        needle.get(
+          `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+          (err, resp) => {
+            if (err) {
+              logger.serverLog(TAG,
+                `Page#${index} access token from graph api error ${JSON.stringify(
+                  err)}`, 'error')
+            }
+            if (resp.body.error) {
+              logger.serverLog(TAG,
+                `Page#${index}: Update Page Name Script in Accounts ${JSON.stringify(
+                  resp.body.error)}`, 'error')
+            }
+            if (resp && resp.body && resp.body.access_token) {
+              logger.serverLog(TAG,
+                `Page#${index} current Access Token ${JSON.stringify(
+                  resp.body.access_token)}`, 'info')
+              needle.get(
+                `https://graph.facebook.com/v2.10/${page.pageId}?fields=name&access_token=${resp.body.access_token}`,
+                (err, pageResponse) => {
+                  if (err) {
+                    logger.serverLog(TAG,
+                      `Page name from graph api error ${JSON.stringify(
+                        err)}`, 'error')
+                  }
+                  if (pageResponse.body.error) {
+                    logger.serverLog(TAG,
+                      `Update Page Name Script in Accounts${JSON.stringify(
+                        pageResponse.body.error)}`, 'error')
+                  }
+                  if (pageResponse && pageResponse.body && pageResponse.body.name) {
+                    logger.serverLog(TAG,
+                      `Page#${index} page name from Graph API - ${pageResponse.body.name}`, 'info')
+                    dataLayer.updatePageObject(page._id, {pageName: pageResponse.body.name})
+                      .then(result => {
+                        logger.serverLog(TAG,
+                          `Page#${index} - Page Name:${pageResponse.body.name} saved in Database`, 'info')
+                        if (index === (userPages.length - 1)) {
+                          logger.serverLog(TAG,
+                            `Page#${index} - Last Record`, 'info')
+                          sendSuccessResponse(res, 200, {'Records Updated': userPages.length}, 'Page Names Updated')
+                        }
+                      })
+                      .catch(err => {
+                        logger.serverLog(TAG,
+                          `Unable to save page name ${JSON.stringify(
+                            err)}`, 'error')
+                      })
+                  }
+                })
+            }
+          })
+      })
+    })
+    .catch(err => {
+      sendErrorResponse(res, 500, err)
     })
 }
 
