@@ -317,6 +317,8 @@ exports.updatePageNames = function (req, res) {
         needle.get(
           `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp) => {
+            console.log('Page', page.pageId)
+            console.log('Page response from Graph API', resp.body)
             if (err) {
               logger.serverLog(TAG,
                 `Page#${index} access token from graph api error ${JSON.stringify(
@@ -334,6 +336,7 @@ exports.updatePageNames = function (req, res) {
               needle.get(
                 `https://graph.facebook.com/v2.10/${page.pageId}?fields=name&access_token=${resp.body.access_token}`,
                 (err, pageResponse) => {
+                  console.log('Page Info Respone', pageResponse.body)
                   if (err) {
                     logger.serverLog(TAG,
                       `Page name from graph api error ${JSON.stringify(
@@ -349,13 +352,9 @@ exports.updatePageNames = function (req, res) {
                       `Page#${index} page name from Graph API - ${pageResponse.body.name}`, 'info')
                     dataLayer.updatePageObject(page._id, {pageName: pageResponse.body.name})
                       .then(result => {
+                        console.log('Page updated in database', page._id)
                         logger.serverLog(TAG,
                           `Page#${index} - Page Name:${pageResponse.body.name} saved in Database`, 'info')
-                        if (index === (userPages.length - 1)) {
-                          logger.serverLog(TAG,
-                            `Page#${index} - Last Record`, 'info')
-                          sendSuccessResponse(res, 200, {'Records Updated': userPages.length}, 'Page Names Updated')
-                        }
                       })
                       .catch(err => {
                         logger.serverLog(TAG,
@@ -364,6 +363,11 @@ exports.updatePageNames = function (req, res) {
                       })
                   }
                 })
+            }
+            if (index === (userPages.length - 1)) {
+              logger.serverLog(TAG,
+                `Successfuly Executed`, 'info')
+              sendSuccessResponse(res, 200, {}, 'Successfully Executed')
             }
           })
       })
