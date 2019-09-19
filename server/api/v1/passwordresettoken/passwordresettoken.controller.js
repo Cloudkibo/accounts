@@ -37,7 +37,6 @@ exports.forgot = function (req, res) {
               .getSendGridObject()
               .send(emailWithBody, function (err, json) {
                 if (err) {
-                  console.log('in catch 3', err)
                   sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
                 } else {
                   sendSuccessResponse(res, 200, '', 'Password Reset Link has been sent to your email address. Check your spam or junk folder if you have not received our email.')
@@ -45,13 +44,11 @@ exports.forgot = function (req, res) {
               })
           })
           .catch(err => {
-            console.log('in catch 1')
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       }
     })
     .catch(err => {
-      console.log('in catch 2', err)
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
