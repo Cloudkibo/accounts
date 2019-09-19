@@ -14,42 +14,44 @@ const { sendSuccessResponse, sendErrorResponse } = require('../../global/respons
 let util = require('util')
 
 exports.forgot = function (req, res) {
-  logger.serverLog(TAG, `fetchedUser not found ${util.inspect(req.body)}`)
   userDataLayer
     .findOneUserByEmail(req.body)
     .then(fetchedUser => {
       if (!fetchedUser) {
-        logger.serverLog(TAG, `fetchedUser not found ${util.inspect(fetchedUser)}`)
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
+      } else {
+        let token = resetTokenLogicLayer.getRandomString()
+        resetTokenDataLayer
+          .createResetTokenObject({userId: fetchedUser._id, token: token})
+          .then(result => {
+            let email = resetTokenLogicLayer
+              .getEmailObject(
+                fetchedUser.email,
+                'support@cloudkibo.com',
+                'KiboPush: Password Reset',
+                'Password Reset'
+              )
+
+            let emailWithBody = resetTokenLogicLayer.getForgotEmailWithBody(email, token, config.domain)
+            utility
+              .getSendGridObject()
+              .send(emailWithBody, function (err, json) {
+                if (err) {
+                  console.log('in catch 3', err)
+                  sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
+                } else {
+                  sendSuccessResponse(res, 200, '', 'Password Reset Link has been sent to your email address. Check your spam or junk folder if you have not received our email.')
+                }
+              })
+          })
+          .catch(err => {
+            console.log('in catch 1')
+            sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
+          })
       }
-      let token = resetTokenLogicLayer.getRandomString()
-      resetTokenDataLayer
-        .createResetTokenObject({userId: fetchedUser._id, token: token})
-        .then(result => {
-          let email = resetTokenLogicLayer
-            .getEmailObject(
-              fetchedUser.email,
-              'support@cloudkibo.com',
-              'KiboPush: Password Reset',
-              'Password Reset'
-            )
-
-          let emailWithBody = resetTokenLogicLayer.getForgotEmailWithBody(email, token, config.domain)
-          utility
-            .getSendGridObject()
-            .send(emailWithBody, function (err, json) {
-              if (err) {
-                sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
-              }
-
-              sendSuccessResponse(res, 200, '', 'Password Reset Link has been sent to your email address. Check your spam or junk folder if you have not received our email.')
-            })
-        })
-        .catch(err => {
-          sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
-        })
     })
     .catch(err => {
+      console.log('in catch 2', err)
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
