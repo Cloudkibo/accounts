@@ -398,8 +398,9 @@ function deletePagesInInterval (pages, delay, res) {
   let i = 0
   let errorMessage = `permission must be granted`
   let count = 0
-
+  console.log('pages.length', pages.length)
   let interval = setInterval(() => {
+    console.log('current_value', i)
     if (i === pages.length) {
       clearInterval(interval)
       return res.status(200).json({status: 'success', payload: count})
