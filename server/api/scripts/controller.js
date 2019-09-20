@@ -408,12 +408,12 @@ function deletePagesInInterval (pages, delay, res) {
       if (pages[i].accessToken) {
         needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
           .then(response => {
-            i++
             if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
               count++
               PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
               })
             }
+            i++
           })
           .catch(err => {
             console.log('pages[i].accessToken', pages[i].accessToken)
