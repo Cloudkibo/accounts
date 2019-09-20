@@ -393,6 +393,39 @@ function updatePlatform (user, callback) {
     })
 }
 
+function deletePagesInInterval (pages, delay, res) {
+
+  let i = 0
+  let errorMessage = `permission must be granted`
+  let count = 0
+
+  let interval = setInterval(() => {
+    if (i === pages.length) {
+      clearInterval(interval)
+      return res.status(200).json({status: 'success', payload: count})
+    }
+    else {
+      if (pages[i].accessToken) {
+        needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
+          .then(response => {
+            i++
+            if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
+              count++
+              PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
+              })
+            }
+          })
+          .catch(err => {
+            console.log('pages[i].accessToken', pages[i].accessToken)
+            return res.status(500).json({status: 'failed', payload: `Failed to fetch permission ${err}`})
+          })
+      }
+      else {
+        i++
+      }
+    }
+  }, delay)
+}
 function intervalForEach (array, delay, res) {
   let current = 0
   let data = []
@@ -439,19 +472,19 @@ exports.analyzePages = function (req, res) {
     })
 }
 exports.deleteUnapprovedPages = function (req, res) {
-  let errorMessage = `permission must be granted`
-  PagesModel.find({}).exec()
+  PagesModel.find({isApproved: true}).exec()
     .then(pages => {
-      for (let i = 0; i < pages.length; i++) {
-        needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
-          .then(response => {
-            if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
-              PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
-              })
-            }
-          })
-      }
-      res.status(200).json({status: 'success', payload: 'updated successfully'})
+      deletePagesInInterval(pages, 500, res)
+      // for (let i = 0; i < pages.length; i++) {
+      //   needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
+      //     .then(response => {
+      //       if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
+      //         PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
+      //         })
+      //       }
+      //     })
+      // }
+      // res.status(200).json({status: 'success', payload: 'updated successfully'})
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
