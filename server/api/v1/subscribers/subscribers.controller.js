@@ -116,7 +116,7 @@ exports.updatePicture = function (req, res) {
         subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
           .then(updated => {
             logger.serverLog(TAG, `Succesfully updated subscriber with senderId ${subscriber.senderId}`)
-            sendSuccessResponse(res, 200, updated)
+            sendSuccessResponse(res, 200, resp.body.profile_pic)
           })
           .catch(err => {
             logger.serverLog(TAG, `Failed to update subscriber ${JSON.stringify(err)}`)
