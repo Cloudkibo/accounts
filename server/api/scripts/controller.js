@@ -395,13 +395,14 @@ function updatePlatform (user, callback) {
 
 function deletePagesInInterval (pages, delay, res) {
 
-  let i = 0
+  let i = -1
   let errorMessage = `permission must be granted`
   let count = 0
-
   let interval = setInterval(() => {
+    i++
     if (i === pages.length) {
       clearInterval(interval)
+      console.log('sending response')
       return res.status(200).json({status: 'success', payload: count})
     }
     else {
@@ -413,15 +414,11 @@ function deletePagesInInterval (pages, delay, res) {
               PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {
               })
             }
-            i++
           })
           .catch(err => {
             console.log('pages[i].accessToken', pages[i].accessToken)
             return res.status(500).json({status: 'failed', payload: `Failed to fetch permission ${err}`})
           })
-      }
-      else {
-        i++
       }
     }
   }, delay)
