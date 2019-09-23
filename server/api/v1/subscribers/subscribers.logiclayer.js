@@ -22,6 +22,12 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
+    if (obj.$match && obj.$match._id && obj.$match._id.$gt) {
+      newBody[index].$match._id.$gt = mongoose.Types.ObjectId(newBody[index].$match._id.$gt)
+    }
+    if (obj.$match && obj.$match._id && obj.$match._id.$lt) {
+      newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
+    }
     if (obj.$match && obj.$match.pageId && !obj.$match.pageId.$exists) {
       if (obj.$match.pageId.$in) {
         let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
@@ -31,7 +37,12 @@ exports.validateAndConvert = (body) => {
       }
     }
     if (obj.$match && obj.$match['pageId._id'] && !obj.$match['pageId._id'].$exists) {
-      newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
+      if (obj.$match['pageId._id'].$in) {
+        let pageIds = obj.$match['pageId._id'].$in.map((p) => mongoose.Types.ObjectId(p))
+        newBody[index].$match['pageId._id'].$in = pageIds
+      } else if (typeof newBody[index].$match['pageId._id'] === 'string') {
+        newBody[index].$match['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match['pageId._id'])
+      }
     }
     if (obj.$match && obj.$match.datetime) {
       if (obj.$match.datetime.$gte) {

@@ -22,6 +22,7 @@ const UserSchema = new Schema({
   isSuperUser: {type: Boolean, default: false},
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date, default: Date.now},
+  lastLogin: {type: Date, default: Date.now},
   wizardSeen: {type: Boolean, default: false},
   uiMode: {type: String, default: 'all'},
   advancedMode: {type: Boolean, default: false},

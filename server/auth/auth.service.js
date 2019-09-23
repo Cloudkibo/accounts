@@ -60,8 +60,9 @@ function attachUserToRequest (req, res, next, userId) {
   let userPromise = UserDataLayer.findOneUserObject(userId)
   let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: userId})
   let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: userId})
+  let updateLastLogin = UserDataLayer.updateOneUserObjectUsingQuery({_id: userId}, {lastLogin: new Date()})
 
-  Promise.all([userPromise, companyUserPromise, permissionsPromise])
+  Promise.all([userPromise, companyUserPromise, permissionsPromise, updateLastLogin])
     .then(result => {
       let user = result[0]
       let companyUser = result[1]

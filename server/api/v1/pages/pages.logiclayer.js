@@ -24,9 +24,6 @@ exports.validateAndConvert = (body) => {
           if (object.companyId) {
             newBody[index].$match.$and[index1].companyId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].companyId)
           }
-          if (object.pageId && !object.pageId.$exists) {
-            newBody[index].$match.$and[index1].pageId = mongoose.Types.ObjectId(newBody[index].$match.$and[index1].pageId)
-          }
           if (object['pageId._id'] && !object['pageId._id'].$exists) {
             newBody[index].$match.$and[index1]['pageId._id'] = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]['pageId._id'])
           }

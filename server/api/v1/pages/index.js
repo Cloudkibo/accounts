@@ -50,7 +50,7 @@ router.post('/aggregate',
   auth.isAuthenticated(),
   controller.aggregate)
 
-router.put('/update',
+router.post('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
@@ -68,5 +68,7 @@ router.post('/deleteWhitelistDomain',
   auth.isAuthenticated(),
   validate({body: validationSchema.deleteWhitelistDomain}),
   controller.deleteWhitelistDomain)
+
+router.get('/script/updatePageNames', controller.updatePageNames)
 
 module.exports = router

@@ -37,3 +37,8 @@ exports.deletePostObject = (postId) => {
   return CommentCaptureModel.deleteMany({_id: postId})
     .exec()
 }
+
+exports.deleteOneUsingQuery = (postId) => {
+  return CommentCaptureModel.deleteOne({post_id: postId})
+    .exec()
+}
