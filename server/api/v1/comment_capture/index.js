@@ -31,6 +31,12 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
+
+  router.put('/updateone',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  controller.update)
+
 router.post('/upload',
   auth.isAuthenticated(),
   controller.upload)

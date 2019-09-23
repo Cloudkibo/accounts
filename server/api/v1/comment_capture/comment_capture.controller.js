@@ -35,13 +35,51 @@ exports.create = function (req, res) {
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update post controller index')
-  dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
+  let isTextComponent = false
+  if(req.body.newPayload.postText){
+    dataLayer.findOnePostObjectUsingQuery(req.body.query)
+        .then(res => {
+          let postPaylaods = res.payload
+          let postPaylaodText 
+          for(let i=0; i<postPaylaods.length; i++){
+            if(postPaylaods[i].componentType === 'text'){
+              isTextComponent = true
+              postPaylaods[i].text = req.body.newPayload.postText
+            }
+          }
+
+          if(!isTextComponent){
+            let newTextPayload = {
+              componentType: 'text',
+              text: req.body.newPayload.postText
+            }
+            postPaylaods.push(newTextPayload)
+          }
+
+        dataLayer.genericUpdatePostObject(req.body.query, {payload: postPaylaods}, req.body.options)
+        .then(result => {
+          //sendSuccessResponse(res, 200, result)
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+          sendErrorResponse(res, 500, err)
+        })})
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)})    
+  }
+
+  var updatePayload = {
+    includedKeywords: req.body.newPayload.includedKeywords, 
+    excludedKeywords: req.body.newPayload.excludedKeywords
+  }
+
+  dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update subscriber ${util.inspect(err)}`)
+      logger.serverLog(TAG, `update endpoint ${util.inspect(err)}`)
       sendErrorResponse(res, 500, err)
     })
 }
@@ -112,46 +150,7 @@ exports.aggregateFetch = function (req, res) {
 exports.genericUpdate = function (req, res) {
   logger.serverLog(TAG, 'generic update endpoint')
 
-  let isTextComponent = false
-  if(req.body.newPayload.postText){
-    dataLayer.findOnePostObjectUsingQuery(req.body.query)
-        .then(res => {
-          let postPaylaods = res.payload
-          let postPaylaodText 
-          for(let i=0; i<postPaylaods.length; i++){
-            if(postPaylaods[i].componentType === 'text'){
-              isTextComponent = true
-              postPaylaods[i].text = req.body.newPayload.postText
-            }
-          }
-
-          if(!isTextComponent){
-            let newTextPayload = {
-              componentType: 'text',
-              text: req.body.newPayload.postText
-            }
-            postPaylaods.push(newTextPayload)
-          }
-
-        dataLayer.genericUpdatePostObject(req.body.query, {payload: postPaylaods}, req.body.options)
-        .then(result => {
-          //sendSuccessResponse(res, 200, result)
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-          sendErrorResponse(res, 500, err)
-        })})
-    .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      sendErrorResponse(res, 500, err)})    
-  }
-
-  var updatePayload = {
-    includedKeywords: req.body.newPayload.includedKeywords, 
-    excludedKeywords: req.body.newPayload.excludedKeywords
-  }
-
-  dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
+  dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
