@@ -28,7 +28,6 @@ function isAuthenticated () {
   return compose()
   // Validate jwt or api keys
     .use((req, res, next) => {
-      console.log('Headers', req.headers)
       if (req.headers.hasOwnProperty('is_kibo_product') || req.headers.hasOwnProperty('consumer_id')) {
         logger.serverLog(TAG, `going to validate ip`)
         isAuthorizedWebHookTrigger(req, res, next)
@@ -43,7 +42,6 @@ function isAuthenticated () {
     })
     // Attach user to request
     .use((req, res, next) => {
-      console.log('Attach User Object')
       var userId
       if (req.user) {
         userId = req.user
@@ -57,6 +55,7 @@ function isAuthenticated () {
       }
     })
 }
+
 function attachUserToRequest (req, res, next, userId) {
   let userPromise = UserDataLayer.findOneUserObject(userId)
   let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: userId})
