@@ -7,7 +7,7 @@ const path = require('path')
 const fs = require('fs')
 let request = require('request')
 const crypto = require('crypto')
-// const youtubedl = require('youtube-dl')
+const youtubedl = require('youtube-dl')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
