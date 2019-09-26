@@ -487,3 +487,38 @@ exports.deleteUnapprovedPages = function (req, res) {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
     })
 }
+exports.normalizeUnreadCount = function (req, res) {
+  let query = {
+    purpose: 'aggregate',
+    match: {status: 'unseen', format: 'facebook'},
+    group: {_id: '$subscriber_id', count: {$sum: 1}}
+  }
+  callApi(`livechat/queryForScript`, 'post', query, undefined, 'kibochat')
+    .then(data => {
+      updateUnreadCount(data)
+        .then(data => {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        })
+        .catch((err) => {
+          res.status(500).json({status: 'failed', payload: `Failed to update counts ${err}`})
+        })
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: `Failed to fetch unread counts ${err}`})
+    })
+}
+function updateUnreadCount (data) {
+  return new Promise(function (resolve, reject) {
+    for (let i = 0; i < data.length; i++) {
+      SubscribersModel.update({_id: data[i]._id}, {unreadCount: data[i].count}).exec()
+        .then(updated => {
+          if (i === data.length - 1) {
+            resolve()
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    }
+  })
+}
