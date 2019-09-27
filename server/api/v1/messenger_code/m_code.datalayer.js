@@ -1,45 +1,22 @@
-/*
-This file will contain the functions for data layer.
-By separating it from controller, we are separating the concerns.
-Thus we can use it from other non express callers like cron etc
-*/
-const CodeAnalyticsModel = require('./code_analytics.model')
+const MessengerCodeModel = require('./messengerCode.model')
 
-exports.createCodeAnalyticsObject = (payload) => {
-  let obj = new CodeAnalyticsModel(payload)
+exports.createMessengerCode = (body) => {
+  let obj = new MessengerCodeModel(body)
   return obj.save()
 }
 
-exports.findCodeAnalyticsObjects = (query) => {
-  return CodeAnalyticsModel.find(query)
+exports.findMessengerCode = (query) => {
+  return MessengerCodeModel.find(query)
+    .populate('companyId pageId')
     .exec()
 }
 
-exports.findOneCodeAnalyticsObjects = (query) => {
-  return CodeAnalyticsModel.findOne(query)
+exports.updateMessengerCode = (id, payload) => {
+  return MessengerCodeModel.updateOne({_id: id}, payload)
     .exec()
 }
 
-exports.genericUpdateCodeAnalyticsObject = (query, updated, options) => {
-  return CodeAnalyticsModel.updateMany(query, updated, options)
+exports.deleteMessengerCode = (id) => {
+  return MessengerCodeModel.deleteOne({_id: id})
     .exec()
-}
-
-exports.genericUpdateOneObject = (query, updated, options) => {
-  return CodeAnalyticsModel.updateOne(query, updated, options)
-    .exec()
-}
-
-exports.aggregateInfo = (query) => {
-  return CodeAnalyticsModel.aggregate(query)
-    .exec()
-}
-
-exports.delete = (query) => {
-  return CodeAnalyticsModel.deleteMany(query)
-    .exec()
-}
-
-exports.saveObject = (object) => {
-  return object.save()
 }
