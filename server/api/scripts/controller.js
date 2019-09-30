@@ -403,7 +403,7 @@ function setPagesField_isApproved_InInterval (pages, delay, res) {
     if (i === pages.length) {
       clearInterval(interval)
       console.log('sending response')
-      return res.status(200).json({status: 'success', payload: count})
+      res.status(200).json({status: 'success', payload: count})
     }
     else {
       if (pages[i].accessToken) {
