@@ -4,30 +4,48 @@ By separating it from controller, we are cleaning the code.
 Now the middleware will automatically send error response if the payload fails
 */
 
-exports.createCodePayload = {
+exports.createPayload = {
   '$schema': 'http://json-schema.org/draft-04/schema#',
   'type': 'object',
   'properties': {
-    'type': {
+    'companyId': {
       'type': 'string'
-    },
-    'data': {
-      'type': 'object',
-      'properties': {
-        'ref': {
-          'type': 'string'
-        }
-      }
-    },
-    'image_size': {
-      'type': 'integer'
     },
     'pageId': {
       'type': 'string'
+    },
+    'QRCode': {
+      'type': 'string'
+    },
+    'optInMessage': {
+      'type': 'array'
     }
   },
   'required': [
-    'image_size',
-    'pageId'
+    'companyId',
+    'pageId',
+    'QRCode',
+    'optInMessage'
+
   ]
+}
+exports.queryPayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'companyId': {
+      'type': 'string',
+      'required': true
+    }
+  }
+}
+exports.updatePayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'optInMessage': {
+      'type': 'array',
+      'required': true
+    }
+  }
 }

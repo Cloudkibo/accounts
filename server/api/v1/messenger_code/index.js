@@ -7,13 +7,22 @@ const controller = require('./m_code.controller')
 const auth = require('./../../../auth/auth.service')
 
 router.post('/',
+  validate({body: validationSchema.createPayload}),
   auth.isAuthenticated(),
-  validate({body: validationSchema.createCodePayload}),
-  controller.createCode)
+  controller.create)
 
-router.post('/webhook',
-  // auth.isAuthenticated(),
-  validate({body: validationSchema.createCodePayload}),
-  controller.handleWebhookNotification)
+router.post('/query',
+  validate({body: validationSchema.queryPayload}),
+  auth.isAuthenticated(),
+  controller.query)
+
+router.put('/:_id',
+  auth.isAuthenticated(),
+  validate({body: validationSchema.updatePayload}),
+  controller.update)
+
+router.delete('/:_id',
+  auth.isAuthenticated(),
+  controller.delete)
 
 module.exports = router
