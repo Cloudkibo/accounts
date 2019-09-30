@@ -393,7 +393,7 @@ function updatePlatform (user, callback) {
     })
 }
 
-function deletePagesInInterval (pages, delay, res) {
+function setPagesField_isApproved_InInterval (pages, delay, res) {
 
   let i = -1
   let errorMessage = `permission must be granted`
@@ -403,7 +403,7 @@ function deletePagesInInterval (pages, delay, res) {
     if (i === pages.length) {
       clearInterval(interval)
       console.log('sending response')
-      return res.status(200).json({status: 'success', payload: count})
+      res.status(200).json({status: 'success', payload: count})
     }
     else {
       if (pages[i].accessToken) {
@@ -469,9 +469,13 @@ exports.analyzePages = function (req, res) {
     })
 }
 exports.deleteUnapprovedPages = function (req, res) {
-  PagesModel.find({isApproved: true}).exec()
+  PagesModel.aggregate([
+    {$match: {isApproved: true}},
+    {$limit: req.body.limit},
+    {$skip: req.body.skip}
+  ]).exec()
     .then(pages => {
-      deletePagesInInterval(pages, 500, res)
+      setPagesField_isApproved_InInterval(pages, 500, res)
       // for (let i = 0; i < pages.length; i++) {
       //   needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
       //     .then(response => {
@@ -511,6 +515,41 @@ function updateUnreadCount (data) {
   return new Promise(function (resolve, reject) {
     for (let i = 0; i < data.length; i++) {
       SubscribersModel.update({_id: data[i]._id}, {unreadCount: data[i].count}).exec()
+        .then(updated => {
+          if (i === data.length - 1) {
+            resolve()
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    }
+  })
+}
+exports.normalizeMessagesCount = function (req, res) {
+  let query = {
+    purpose: 'aggregate',
+    match: {},
+    group: {_id: '$subscriber_id', count: {$sum: 1}}
+  }
+  callApi(`livechat/queryForScript`, 'post', query, undefined, 'kibochat')
+    .then(data => {
+      updateMessagesCount(data)
+        .then(data => {
+          return res.status(200).json({status: 'success', payload: 'updated successfully'})
+        })
+        .catch((err) => {
+          res.status(500).json({status: 'failed', payload: `Failed to update counts ${err}`})
+        })
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: `Failed to fetch unread counts ${err}`})
+    })
+}
+function updateMessagesCount (data) {
+  return new Promise(function (resolve, reject) {
+    for (let i = 0; i < data.length; i++) {
+      SubscribersModel.update({_id: data[i]._id}, {messagesCount: data[i].count}).exec()
         .then(updated => {
           if (i === data.length - 1) {
             resolve()

@@ -73,7 +73,8 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: true
   },
-  unreadCount: {type: Number, default: 0}
+  unreadCount: {type: Number, default: 0},
+  messagesCount: {type: Number, default: 0}
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
