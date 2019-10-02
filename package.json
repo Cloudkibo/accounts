@@ -4,7 +4,7 @@
   "description": "CloudKibo Authentication Server",
   "main": "server/app.js",
   "scripts": {
-    "test": "cross-env DEBUG=accounts:* NODE_ENV=testing jest",
+    "test": "cross-env DEBUG=accounts:* NODE_ENV=testing jest  --coverage",
     "test:watch": "cross-env DEBUG=accounts:* NODE_ENV=testing jest --watch",
     "start:prod": "cross-env DEBUG=accounts:* forever start server/app.js",
     "stop:prod": "forever stopall",
