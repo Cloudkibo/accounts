@@ -471,8 +471,8 @@ exports.analyzePages = function (req, res) {
 exports.deleteUnapprovedPages = function (req, res) {
   PagesModel.aggregate([
     {$match: {isApproved: true}},
-    {$limit: req.body.limit},
-    {$skip: req.body.skip}
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
   ]).exec()
     .then(pages => {
       setPagesField_isApproved_InInterval(pages, 500, res)

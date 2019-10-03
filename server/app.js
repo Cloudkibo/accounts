@@ -28,3 +28,5 @@ require('./routes')(appObj)
 process.on('uncaughtException', function (exception) {
   console.log('asad catch:', exception)
 })
+
+module.exports = appObj
