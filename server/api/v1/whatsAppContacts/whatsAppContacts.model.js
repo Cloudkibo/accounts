@@ -7,13 +7,8 @@ let contacts = new Schema({
   number: {type: String},
   datetime: { type: Date, default: Date.now },
   last_activity_time: { type: Date },
-  isSubscribed: {type: Boolean, default: true},
-  status: {type: String, default: 'new'},
-  unreadCount: {type: Number, default: 0},
-  messagesCount: {type: Number, default: 0},
-  pendingResponse: {type: Boolean, default: true},
-  is_assigned: {type: Boolean, default: false},
-  assigned_to: { type: Schema.Types.Mixed }
+  hasChat: {type: Boolean, default: false},
+  isSubscribed: {type: Boolean, default: true}
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)
