@@ -31,6 +31,12 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.last_activity_time && obj.$match.last_activity_time.$gt) {
       newBody[index].$match.last_activity_time.$gt = new Date(newBody[index].$match.last_activity_time.$gt)
     }
+    if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$lt) {
+      newBody[index].$match.lastMessagedAt.$lt = new Date(newBody[index].$match.lastMessagedAt.$lt)
+    }
+    if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$gt) {
+      newBody[index].$match.lastMessagedAt.$gt = new Date(newBody[index].$match.lastMessagedAt.$gt)
+    }
     if (obj.$match && obj.$match._id && obj.$match._id.$lt) {
       newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
     }
