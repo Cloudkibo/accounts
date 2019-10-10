@@ -561,3 +561,41 @@ function updateMessagesCount (data) {
     }
   })
 }
+
+exports.normalizeLastMessagedAt = function (req, res) {
+  let subscribersQuery = [
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]
+  SubscribersModel.aggregate(subscribersQuery).exec()
+    .then(subscribers => {
+      subscribers.forEach((subscriber) => {
+        let query = {
+          purpose: 'aggregate',
+          match: {format: 'facebook', subscriber_id: subscriber._id},
+          group: {_id: null, chat: {$last: '$$ROOT'}}
+        }
+        callApi(`livechat/queryForScript`, 'post', query, undefined, 'kibochat')
+          .then(data => {
+            let lastMessagedAt = subscriber.datetime
+            if (data.length > 0) {
+              lastMessagedAt = data[0].chat.datetime
+            }
+            SubscribersModel.update({_id: subscriber._id}, {lastMessagedAt}).exec()
+              .then(updated => {
+                logger.serverLog(TAG, `updated successfully for ${subscriber._id}`)
+              })
+              .catch(err => {
+                logger.serverLog(TAG, err)
+              })
+          })
+          .catch(err => {
+            logger.serverLog(TAG, err)
+          })
+      })
+      return res.status(200).json({status: 'success'})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}
