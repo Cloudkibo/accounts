@@ -60,6 +60,9 @@ const subscriberSchema = new Schema({
   last_activity_time: {
     type: Date
   },
+  lastMessagedAt: {
+    type: Date
+  },
   userRefIdForCheckBox: {
     type: String
   },
