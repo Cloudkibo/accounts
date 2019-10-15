@@ -60,6 +60,16 @@ exports.getAssignedTagInfo = (req, res) => {
     })
 }
 
+exports.removeDefaultTags = (req, res) => {
+  TagsModel.deleteMany({defaultTag: true}).exec()
+    .then(deleted => {
+      return res.status(200).json({status: 'success', payload: 'Deleted successfully!'})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'Failed', payload: err})
+    })
+}
+
 exports.removeDefaultTagSubscribers = (req, res) => {
   TagsModel.aggregate([
     {$match: {defaultTag: true}},
