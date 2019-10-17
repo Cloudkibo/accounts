@@ -171,15 +171,26 @@ exports.uploadForTemplate = function (req, res) {
 
 exports.download = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/userfiles')
-  try {
-    res.sendfile(req.params.id, {root: dir})
-  } catch (err) {
-    logger.serverLog(TAG,
-      `Inside Download file, err = ${JSON.stringify(err)}`)
-    sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
-  }
+  // try {
+  //   res.sendfile(req.params.id, {root: dir})
+  // } catch (err) {
+  //   logger.serverLog(TAG,
+  //     Inside Download file, err = ${JSON.stringify(err)})
+  //   sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
+  // }
+  res.sendFile(req.params.id, {root: dir}, function (err) {
+    if (err) {
+      console.log('request aborted', err)
+      logger.serverLog(TAG,
+        `Inside Download file, err = ${JSON.stringify(err)}`)
+      res.status(err.status).end()
+    } else {
+      console.log('req.params.id:', req.params.id)
+      logger.serverLog(TAG,
+        `Inside Download file, req.params.id: = ${req.params.id}`)
+    }
+  })
 }
-
 exports.downloadYouTubeVideo = function (req, res) {
   downloadVideo(req.body)
     .then(video => {
