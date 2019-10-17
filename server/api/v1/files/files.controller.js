@@ -180,12 +180,10 @@ exports.download = function (req, res) {
   // }
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
-      console.log('request aborted', err)
       logger.serverLog(TAG,
         `Inside Download file, err = ${JSON.stringify(err)}`)
       res.status(err.status).end()
     } else {
-      console.log('req.params.id:', req.params.id)
       logger.serverLog(TAG,
         `Inside Download file, req.params.id: = ${req.params.id}`)
     }
