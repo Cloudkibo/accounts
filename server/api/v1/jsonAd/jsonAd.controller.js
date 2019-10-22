@@ -98,7 +98,7 @@ exports.edit = function (req, res) {
                             Promise.all(requests)
                               .then((responses) => {
                                 responses = {
-                                  jsonAd: responses[0],
+                                  jsonAd: responses[2],
                                   jsonAdMessages: response.jsonAdMessages
                                 }
                                 sendSuccessResponse(res, 200, responses)
