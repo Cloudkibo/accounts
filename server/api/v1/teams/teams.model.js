@@ -9,7 +9,8 @@ let teamSchema = new Schema({
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   teamPages: [String],
   teamPagesIds: [String],
-  creation_date: { type: Date, default: Date.now }
+  creation_date: { type: Date, default: Date.now },
+  platform: {type: String, default: 'messenger'}
 })
 
 module.exports = mongoose.model('teams', teamSchema)
