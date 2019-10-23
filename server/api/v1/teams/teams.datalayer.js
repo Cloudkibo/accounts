@@ -6,15 +6,10 @@ Thus we can use it from other non express callers like cron etc
 const TeamModel = require('./teams.model')
 const TeamAgentsModel = require('./team_agents.model')
 const TeamPagesModel = require('./team_pages.model')
-const ObjectId = require('mongoose').Types.ObjectId
 
-exports.saveTeamDocument = (name, description, createdBy, companyId, teamPages, teamPagesIds) => {
-  // createdBy = ObjectId.isValid(createdBy) ? createdBy : new ObjectId(createdBy)
-  // companyId = ObjectId.isValid(companyId) ? companyId : new ObjectId(companyId)
-  let payload = new TeamModel({
-    name, description, created_by: createdBy, companyId, teamPages, teamPagesIds
-  })
-  return payload.save(payload)
+exports.saveTeamDocument = (body) => {
+  let obj = new TeamModel(body)
+  return obj.save()
 }
 
 exports.findOneTeamObject = (teamId) => {
