@@ -33,15 +33,8 @@ exports.findOne = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create endpoint')
-
   dataLayer
-    .saveTeamDocument(
-      req.body.name,
-      req.body.description,
-      req.body.created_by,
-      req.body.companyId,
-      req.body.teamPages,
-      req.body.teamPagesIds)
+    .saveTeamDocument(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
