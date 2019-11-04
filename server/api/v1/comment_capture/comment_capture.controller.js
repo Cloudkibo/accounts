@@ -70,6 +70,7 @@ exports.update = function (req, res) {
   }
 
   var updatePayload = {
+    title: req.body.newPayload.title,
     includedKeywords: req.body.newPayload.includedKeywords,
     excludedKeywords: req.body.newPayload.excludedKeywords
   }
