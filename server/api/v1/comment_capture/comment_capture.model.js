@@ -15,7 +15,8 @@ let facebookPostSchema = new Schema({
   post_id: String,
   count: {type: Number, default: 0},
   title: String,
-  existingPostUrl: String
+  existingPostUrl: String,
+  secondReply: Schema.Types.Mixed
 })
 
 module.exports = mongoose.model('facebook_posts', facebookPostSchema)
