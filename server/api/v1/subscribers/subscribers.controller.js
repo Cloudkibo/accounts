@@ -60,7 +60,7 @@ exports.delete = function (req, res) {
 exports.query = function (req, res) {
   logger.serverLog(TAG, 'Hit the query endpoint for subscriber controller')
   // logicLayer.convertPageID(req.body)
-
+  req.body = logicLayer.convertIdtoObjectId(req.body)
   subscribersDataLayer.findSubscriberObjects(req.body)
     .then(result => {
       logger.serverLog(TAG, `query endpoint for subscriber found result ${util.inspect(result)}`)

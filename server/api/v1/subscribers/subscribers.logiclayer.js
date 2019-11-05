@@ -16,6 +16,18 @@ exports.prepareUpdateUserPayload = (name, password, email, uiMode) => {
   return temp
 }
 
+exports.convertIdtoObjectId = (body) => {
+  let newBody = body
+  if (body._id) {
+    if (body._id.$in) {
+      body._id.$in.forEach((id, index) => {
+        newBody._id.$in[index] = mongoose.Types.ObjectId(id)
+      })
+    }
+  }
+  return newBody
+}
+
 exports.validateAndConvert = (body) => {
   let newBody = body
   body.forEach((obj, index) => {
