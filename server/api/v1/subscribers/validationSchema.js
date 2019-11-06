@@ -13,19 +13,19 @@ exports.subscriberPayload = {
     },
     firstName: {
       type: 'string',
-      required: true
+      required: false
     },
     lastName: {
       type: 'string',
-      required: true
+      required: false
     },
     locale: {
       type: 'string',
-      required: true
+      required: false
     },
     timezone: {
       type: 'number',
-      required: true
+      required: false
     },
     email: {
       type: 'string',
@@ -33,7 +33,7 @@ exports.subscriberPayload = {
     },
     gender: {
       type: 'string',
-      required: true
+      required: false
     },
     senderId: {
       type: 'string',
@@ -41,7 +41,7 @@ exports.subscriberPayload = {
     },
     profilePic: {
       type: 'string',
-      required: true
+      required: false
     },
     coverPhoto: {
       type: 'string',
