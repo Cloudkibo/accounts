@@ -25,7 +25,7 @@ exports.postPayload = {
     },
     payload: {
       type: 'array',
-      required: true
+      required: false
     },
     includedKeywords: {
       type: 'array',
@@ -40,6 +40,14 @@ exports.postPayload = {
         type: 'string',
         required: true
       }
+    },
+    title: {
+      type: 'string',
+      required: true
+    },
+    existingPostUrl: {
+      type: 'string',
+      required: false
     }
   }
 }

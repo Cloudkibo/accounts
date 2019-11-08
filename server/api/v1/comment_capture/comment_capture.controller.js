@@ -25,7 +25,7 @@ exports.index = function (req, res) {
 
 exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create post controller index')
-  dataLayer.createPostObject(logicLayer.preparePostPayload(req.body))
+  dataLayer.createPostObject(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
@@ -40,7 +40,7 @@ exports.update = function (req, res) {
     dataLayer.findOnePostObjectUsingQuery(req.body.query)
         .then(res => {
           let postPaylaods = res.payload
-          let postPaylaodText 
+          let postPaylaodText
           for(let i=0; i<postPaylaods.length; i++){
             if(postPaylaods[i].componentType === 'text'){
               isTextComponent = true
@@ -66,12 +66,14 @@ exports.update = function (req, res) {
         })})
     .catch(err => {
       logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
-      sendErrorResponse(res, 500, err)})    
+      sendErrorResponse(res, 500, err)})
   }
 
   var updatePayload = {
-    includedKeywords: req.body.newPayload.includedKeywords, 
-    excludedKeywords: req.body.newPayload.excludedKeywords
+    title: req.body.newPayload.title,
+    includedKeywords: req.body.newPayload.includedKeywords,
+    excludedKeywords: req.body.newPayload.excludedKeywords,
+    secondReply: req.body.newPayload.secondReply
   }
 
   dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
