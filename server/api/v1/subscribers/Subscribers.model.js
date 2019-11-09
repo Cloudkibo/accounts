@@ -79,7 +79,8 @@ const subscriberSchema = new Schema({
   unreadCount: {type: Number, default: 0},
   messagesCount: {type: Number, default: 0},
   awaitingCommentReply: {type: Schema.Types.Mixed},
-  completeInfo: {type: Boolean, default: true}
+  completeInfo: {type: Boolean, default: true},
+  siteInfo: { type: Schema.Types.Mixed }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
