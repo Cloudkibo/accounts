@@ -1,8 +1,4 @@
-
-const logger = require('../../../components/logger')
-const TAG = 'api/ipcountry/ipcountry.controller.js'
 const IpCountryDataLayer = require('./ipcountry.datalayer')
-const callApi = require('../utility')
 const { sendErrorResponse, sendSuccessResponse } = require('../../global/response')
 
 exports.findIp = function (req, res) {
