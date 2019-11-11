@@ -17,6 +17,7 @@ router.get('/deleteUnapprovedPages', controller.deleteUnapprovedPages)
 router.get('/normalizeUnreadCount', controller.normalizeUnreadCount)
 router.get('/normalizeMessagesCount', controller.normalizeMessagesCount)
 router.post('/subscribers/normalizeLastMessagedAt', controller.normalizeLastMessagedAt)
+router.get('/normalizeCommentCapture', controller.normalizeCommentCapture)
 
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
