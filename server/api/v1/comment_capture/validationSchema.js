@@ -20,7 +20,7 @@ exports.postPayload = {
       required: true
     },
     reply: {
-      type: 'string',
+      type: 'array',
       required: true
     },
     payload: {
