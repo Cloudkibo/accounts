@@ -599,3 +599,23 @@ exports.normalizeLastMessagedAt = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+exports.normalizeCommentCapture = function (req, res) {
+  let updatePayload
+  PostsModel.find({})
+    .then(posts => {
+      for (let i = 0; i < posts.length; i++) {
+        updatePayload = [{
+          componentType: 'text',
+          text: posts[i].reply
+        }]
+        PostsModel.updateOne({_id: posts[i]._id}, {reply: updatePayload}).then(updated => {
+        })
+        if (i === posts.length - 1) {
+          return res.status(200).json({status: 'success'})
+        }
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: err})
+    })
+}

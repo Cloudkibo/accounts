@@ -19,7 +19,7 @@ exports.create = function (req, res) {
 exports.update = function (req, res) {
   console.log('req.body', req.body)
 
-  dataLayer.updateSponsoredMessage(req.body._id,req.body)
+  dataLayer.updateSponsoredMessage(req.params.id,req.body)
     .then(result => {
       console.log('result', result)
       res.status(200).json({status: 'success', payload: result})
@@ -49,7 +49,7 @@ exports.getAllSponsoredMessages = function(req, res){
     .then(sponsoredMessages => {
       if (sponsoredMessages.length > 0) {
         console.log('result', sponsoredMessages)
-        res.status(200).json({status: 'success', payload: sponsoredMessages})  
+        res.status(200).json({status: 'success', payload: sponsoredMessages})
       } else {
         res.status(200).json({status: 'success', payload: []})
       }

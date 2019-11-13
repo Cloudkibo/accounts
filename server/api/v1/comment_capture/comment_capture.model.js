@@ -9,7 +9,7 @@ let facebookPostSchema = new Schema({
   userId: { type: Schema.ObjectId, ref: 'users' },
   datetime: {type: Date, default: Date.now},
   payload: Schema.Types.Mixed,
-  reply: String,
+  reply: Schema.Types.Mixed,
   includedKeywords: [String],
   excludedKeywords: [String],
   post_id: String,
