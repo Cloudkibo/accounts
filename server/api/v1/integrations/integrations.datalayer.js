@@ -6,6 +6,7 @@ exports.createIntegrationObject = (payload) => {
 }
 exports.findIntegrationObjects = (query) => {
   return IntegrationModel.find(query)
+    .populate('companyId userId')
     .exec()
 }
 exports.genericUpdate = (query, updated, options) => {

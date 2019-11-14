@@ -6,7 +6,8 @@ let integrations = new Schema({
   userId: { type: Schema.ObjectId, ref: 'users' },
   integrationName: String,
   integrationToken: String,
-  integrationPayload: Schema.Types.Mixed
+  integrationPayload: Schema.Types.Mixed,
+  enabled: Boolean
 })
 
 module.exports = mongoose.model('integrations', integrations)
