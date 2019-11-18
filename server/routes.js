@@ -46,6 +46,8 @@ module.exports = function (app) {
   app.use('/api/v1/whatsAppContacts', require('./api/v1/whatsAppContacts'))
   app.use('/api/v1/api_ngp', require('./api/v1/api_ngp'))
   app.use('/api/v1/ipcountry', require('./api/v1/ipcountry'))
+  app.use('/api/v1/integrations', require('./api/v1/integrations'))
+  app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
