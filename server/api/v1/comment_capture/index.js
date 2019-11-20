@@ -47,4 +47,27 @@ router.post('/upload',
   controller.upload)
 
 
+router.post('/comments',
+  validate({body: validationSchema.commentPayload}),
+  auth.isAuthenticated(),
+  commentController.create)
+
+router.post('/comments/delete',
+  auth.isAuthenticated(),
+  commentController.delete)
+
+router.post('/comments/query',
+  auth.isAuthenticated(),
+  commentController.genericFetch)
+
+router.post('/comments/aggregate',
+  auth.isAuthenticated(),
+  commentController.aggregateFetch)
+
+router.put('/comments/update',
+  validate({body: validationSchema.genericUpdatePayload}),
+  auth.isAuthenticated(),
+  commentController.genericUpdate)
+
+
 module.exports = router
