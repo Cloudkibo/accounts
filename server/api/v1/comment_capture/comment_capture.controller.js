@@ -184,3 +184,30 @@ exports.upload = function (req, res) {
     })
   })
 }
+
+exports.scriptNormalizeAnalytics = function (req, res) {
+  dataLayer.fetchAllPosts()
+  .then(posts => {
+    for(let i=0; i<posts.length; i++){
+      if (posts[i].includedKeywords.length < 1 && posts[i].excludedKeywords.length < 1 ) {
+        console.log(JSON.stringify(posts[i]))
+        dataLayer.genericUpdatePostObject({_id: posts[i]._id}, {positiveMatchCount: posts[i].count}, {})
+          .then(result => {
+            logger.serverLog(TAG, `Result ${util.inspect(result)}`)
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+            sendErrorResponse(res, 500, err)
+          })
+      
+      }
+      if (i === posts.length -1) {
+        sendSuccessResponse(res, 200, posts)
+      }
+    }
+  })
+  .catch(err => {
+    logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+    sendErrorResponse(res, 500, err)
+  })
+}

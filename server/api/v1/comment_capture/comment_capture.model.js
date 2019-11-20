@@ -14,6 +14,8 @@ let facebookPostSchema = new Schema({
   excludedKeywords: [String],
   post_id: String,
   count: {type: Number, default: 0},
+  positiveMatchCount: {type: Number, default: 0},
+  conversionCount: {type: Number, default: 0},
   title: String,
   existingPostUrl: String,
   secondReply: Schema.Types.Mixed
