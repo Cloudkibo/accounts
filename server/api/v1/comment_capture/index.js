@@ -4,6 +4,7 @@ const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
 const controller = require('./comment_capture.controller')
+const commentController = require('./comments.controller')
 const auth = require('./../../../auth/auth.service')
 
 router.get('/:id',
@@ -30,12 +31,13 @@ router.post('/query',
   auth.isAuthenticated(), controller.genericFetch)
 
 router.post('/aggregate', auth.isAuthenticated(), controller.aggregateFetch)
+
 router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.genericUpdate)
 
-  router.put('/updateone',
+router.put('/updateone',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   controller.update)
