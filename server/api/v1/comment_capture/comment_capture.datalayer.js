@@ -43,7 +43,6 @@ exports.deleteOneUsingQuery = (postId) => {
     .exec()
 }
 
-
 exports.fetchAllPosts = () => {
   return CommentCaptureModel.find({}).exec()
 }
