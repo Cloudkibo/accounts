@@ -45,7 +45,7 @@ router.put('/updateone',
 router.post('/upload',
   auth.isAuthenticated(),
   controller.upload)
-
+//  comments endpoints
 
 router.post('/comments',
   validate({body: validationSchema.commentPayload}),
@@ -68,6 +68,5 @@ router.put('/comments/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
   commentController.genericUpdate)
-
 
 module.exports = router
