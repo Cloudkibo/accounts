@@ -158,3 +158,34 @@ exports.indexPayload = {
     'companyId'
   ]
 }
+exports.commentPayload = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'postId': {
+      'type': 'string'
+    },
+    'postFbLink': {
+      'type': 'string'
+    },
+    'commentFbId': {
+      'type': 'string'
+    },
+    'senderName': {
+      'type': 'string'
+    },
+    'senderFbId': {
+      'type': 'string'
+    },
+    'commentPayload': {
+      'type': 'array'
+    }
+  },
+  'required': [
+    'postId',
+    'commentFbId',
+    'senderName',
+    'senderFbId',
+    'commentPayload'
+  ]
+}
