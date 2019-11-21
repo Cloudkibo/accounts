@@ -14,9 +14,22 @@ let facebookPostSchema = new Schema({
   excludedKeywords: [String],
   post_id: String,
   count: {type: Number, default: 0},
+  positiveMatchCount: {type: Number, default: 0},
+  conversionCount: {type: Number, default: 0},
   title: String,
   existingPostUrl: String,
   secondReply: Schema.Types.Mixed
+})
+
+facebookPostSchema.virtual('negativeMatchCount').get(function () {
+  return {
+    'negativeMatchCount': this.count - this.positiveMatchCount
+  }
+})
+facebookPostSchema.virtual('waitingReply').get(function () {
+  return {
+    'waitingReply': this.positiveMatchCount -  this.conversionCount
+  }
 })
 
 module.exports = mongoose.model('facebook_posts', facebookPostSchema)

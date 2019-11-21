@@ -136,10 +136,11 @@ exports.genericFetch = function (req, res) {
 }
 
 exports.aggregateFetch = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
-
+  logger.serverLog(TAG, `Hit the genericFetch controller index ${util.inspect(req.body)}`)
+  var query = logicLayer.prepareMongoAggregateQuery(req.body)
+  logger.serverLog(TAG, `Fetch Query ${util.inspect(query)}`)
   dataLayer
-    .findPostObjectUsingAggregate(req.body)
+    .findPostObjectUsingAggregate(query)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
@@ -182,5 +183,32 @@ exports.upload = function (req, res) {
       }
       sendSuccessResponse(res, 200, payload)
     })
+  })
+}
+
+exports.scriptNormalizeAnalytics = function (req, res) {
+  dataLayer.fetchAllPosts()
+  .then(posts => {
+    for(let i=0; i<posts.length; i++){
+      if (posts[i].includedKeywords.length < 1 && posts[i].excludedKeywords.length < 1 ) {
+        console.log(JSON.stringify(posts[i]))
+        dataLayer.genericUpdatePostObject({_id: posts[i]._id}, {positiveMatchCount: posts[i].count}, {})
+          .then(result => {
+            logger.serverLog(TAG, `Result ${util.inspect(result)}`)
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+            sendErrorResponse(res, 500, err)
+          })
+      
+      }
+      if (i === posts.length -1) {
+        sendSuccessResponse(res, 200, posts)
+      }
+    }
+  })
+  .catch(err => {
+    logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+    sendErrorResponse(res, 500, err)
   })
 }

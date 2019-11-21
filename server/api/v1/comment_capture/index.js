@@ -11,6 +11,9 @@ router.get('/:id',
   auth.isAuthenticated(),
   controller.index)
 
+router.get('/script/normalize',
+  controller.scriptNormalizeAnalytics)
+
 router.post('/',
   validate({body: validationSchema.postPayload}),
   auth.isAuthenticated(),
@@ -42,7 +45,6 @@ router.put('/updateone',
 router.post('/upload',
   auth.isAuthenticated(),
   controller.upload)
-
 //  comments endpoints
 
 router.post('/comments',
