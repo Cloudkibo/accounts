@@ -136,10 +136,11 @@ exports.genericFetch = function (req, res) {
 }
 
 exports.aggregateFetch = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
-
+  logger.serverLog(TAG, `Hit the genericFetch controller index ${util.inspect(req.body)}`)
+  var query = logicLayer.prepareMongoAggregateQuery(req.body)
+  logger.serverLog(TAG, `Fetch Query ${util.inspect(query)}`)
   dataLayer
-    .findPostObjectUsingAggregate(req.body)
+    .findPostObjectUsingAggregate(query)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
