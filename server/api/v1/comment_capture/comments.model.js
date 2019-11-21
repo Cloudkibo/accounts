@@ -13,7 +13,8 @@ let commentsSchema = new Schema({
   postFbLink: String,
   childCommentCount: {type: Number, default: 0},
   subscriberId: {type: Schema.ObjectId, ref: 'subscribers'},
-  replySentOnMessenger: Boolean
+  replySentOnMessenger: Boolean,
+  datetime: {type: Date, default: Date.now}
 })
 
 module.exports = mongoose.model('comments', commentsSchema)
