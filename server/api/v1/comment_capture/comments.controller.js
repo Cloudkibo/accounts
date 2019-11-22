@@ -1,4 +1,5 @@
 const dataLayer = require('./comments.datalayer')
+const LogicLayer = require('./comments.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
@@ -34,7 +35,7 @@ exports.genericFetch = function (req, res) {
 
 exports.aggregateFetch = function (req, res) {
   dataLayer
-    .findCommentObjectUsingAggregate(req.body)
+    .findCommentObjectUsingAggregate(LogicLayer.validateAndConvert(req.body))
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
