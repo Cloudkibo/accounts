@@ -18,17 +18,13 @@ let facebookPostSchema = new Schema({
   conversionCount: {type: Number, default: 0},
   title: String,
   existingPostUrl: String,
-  secondReply: Schema.Types.Mixed
+  secondReply: Schema.Types.Mixed,
+  waitingReply: {type: Number, default: 0}
 })
 
 facebookPostSchema.virtual('negativeMatchCount').get(function () {
   return {
     'negativeMatchCount': this.count - this.positiveMatchCount
-  }
-})
-facebookPostSchema.virtual('waitingReply').get(function () {
-  return {
-    'waitingReply': this.positiveMatchCount -  this.conversionCount
   }
 })
 
