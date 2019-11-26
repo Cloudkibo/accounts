@@ -13,6 +13,7 @@ let sponsoredMessagesSchema = new Schema({
     companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
     userId: { type: Schema.ObjectId, ref: 'users' },
     pageId: String,
+    clicks: {type: Number, default: 0},
     statsFromUs: Schema.Types.Mixed
 })
 
