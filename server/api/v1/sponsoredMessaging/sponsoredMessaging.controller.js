@@ -42,10 +42,10 @@ exports.delete = function (req, res) {
     })
 }
 
-exports.getAllSponsoredMessages = function(req, res){
+exports.getAllSponsoredMessages = function (req, res) {
   let query = req.body
   console.log('query', query)
-    dataLayer.findSponsoredMessage(query)
+  dataLayer.findSponsoredMessage(query)
     .then(sponsoredMessages => {
       if (sponsoredMessages.length > 0) {
         console.log('result', sponsoredMessages)
@@ -55,6 +55,17 @@ exports.getAllSponsoredMessages = function(req, res){
       }
     })
     .catch(error => {
-      return res.status(500).json({status:'failed', payload: `Couldn't fetch sponsored Messges ${JSON.stringify(error)}`})
+      return res.status(500).json({status: 'failed', payload: `Couldn't fetch sponsored Messges ${JSON.stringify(error)}`})
     })
-  }
+}
+
+exports.clickCountUpdate = function (req, res) {
+  console.log('click count update', req.body)
+  dataLayer.updateAllSponsoredMessage(req.body)
+    .then(foundObjects => {
+      res.status(200).json({status: 'success', payload: []})
+    })
+    .catch(error => {
+      return res.status(500).json({status: 'failed', payload: `Couldn't update sponsorMessages ${JSON.stringify(error)}`})
+    })
+}

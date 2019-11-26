@@ -26,5 +26,9 @@ router.post('/',
   auth.isAuthenticated(),
   controller.delete)
 
+  router.put('/clickCountUpdate',
+  auth.isAuthenticated(),
+  controller.clickCountUpdate)
+
 
   module.exports = router
