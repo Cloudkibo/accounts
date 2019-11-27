@@ -20,3 +20,10 @@ exports.deleteSponsoredMessage = (sponsoredMessageId) => {
     return sponsoredMessagingModel.deleteOne({_id: sponsoredMessageId})
       .exec()
   }
+
+exports.updateAllSponsoredMessage = (body) => {
+  let query = body.match
+  let updated = body.updated
+  let options = {}
+  return sponsoredMessagingModel.updateMany(query, updated, options)
+}
