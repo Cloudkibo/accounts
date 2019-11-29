@@ -25,25 +25,28 @@ exports.prepareUpdatePostPayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
-  let query = []
+  let newBody = body
 
-  if (body.match) {
-    if (Object.keys(body.match).includes('companyId')) {
-      body.match.companyId = mongoose.Types.ObjectId(body.match.companyId)
+  body.forEach((obj, index) => {
+    if (obj.$match && obj.$match.datetime && !obj.$match.datetime.$exists) {
+      if (obj.$match.datetime.$gte) {
+        newBody[index].$match.datetime.$gte = new Date(newBody[index].$match.datetime.$gte)
+      }
+      if (obj.$match.datetime.$lt) {
+        newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
+      }
     }
-    query.push({$match: body.match})
-  } else {
-    return 'Match Criteria Not Found'
-  }
-
-  if (body.group) {
-    if (!Object.keys(body.group).includes('_id')) return '_id is missing in Group Criteria'
-    else query.push({$group: body.group})
-  }
-
-  if (body.skip) query.push({$skip: body.skip})
-  if (body.sort) query.push({$sort: body.sort})
-  if (body.limit) query.push({$limit: body.limit})
-
-  return query
+    if (obj.$match && obj.$match.companyId) {
+      newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
+    }
+    if (obj.$match && obj.$match._id && !obj.$match._id.$exists) {
+      if (obj.$match._id.$gt) {
+        newBody[index].$match._id.$gt = mongoose.Types.ObjectId(newBody[index].$match._id.$gt)
+      }
+      if (obj.$match._id.$lt) {
+        newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
+      }
+    }
+  })
+  return newBody
 }
