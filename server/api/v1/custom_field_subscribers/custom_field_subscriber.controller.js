@@ -32,7 +32,7 @@ exports.create = function (req, res) {
 
 exports.query = function (req, res) {
   logger.serverLog(TAG, `Query endpoint is hit:`)
-
+  console.log('query in custom_field_subscribers', req.body)
   DataLayer.findCustomFieldubscriberUsingQuery(req.body)
     .then(foundObjects => {
       sendSuccessResponse(res, 200, foundObjects)
