@@ -14,6 +14,9 @@ exports.validateAndConvert = (body) => {
       if (obj.$match.datetime.$gt) {
         newBody[index].$match.datetime.$gt = new Date(newBody[index].$match.datetime.$gt)
       }
+      if (obj.$match.datetime.$gte) {
+        newBody[index].$match.datetime.$gte = new Date(newBody[index].$match.datetime.$gte)
+      }
       if (obj.$match.datetime.$lt) {
         newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
       }

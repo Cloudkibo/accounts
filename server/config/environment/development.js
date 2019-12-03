@@ -14,7 +14,7 @@ module.exports = {
 
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/accounts-dev'
+    uri: 'mongodb://localhost/local-accounts-prod'
   },
   seedDB: false,
 
