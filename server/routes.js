@@ -31,7 +31,6 @@ module.exports = function (app) {
   app.use('/api/v1/phone', require('./api/v1/phone'))
   app.use('/api/v1/verificationtoken', require('./api/v1/verificationtoken'))
   app.use('/api/v1/webhooks', require('./api/v1/webhooks'))
-  app.use('/api/v1/api_settings', require('./api/v1/api_settings'))
   app.use('/api/v1/tags_subscriber', require('./api/v1/tags_subscriber'))
   app.use('/api/v1/tags', require('./api/v1/tags'))
   app.use('/api/v1/landingPage', require('./api/v1/landingPage'))
