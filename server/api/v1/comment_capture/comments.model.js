@@ -11,6 +11,7 @@ let commentsSchema = new Schema({
   commentPayload: Schema.Types.Mixed,
   parentId: {type: Schema.ObjectId, ref: 'comments'},
   postFbLink: String,
+  postFbId: String,
   childCommentCount: {type: Number, default: 0},
   subscriberId: {type: Schema.ObjectId, ref: 'subscribers'},
   replySentOnMessenger: Boolean,
