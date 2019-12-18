@@ -73,7 +73,8 @@ exports.update = function (req, res) {
     title: req.body.newPayload.title,
     includedKeywords: req.body.newPayload.includedKeywords,
     excludedKeywords: req.body.newPayload.excludedKeywords,
-    secondReply: req.body.newPayload.secondReply
+    secondReply: req.body.newPayload.secondReply,
+    reply: req.body.newPayload.reply
   }
 
   dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
