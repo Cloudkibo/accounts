@@ -79,6 +79,7 @@ const subscriberSchema = new Schema({
   unreadCount: {type: Number, default: 0},
   messagesCount: {type: Number, default: 0},
   awaitingCommentReply: {type: Schema.Types.Mixed},
+  waitingForUserInput: {type: Schema.Types.Mixed},
   completeInfo: {type: Boolean, default: true},
   siteInfo: { type: Schema.Types.Mixed }
 })
