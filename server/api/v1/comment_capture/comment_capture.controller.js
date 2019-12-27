@@ -73,7 +73,8 @@ exports.update = function (req, res) {
     title: req.body.newPayload.title,
     includedKeywords: req.body.newPayload.includedKeywords,
     excludedKeywords: req.body.newPayload.excludedKeywords,
-    secondReply: req.body.newPayload.secondReply
+    secondReply: req.body.newPayload.secondReply,
+    reply: req.body.newPayload.reply
   }
 
   dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
@@ -88,11 +89,7 @@ exports.update = function (req, res) {
 
 exports.delete = function (req, res) {
   logger.serverLog(TAG, 'Hit the delete post controller index')
-  // delete post from facebook
   dataLayer.findOnePostObjectUsingQuery({_id: req.params.id})
-    .then(post => {
-      return needle.request('delete', `https://graph.facebook.com/v3.2/${post.post_id}?access_token=${post.pageId.accessToken}`, null)
-    })
     // delete post from database
     .then(result => {
       return dataLayer.deletePostObject(req.params.id)
