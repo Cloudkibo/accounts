@@ -102,6 +102,19 @@ exports.genericUpdate = function (req, res) {
     })
 }
 
+exports.updateAll = function (req, res) {
+  logger.serverLog(TAG, 'generic All update endpoint')
+  console.log('called function update All')
+  subscribersDataLayer.genericUpdateSubscriberObjectAll(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      sendSuccessResponse(res, 200, result)
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}
+
 exports.updatePicture = function (req, res) {
   let subscriber = req.body.subscriber
   let accessToken = subscriber.pageId.accessToken

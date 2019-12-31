@@ -33,6 +33,10 @@ router.put('/update',
   auth.isAuthenticated(),
   controller.genericUpdate)
 
+router.put('/updateAll',
+  auth.isAuthenticated(),
+  controller.updateAll)
+
 router.get('/updateData',
   auth.isAuthenticated(),
   controller.updateData)

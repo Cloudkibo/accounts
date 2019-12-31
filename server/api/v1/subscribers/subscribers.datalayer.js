@@ -42,6 +42,11 @@ exports.genericUpdateSubscriberObject = (query, updated, options) => {
     .exec()
 }
 
+exports.genericUpdateSubscriberObjectAll = (query, updated, options) => {
+  return SubscriberModel.updateMany(query, updated, options)
+    .exec()
+}
+
 exports.deleteSubscriberObject = (subscriberId) => {
   return SubscriberModel.deleteOne({_id: subscriberId})
     .exec()
