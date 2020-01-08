@@ -1,5 +1,5 @@
 const dataLayer = require('./overlayWidgets.datalayer')
-const logicLayer = require('./overlayWidgets.logicLayer')
+const logicLayer = require('./overlayWidgets.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
