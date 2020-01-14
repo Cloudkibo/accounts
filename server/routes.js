@@ -47,6 +47,7 @@ module.exports = function (app) {
   app.use('/api/v1/ipcountry', require('./api/v1/ipcountry'))
   app.use('/api/v1/integrations', require('./api/v1/integrations'))
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
+  app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
