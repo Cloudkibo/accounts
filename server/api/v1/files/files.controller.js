@@ -129,7 +129,7 @@ exports.uploadForTemplate = function (req, res) {
             let pageAccessToken = resp2.body.access_token
             let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
             logger.serverLog(TAG, dir + '/userfiles/' + req.body.name)
-            logger.serverLog(TAG, `fileReaderStream ${fileReaderStream}`)
+            logger.serverLog(TAG, `fileReaderStream ${JSON.stringify(fileReaderStream)}`)
             const messageData = {
               'message': JSON.stringify({
                 'attachment': {
@@ -141,7 +141,6 @@ exports.uploadForTemplate = function (req, res) {
               }),
               'filedata': fileReaderStream
             }
-            logger.serverLog(TAG, `messageData ${JSON.stringify(messageData)}`)
             request(
               {
                 'method': 'POST',
