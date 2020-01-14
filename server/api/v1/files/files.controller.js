@@ -124,6 +124,8 @@ exports.uploadForTemplate = function (req, res) {
             if (err) {
               sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
             }
+            logger.serverLog(TAG,
+              `retrieved page access_token ${JSON.stringify(resp2.body)}`)
             let pageAccessToken = resp2.body.access_token
             let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
             const messageData = {
