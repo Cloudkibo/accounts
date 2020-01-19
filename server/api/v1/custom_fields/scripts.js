@@ -27,7 +27,7 @@ exports.populateDefaultFields = function (req, res) {
         logger.serverLog(CUSTOMFIELD, `created the default custom field for ${createdObject.name}`)
       })
       .catch(err => {
-        logger.serverLog(CUSTOMFIELD, `Error found create default custom field : ${util.inspect(err)}`)
+        logger.serverLog(CUSTOMFIELD, `Error create default custom field : ${util.inspect(err)}`)
       })
   }
   sendSuccessResponse(res, 200, {status: 'success', description: 'script started'})
@@ -48,21 +48,27 @@ exports.normalizeData = function (req, res) {
     { default: true, description: 'Age of the subscriber', type: 'number', name: 'Age' }
   ]
 
-  for (let i = 0; i < defaultFields.length; i++) {
-    let query = {
-      purpose: 'findAll',
-      match: {
-        name: req.body.name,
-        companyId: req.body.companyId
+  DataLayer.findAllCustomFieldObjects()
+    .then(foundCustomFields => {
+      logger.serverLog(CUSTOMFIELD, `find all the default custom field for ${foundCustomFields}`)
+      for (let i = 0; i < foundCustomFields; i++) {
+        if (!foundCustomFields[i].default) {
+          for (let j = 0; j < defaultFields.length; j++) {
+            if (foundCustomFields[i].name.toLowerCase() === defaultFields[j].name.toLowerCase()) {
+              _normalizeThisData(foundCustomFields[i])
+            }
+          }
+        }
       }
-    }
-    DataLayer.findCustomFieldsUsingQuery(query)
-      .then(foundCustomFields => {
-        logger.serverLog(CUSTOMFIELD, `created the default custom field for ${createdObject.name}`)
-      })
-      .catch(err => {
-        logger.serverLog(CUSTOMFIELD, `Error found create default custom field : ${util.inspect(err)}`)
-      })
-  }
+    })
+    .catch(err => {
+      logger.serverLog(CUSTOMFIELD, `Error found all default custom field : ${util.inspect(err)}`)
+    })
   sendSuccessResponse(res, 200, {status: 'success', description: 'script started'})
+}
+
+function _normalizeThisData (customFieldObject) {
+  // note, not implemented, we might do this in db manually
+  // as all the old data regarding custom fields is just testing
+  // data in both production and staging, we can just replace it.
 }
