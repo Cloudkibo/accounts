@@ -32,9 +32,7 @@ exports.createPayload = {
   },
   'required': [
     'name',
-    'type',
-    'companyId',
-    'createdBy'
+    'type'
   ]
 }
 
