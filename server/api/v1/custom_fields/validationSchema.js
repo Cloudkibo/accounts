@@ -65,8 +65,7 @@ exports.queryPayload = {
           'type': 'boolean'
         },
         'companyId': {
-          'type': 'string',
-          'required': true
+          'type': 'string'
         },
         'createdBy': {
           'type': 'string'
