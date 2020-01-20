@@ -28,6 +28,5 @@ router.delete('/',
   controller.delete)
 
 router.get('/scripts/populateDefaultField', require('./scripts').populateDefaultFields)
-router.get('/scripts/normalizeData', require('./scripts').normalizeData)
 
 module.exports = router
