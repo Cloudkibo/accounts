@@ -17,7 +17,7 @@ exports.createPayload = {
     'description': {
       'type': 'string'
     },
-    'default': {
+    'isDefault': {
       'type': 'boolean'
     },
     'companyId': {
@@ -61,7 +61,7 @@ exports.queryPayload = {
         'description': {
           'type': 'string'
         },
-        'default': {
+        'isDefault': {
           'type': 'boolean'
         },
         'companyId': {
