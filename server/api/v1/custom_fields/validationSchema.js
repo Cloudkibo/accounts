@@ -103,7 +103,7 @@ exports.updatePayload =
           'description': {
             'type': 'string'
           },
-          'default': {
+          'isDefault': {
             'type': 'boolean'
           },
           'companyId': {
