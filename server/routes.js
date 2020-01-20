@@ -61,6 +61,9 @@ module.exports = function (app) {
   app.options('/uploadTemplate', cors(corsOptions))
   app.post('/uploadTemplate', cors(), controller.uploadForTemplate)
 
+  app.options('/api/v1/uploadTemplate', cors(corsOptions))
+  app.post('/api/v1/uploadTemplate', cors(), controller.uploadForTemplate)
+
   app.options('/downloadYouTubeVideo', cors(corsOptions))
   app.post('/downloadYouTubeVideo', cors(), controller.downloadYouTubeVideo)
 
