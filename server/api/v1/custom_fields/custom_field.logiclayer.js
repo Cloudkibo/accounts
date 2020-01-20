@@ -9,9 +9,7 @@ exports.validateCreatePayload = (body) => {
   let bool = true
   let arrayOfRequiredFields = [
     'name',
-    'type',
-    'companyId',
-    'createdBy'
+    'type'
   ]
   let arrayOfKeys = Object.keys(body)
 
