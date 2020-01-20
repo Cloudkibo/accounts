@@ -2,6 +2,7 @@ let mongoose = require('mongoose')
 let Schema = mongoose.Schema
 
 const overlayWidgetsSchema = new Schema({
+  title: String,
   widgetType: String,
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   userId: { type: Schema.ObjectId, ref: 'users' },
