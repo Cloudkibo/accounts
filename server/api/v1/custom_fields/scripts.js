@@ -16,8 +16,8 @@ exports.populateDefaultFields = function (req, res) {
     { default: true, description: 'Region of the subscriber', type: 'text', name: 'Region' },
     { default: true, description: 'Date of birth of the subscriber', type: 'date', name: 'Date of Birth' },
     { default: true, description: 'Marital Status of the subscriber', type: 'text', name: 'Marital Status' },
-    { default: true, description: 'Phone number of the subscriber', type: 'phone', name: 'Phone Number' },
-    { default: true, description: 'Email address of the subscriber', type: 'email', name: 'Email' },
+    { default: true, description: 'Phone number of the subscriber', type: 'text', name: 'Phone Number' },
+    { default: true, description: 'Email address of the subscriber', type: 'text', name: 'Email' },
     { default: true, description: 'Age of the subscriber', type: 'number', name: 'Age' }
   ]
 
