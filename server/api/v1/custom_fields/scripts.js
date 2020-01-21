@@ -22,13 +22,33 @@ exports.populateDefaultFields = function (req, res) {
   ]
 
   for (let i = 0; i < defaultFields.length; i++) {
-    DataLayer.createOneCustomFieldObject(defaultFields[i])
-      .then(createdObject => {
-        logger.serverLog(CUSTOMFIELD, `created the default custom field for ${createdObject.name}`)
-      })
-      .catch(err => {
-        logger.serverLog(CUSTOMFIELD, `Error create default custom field : ${util.inspect(err)}`)
-      })
+    _populateDefaultField(defaultFields[i])
   }
   sendSuccessResponse(res, 200, {status: 'success', description: 'script started'})
+}
+
+function _populateDefaultField (defaultField) {
+  let query = {
+    purpose: 'findOne',
+    match: {
+      name: defaultField.name,
+      default: defaultField.default
+    }
+  }
+  DataLayer.findCustomFieldsUsingQuery(query)
+    .then(foundObject => {
+      if (!foundObject) {
+        // default custom field not found, going to create new
+        DataLayer.createOneCustomFieldObject(defaultField)
+          .then(createdObject => {
+            logger.serverLog(CUSTOMFIELD, `created the default custom field for ${createdObject.name}`)
+          })
+          .catch(err => {
+            logger.serverLog(CUSTOMFIELD, `Error create default custom field : ${util.inspect(err)}`)
+          })
+      }
+    })
+    .catch(err => {
+      logger.serverLog(CUSTOMFIELD, `Error find default custom field : ${util.inspect(err)}`)
+    })
 }
