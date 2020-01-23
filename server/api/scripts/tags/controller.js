@@ -5,6 +5,7 @@ const needle = require('needle')
 const TagsModel = require('../../v1//tags/tags.model')
 const TagSubscribersModel = require('../../v1//tags_subscriber/tags_subscriber.model')
 const SubscribersModel = require('../../v1/subscribers/Subscribers.model')
+let mongoose = require('mongoose')
 
 exports.getAssignedTagInfo = (req, res) => {
   SubscribersModel.aggregate([
@@ -290,5 +291,49 @@ function _unassignTag (fbid, subscriber) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${err}`)
+    })
+}
+
+exports.normalizeTagsData = (req, res) => {
+  TagsModel.aggregate([
+    {$group: {_id: {companyId: '$companyId', tag: '$tag'}}}
+  ]).exec()
+    .then(uniqueTags => {
+      async.each(uniqueTags, function (uniqueTag, cb) {
+        TagsModel.find({companyId: uniqueTag._id.companyId, tag: uniqueTag._id.tag}).exec()
+          .then(duplicateTags => {
+            let savedTagId = duplicateTags[0]._id
+            let duplicateTagIds = duplicateTags.map(d => d._id).filter(d => d._id !== savedTagId)
+            if (duplicateTagIds.length > 0) {
+              TagSubscribersModel.update({tagId: {$in: duplicateTagIds}}, {tagId: savedTagId}, {multi: true}).exec()
+                .then(updated => {
+                  TagsModel.deleteMany({_id: {$in: duplicateTagIds}}).exec()
+                    .then(deleted => {
+                      cb()
+                    })
+                    .catch((err) => {
+                      cb(err)
+                    })
+                })
+                .catch((err) => {
+                  cb(err)
+                })
+            } else {
+              cb()
+            }
+          })
+          .catch(err => {
+            cb(err)
+          })
+      }, function (err) {
+        if (err) {
+          return res.status(500).json({status: 'Failed', payload: err})
+        } else {
+          return res.status(200).json({status: 'success'})
+        }
+      })
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'Failed', payload: err})
     })
 }
