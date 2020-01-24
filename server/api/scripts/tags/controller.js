@@ -5,7 +5,6 @@ const needle = require('needle')
 const TagsModel = require('../../v1//tags/tags.model')
 const TagSubscribersModel = require('../../v1//tags_subscriber/tags_subscriber.model')
 const SubscribersModel = require('../../v1/subscribers/Subscribers.model')
-let mongoose = require('mongoose')
 
 exports.getAssignedTagInfo = (req, res) => {
   SubscribersModel.aggregate([
