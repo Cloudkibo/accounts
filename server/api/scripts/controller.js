@@ -7,10 +7,26 @@ const PostsModel = require('../v1/comment_capture/comment_capture.model')
 const ReferralModel = require('../v1/pageReferrals/pageReferrals.model')
 const MenuModel = require('../v1/menu/Menu.model')
 const UserModel = require('../v1/user/user.model')
+const CompanyUsers = require('../v1/companyuser/companyuser.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
 const needle = require('needle')
+
+exports.normalizeCompanyUsers = function (req, res) {
+  CompanyUsers.aggregate([
+    {$lookup: {from: 'users', localField: 'userId', foreignField: '_id', as: 'userId'}},
+    {$unwind: { path: '$userId', 'preserveNullAndEmptyArrays': true }},
+    {$match: {userId: null}}
+  ]).exec()
+    .then(companyUsers => {
+      const ids = companyUsers.map((cu) => cu._id)
+      CompanyUsers.deleteMany({_id: {$in: ids}}).exec()
+        .then(deleted => res.status(200).json({status: 'success'}))
+        .catch(err => res.status(500).json({status: 'Failed', payload: err}))
+    })
+    .catch(err => res.status(500).json({status: 'Failed', payload: err}))
+}
 
 exports.normalizeSubscribersDatetime = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
