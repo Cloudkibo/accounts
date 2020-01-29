@@ -18,6 +18,7 @@ router.get('/normalizeUnreadCount', controller.normalizeUnreadCount)
 router.get('/normalizeMessagesCount', controller.normalizeMessagesCount)
 router.post('/subscribers/normalizeLastMessagedAt', controller.normalizeLastMessagedAt)
 router.get('/normalizeCommentCapture', controller.normalizeCommentCapture)
+router.get('/companyUsers/normalize', controller.normalizeCompanyUsers)
 
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
