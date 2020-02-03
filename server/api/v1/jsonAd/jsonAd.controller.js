@@ -13,15 +13,15 @@ exports.create = function (req, res) {
     jsonAd: {},
     jsonAdMessages: []
   }
-  requests.push(new Promise((resolve, reject) => {
-    JsonAdDataLayer.create({
-      title: req.body.title,
-      companyId: req.user.companyId,
-      userId: req.user.userId
-    })
-      .then(jsonAd => {
-        response.jsonAd = jsonAd
-        for (let i = 0; i < messages.length; i++) {
+  JsonAdDataLayer.create({
+    title: req.body.title,
+    companyId: req.user.companyId,
+    userId: req.user.userId
+  })
+    .then(jsonAd => {
+      response.jsonAd = jsonAd
+      for (let i = 0; i < messages.length; i++) {
+        requests.push(new Promise((resolve, reject) => {
           let message = messages[i]
           jsonAdMessagesDataLayer.create({
             jsonAdId: jsonAd._id,
@@ -31,30 +31,26 @@ exports.create = function (req, res) {
             messageContent: message.messageContent
           }).then(jsonAdMessage => {
             response.jsonAdMessages.push(jsonAdMessage)
-            resolve(jsonAdMessage)
-            if (messages.length - 1 === i) {
-              Promise.all(requests)
-                .then((responses) => {
-                  responses = {
-                    jsonAd: responses[0],
-                    jsonAdMessages: response.jsonAdMessages
-                  }
-                  sendSuccessResponse(res, 200, responses)
-                })
-                .catch((err) => sendErrorResponse(res, 500, '', err))
-            }
+            resolve(jsonAdMessage)            
           }).catch(err => {
             reject(err)
           })
-        }
-        resolve(jsonAd)
-      })
-      .catch(err => {
-        reject(err)
-      })
-  }))
+        }))
+      }
+      Promise.all(requests)
+        .then((responses) => {
+          let data = {
+            jsonAd: response.jsonAd,
+            jsonAdMessages: responses
+          }
+          sendSuccessResponse(res, 200, data)
+        })
+        .catch((err) => sendErrorResponse(res, 500, '', err))
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `error at ${err}`)
+    })
 }
-
 exports.edit = function (req, res) {
   logger.serverLog(TAG, 'Hit the edit json ad endpoint')
 
@@ -67,71 +63,61 @@ exports.edit = function (req, res) {
   }
   JsonAdDataLayer.findOneUsingQuery({_id: req.body.jsonAdId})
     .then(jsonAd => {
-      requests.push(new Promise((resolve, reject) => {
-        jsonAdMessagesDataLayer.deleteUsingQuery({
-          jsonAdId: req.body.jsonAdId
-        }).then(deleted => {
-          requests.push(new Promise((resolve, reject) => {
-            JsonAdDataLayer.deleteOneUsingQuery({_id: jsonAd._id})
-              .then(deletedJsonAd => {
-                requests.push(new Promise((resolve, reject) => {
-                  JsonAdDataLayer.create({
-                    title: req.body.title,
-                    companyId: req.user.companyId,
-                    userId: req.user.userId
-                  })
-                    .then(createdJsonAd => {
-                      response.jsonAd = createdJsonAd
-                      for (let i = 0; i < messages.length; i++) {
-                        let message = messages[i]
-                        jsonAdMessagesDataLayer.create({
-                          _id: mongoose.Types.ObjectId(message._id),
-                          jsonAdId: createdJsonAd._id,
-                          jsonAdMessageId: message.jsonAdMessageId,
-                          title: message.title,
-                          jsonAdMessageParentId: message.jsonAdMessageParentId,
-                          messageContent: message.messageContent
-                        }).then(jsonAdMessage => {
-                          response.jsonAdMessages.push(jsonAdMessage)
-                          resolve(jsonAdMessage)
-                          if (messages.length - 1 === i) {
-                            Promise.all(requests)
-                              .then((responses) => {
-                                responses = {
-                                  jsonAd: responses[2],
-                                  jsonAdMessages: response.jsonAdMessages
-                                }
-                                sendSuccessResponse(res, 200, responses)
-                              })
-                              .catch((err) => sendErrorResponse(res, 500, '', err))
-                          }
-                        }).catch(err => {
-                          reject(err)
-                        })
-                      }
-                      resolve(createdJsonAd)
-                    })
-                    .catch(err => {
+      jsonAdMessagesDataLayer.deleteUsingQuery({
+        jsonAdId: req.body.jsonAdId
+      }).then(deleted => {
+        JsonAdDataLayer.deleteOneUsingQuery({_id: jsonAd._id})
+          .then(deletedJsonAd => {
+            JsonAdDataLayer.create({
+              title: req.body.title,
+              companyId: req.user.companyId,
+              userId: req.user.userId
+            })
+              .then(createdJsonAd => {
+                response.jsonAd = createdJsonAd
+                for (let i = 0; i < messages.length; i++) {
+                  requests.push(new Promise((resolve, reject) => {
+                    let message = messages[i]
+                    jsonAdMessagesDataLayer.create({
+                      _id: mongoose.Types.ObjectId(message._id),
+                      jsonAdId: createdJsonAd._id,
+                      jsonAdMessageId: message.jsonAdMessageId,
+                      title: message.title,
+                      jsonAdMessageParentId: message.jsonAdMessageParentId,
+                      messageContent: message.messageContent
+                    }).then(jsonAdMessage => {
+                      response.jsonAdMessages.push(jsonAdMessage)
+                      resolve(jsonAdMessage)
+                    }).catch(err => {
                       reject(err)
                     })
-                }))
-                resolve(deletedJsonAd)
+                  }))
+                }
+                Promise.all(requests)
+                  .then((responses) => {
+                    responses = {
+                      jsonAd: response.jsonAd,
+                      jsonAdMessages: responses
+                    }
+                    sendSuccessResponse(res, 200, responses)
+                  })
+                  .catch((err) => sendErrorResponse(res, 500, '', err))
               })
               .catch(err => {
-                reject(err)
+                sendErrorResponse(res, 500, '', err)
               })
-          }))
-          resolve(deleted)
-        }).catch(err => {
-          reject(err)
-        })
-      }))
+          })
+          .catch(err => {
+            sendErrorResponse(res, 500, '', err)
+          })
+      }).catch(err => {
+        sendErrorResponse(res, 500, '', err)
+      })
     })
     .catch(err => {
       sendErrorResponse(res, 500, '', err)
     })
 }
-
 exports.getAll = function (req, res) {
   JsonAdDataLayer.findAllUsingQuery({userId: req.user.userId})
     .then(response => {
