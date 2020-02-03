@@ -22,7 +22,7 @@ exports.create = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: req.body.name,
+      name: {$regex: req.body.name, $options: 'i'},
       companyId: req.body.companyId
     }
   }
@@ -65,8 +65,9 @@ exports.update = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: req.body.updated.name,
-      companyId: req.body.updated.companyId
+      name: {$regex: req.body.updated.name, $options: 'i'},
+      companyId: req.body.updated.companyId,
+      _id: {$ne: req.body.match._id}
     }
   }
   DataLayer.findCustomFieldsUsingQuery(query)
@@ -80,7 +81,7 @@ exports.update = function (req, res) {
           })
           .catch(err => {
             logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
-            sendErrorResponse(res, 500, err.toString())
+            sendErrorResponse(res, 500, err)
           })
       }
     })
