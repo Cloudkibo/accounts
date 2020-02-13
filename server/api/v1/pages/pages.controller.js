@@ -216,11 +216,10 @@ exports.fetchWhitelistedDomains = function (req, res) {
   }
 }
 exports.whitelistDomain = function (req, res) {
-  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
-    (err, resp) => {
-      if (err) {
-      }
-      var accessToken = resp.body.access_token
+  dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
+    .then(page => {
+      logger.serverLog(TAG, `page in whitelistDomain ${page}`)
+      var accessToken = page.accessToken
       needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
         }
@@ -246,15 +245,16 @@ exports.whitelistDomain = function (req, res) {
           }
         })
       })
+    }).catch(err => {
+      logger.serverLog(TAG, `Failed to fetch pages ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
 exports.deleteWhitelistDomain = function (req, res) {
-  needle.get(`https://graph.facebook.com/v2.10/${req.body.page_id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
-    (err, resp) => {
-      if (err) {
-      }
-      var accessToken = resp.body.access_token
+  dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
+    .then(page => {
+      var accessToken = page.accessToken
       needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
         }
@@ -299,6 +299,9 @@ exports.deleteWhitelistDomain = function (req, res) {
           sendSuccessResponse(res, 200, temp)
         }
       })
+    }).catch(err => {
+      logger.serverLog(TAG, `Failed to fetch pages ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: err})
     })
 }
 
