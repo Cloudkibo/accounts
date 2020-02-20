@@ -22,7 +22,7 @@ exports.create = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: {$regex: req.body.name, $options: 'i'},
+      name: {$regex: `^${req.body.name}$`, $options: 'i'},
       companyId: req.body.companyId
     }
   }
@@ -65,7 +65,7 @@ exports.update = function (req, res) {
   let query = {
     purpose: 'findOne',
     match: {
-      name: {$regex: req.body.updated.name, $options: 'i'},
+      name: {$regex: `^${req.body.updated.name}$`, $options: 'i'},
       companyId: req.body.updated.companyId,
       _id: {$ne: req.body.match._id}
     }
