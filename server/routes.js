@@ -4,6 +4,7 @@ const TAG = '/server/routes.js'
 const Raven = require('raven')
 const cors = require('cors')
 const controller = require('./api/v1/files/files.controller')
+const userController = require('./api/v1/user/user.controller')
 const corsOptions = require('./api/v1/files/utility')
 const multiparty = require('connect-multiparty')
 const multipartyMiddleware = multiparty()
@@ -51,6 +52,9 @@ module.exports = function (app) {
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
+
+  app.options('/updatePicture', cors(corsOptions))
+  app.post('/updatePicture', cors(), multipartyMiddleware, userController.updatePicture)
 
   app.options('/uploadFile', cors(corsOptions))
   app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)
