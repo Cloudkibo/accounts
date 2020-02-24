@@ -609,8 +609,8 @@ exports.fetchGeneral = function (req, res) {
 }
 
 exports.updatePicture = function (req, res) {
-  let userFbId = req.user.facebookInfo.fbId
-  let userFbToken = req.user.facebookInfo.fbToken
+  let userFbId = req.body.user.facebookInfo.fbId
+  let userFbToken = req.body.user.facebookInfo.fbToken
   logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${userFbId}/picture`)
   needle.get(
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
@@ -619,17 +619,17 @@ exports.updatePicture = function (req, res) {
         logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${userFbId}/picture ${JSON.stringify(err)}`)
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
-        dataLayer.genericUpdateUserObject({_id: req.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
+        dataLayer.genericUpdateUserObject({_id: req.body.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
           .then(updated => {
-            logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.user._id}`)
-            sendSuccessResponse(res, 200, updated)
+            logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.body.user._id}`)
+            sendSuccessResponse(res, 200, resp.body.picture.data.url)
           })
           .catch(err => {
             logger.serverLog(TAG, `Failed to update user ${JSON.stringify(err)}`)
             sendErrorResponse(res, 500, err)
           })
       } else {
-        sendErrorResponse(res, 500, `profile picture not found for user with _id ${req.user._id}`)
+        sendErrorResponse(res, 500, `profile picture not found for user with _id ${req.body.user._id}`)
       }
     })
 }
