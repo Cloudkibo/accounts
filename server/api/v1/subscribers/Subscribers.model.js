@@ -61,7 +61,8 @@ const subscriberSchema = new Schema({
     type: Date
   },
   lastMessagedAt: {
-    type: Date
+    type: Date,
+    default: Date.now
   },
   userRefIdForCheckBox: {
     type: String
