@@ -54,7 +54,6 @@ exports.prepareMongoAggregateQuery = (body) => {
         }
       }
     })
-    console.log('body found', JSON.stringify(newBody))
     return newBody
   } else {
     let query = []

@@ -26,7 +26,6 @@ exports.findOneCompanyUserObjectUsingQueryPoppulate = (queryObject) => {
   if (queryObject.populate) {
     let populateBy = queryObject.populate
     delete queryObject.populate
-    console.log('queryObject', queryObject)
     return CompanyUserModel.findOne(queryObject)
       .populate(populateBy)
       .exec()
