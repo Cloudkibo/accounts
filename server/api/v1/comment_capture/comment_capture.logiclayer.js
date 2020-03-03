@@ -25,6 +25,7 @@ exports.prepareUpdatePostPayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
+  console.log('body got', JSON.stringify(body))
   if (body.length && body.length > 0) {
     let newBody = body
     body.forEach((obj, index) => {
@@ -39,6 +40,11 @@ exports.prepareMongoAggregateQuery = (body) => {
       if (obj.$match && obj.$match.companyId) {
         newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
       }
+      if (obj.$match && obj.$match.pageId && obj.$match.pageId.$in) {
+        obj.$match.pageId.$in.forEach((value, indexValue) => {
+          newBody[index].$match.pageId.$in[indexValue] = mongoose.Types.ObjectId(newBody[index].$match.pageId.$in[indexValue])
+        })
+      }
       if (obj.$match && obj.$match._id && !obj.$match._id.$exists) {
         if (obj.$match._id.$gt) {
           newBody[index].$match._id.$gt = mongoose.Types.ObjectId(newBody[index].$match._id.$gt)
@@ -48,6 +54,7 @@ exports.prepareMongoAggregateQuery = (body) => {
         }
       }
     })
+    console.log('body found', JSON.stringify(newBody))
     return newBody
   } else {
     let query = []
