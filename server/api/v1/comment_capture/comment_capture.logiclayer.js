@@ -25,7 +25,6 @@ exports.prepareUpdatePostPayload = (body) => {
 }
 
 exports.prepareMongoAggregateQuery = (body) => {
-  console.log('body got', JSON.stringify(body))
   if (body.length && body.length > 0) {
     let newBody = body
     body.forEach((obj, index) => {
