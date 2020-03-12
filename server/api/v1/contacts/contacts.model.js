@@ -9,7 +9,12 @@ let contacts = new Schema({
   datetime: { type: Date, default: Date.now },
   last_activity_time: { type: Date },
   hasChat: {type: Boolean, default: false},
-  isSubscribed: {type: Boolean, default: true}
+  isSubscribed: {type: Boolean, default: true},
+  assigned_to: { type: Schema.Types.Mixed },
+  is_assigned: {
+    type: Boolean,
+    default: false
+  }
 })
 
 module.exports = mongoose.model('contacts', contacts)
