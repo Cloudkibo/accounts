@@ -19,6 +19,11 @@ let contacts = new Schema({
   status: {
     type: String,
     default: 'new'
+  },
+  assigned_to: { type: Schema.Types.Mixed },
+  is_assigned: {
+    type: Boolean,
+    default: false
   }
 })
 
