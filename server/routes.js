@@ -4,6 +4,7 @@ const TAG = '/server/routes.js'
 const Raven = require('raven')
 const cors = require('cors')
 const controller = require('./api/v1/files/files.controller')
+const userController = require('./api/v1/user/user.controller')
 const corsOptions = require('./api/v1/files/utility')
 const multiparty = require('connect-multiparty')
 const multipartyMiddleware = multiparty()
@@ -41,7 +42,6 @@ module.exports = function (app) {
   app.use('/api/v1/custom_field_subscribers', require('./api/v1/custom_field_subscribers'))
   app.use('/api/kibodash', require('./api/v1/kiboDash'))
   app.use('/api/v1/contacts', require('./api/v1/contacts'))
-  app.use('/api/v1/sponsoredmessaging', require('./api/v1/sponsoredMessaging'))
   app.use('/api/v1/whatsAppContacts', require('./api/v1/whatsAppContacts'))
   app.use('/api/v1/api_ngp', require('./api/v1/api_ngp'))
   app.use('/api/v1/ipcountry', require('./api/v1/ipcountry'))
@@ -51,6 +51,9 @@ module.exports = function (app) {
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
+
+  app.options('/updatePicture', cors(corsOptions))
+  app.post('/updatePicture', cors(), multipartyMiddleware, userController.updatePicture)
 
   app.options('/uploadFile', cors(corsOptions))
   app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)

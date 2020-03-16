@@ -23,7 +23,7 @@ exports.create = function (req, res) {
     purpose: 'findOne',
     match: {
       name: {$regex: `^${req.body.name}$`, $options: 'i'},
-      companyId: req.body.companyId
+      $or: [{companyId: req.body.companyId}, {default: true}] 
     }
   }
   DataLayer.findCustomFieldsUsingQuery(query)
@@ -66,7 +66,7 @@ exports.update = function (req, res) {
     purpose: 'findOne',
     match: {
       name: {$regex: `^${req.body.updated.name}$`, $options: 'i'},
-      companyId: req.body.updated.companyId,
+      $or: [{companyId: req.body.updated.companyId}, {default: true}],
       _id: {$ne: req.body.match._id}
     }
   }
