@@ -7,14 +7,14 @@ let contacts = new Schema({
   number: {type: String},
   otherColumns: Schema.Types.Mixed,
   datetime: { type: Date, default: Date.now },
-  last_activity_time: { type: Date },
+  last_activity_time: { type: Date, default: Date.now },
   hasChat: {type: Boolean, default: false},
   isSubscribed: {type: Boolean, default: true},
   unreadCount: {type: Number, default: 0},
   messagesCount: {type: Number, default: 0},
   pendingResponse: {
     type: Boolean,
-    default: true
+    default: false
   },
   status: {
     type: String,
