@@ -62,9 +62,6 @@ exports.findOneAndUpdateUsingQuery = (query, updated, options) => {
 }
 
 exports.genericUpdateUserObject = (query, updated, options) => {
-  console.log('query got', query)
-  console.log('options got', options)
-  console.log('updated got', updated)
   return UserModel.update(query, updated, options)
     .exec()
 }
