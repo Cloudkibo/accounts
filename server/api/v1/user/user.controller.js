@@ -587,6 +587,7 @@ exports.genericUpdate = function (req, res) {
 
   dataLayer.genericUpdateUserObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
+      console.log('updated user', result)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
