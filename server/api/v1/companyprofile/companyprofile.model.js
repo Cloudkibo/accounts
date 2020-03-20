@@ -17,7 +17,8 @@ var CompanyprofileSchema = new Schema({
     default: 'MIX_CHAT'
   },
   twilio: Schema.Types.Mixed,
-  twilioWhatsApp: Schema.Types.Mixed
+  twilioWhatsApp: Schema.Types.Mixed,
+  saveBroadcastInChat: {type: Boolean, default: false}
 })
 
 var stripeOptions = config.stripeOptions
