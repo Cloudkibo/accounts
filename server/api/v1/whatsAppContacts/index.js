@@ -24,4 +24,8 @@ router.put('/update',
   auth.isAuthenticated(),
   controller.genericUpdate)
 
+router.delete('/deleteMany',
+  auth.isAuthenticated(),
+  controller.deleteMany)
+
 module.exports = router

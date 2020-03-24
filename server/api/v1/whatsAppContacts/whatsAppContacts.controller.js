@@ -39,3 +39,12 @@ exports.genericUpdate = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+exports.deleteMany = function (req, res) {
+  dataLayer.deleteMany(req.body)
+    .then(result => {
+      sendSuccessResponse(res, 200, result)
+    })
+    .catch(err => {
+      sendErrorResponse(res, 500, err)
+    })
+}

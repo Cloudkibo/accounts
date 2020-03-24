@@ -14,7 +14,11 @@ let contacts = new Schema({
   pendingResponse: {type: Boolean, default: true},
   is_assigned: {type: Boolean, default: false},
   assigned_to: { type: Schema.Types.Mixed },
-  unSubscribedBy: {type: String, default: 'subscriber'}
+  unSubscribedBy: {type: String, default: 'subscriber'},
+  lastMessagedAt: {
+    type: Date,
+    default: Date.now
+  }
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)

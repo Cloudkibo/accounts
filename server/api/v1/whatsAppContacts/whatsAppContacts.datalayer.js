@@ -16,3 +16,7 @@ exports.genericUpdate = (query, updated, options) => {
   return ContactModel.update(query, updated, options)
     .exec()
 }
+exports.deleteMany = (query) => {
+  return ContactModel.deleteMany(query)
+    .exec()
+}
