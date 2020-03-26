@@ -500,7 +500,7 @@ exports.enableDelete = function (req, res) {
       // let sendgrid = utility.getSendGridObject()
       let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
-        to: 'arveenkumar55@gmail.com',
+        to: req.user.email,
         from: 'support@cloudkibo.com',
         subject: 'KiboPush: Delete Confirmation',
         text: ' Delete Confirmation'
