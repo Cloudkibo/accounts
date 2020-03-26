@@ -506,6 +506,7 @@ exports.enableDelete = function (req, res) {
         text: ' Delete Confirmation'
       })
       email = logicLayer.setEnableDeleteEmailBody(email, emailText)
+      logger.serverLog(TAG, `email in user_controller${JSON.stringify(email)}`)
       sendgrid.send(email, function (err, json) {
         if (err) {
           return logger.serverLog(TAG,
@@ -520,6 +521,7 @@ exports.enableDelete = function (req, res) {
         text: 'Delete User Information',
         cc: 'jekram@cloudkibo.com'
       })
+      logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
       sendgrid.send(emailAdmin, function (err, json) {
         if (err) {
           return logger.serverLog(TAG,
@@ -527,8 +529,7 @@ exports.enableDelete = function (req, res) {
               err)}`)
         }
       })
-      emailAdmin = logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
-      sendSuccessResponse(res, 20, updatedUser)
+      sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
