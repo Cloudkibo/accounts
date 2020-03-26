@@ -495,12 +495,9 @@ exports.enableDelete = function (req, res) {
   let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}
   dataLayer.updateUserObject(req.user._id, deleteInformation, {new: true})
     .then(updatedUser => {
-      console.log('updatedUser', updatedUser)
       let deletionDate = moment(req.body.deletion_date).format('dddd, MMMM Do YYYY')
-      console.log('deletionDate', deletionDate)
       let emailText = logicLayer.getEnableDeleteEmailText(req.body, deletionDate)
       // let sendgrid = utility.getSendGridObject()
-      console.log('emailText', emailText)
       let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: 'arveenkumar55@gmail.com',
