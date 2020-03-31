@@ -258,3 +258,15 @@ function downloadVideo (data) {
     })
   })
 }
+
+exports.deleteFile = function (req, res) {
+  let file = path.resolve(__dirname, `../../../../broadcastFiles//userfiles/${req.params.id}`)
+  fs.unlink(file, (err) => {
+    if (err) {
+      sendErrorResponse(res, 500, `Failed to delete file ${err}`)
+    } else {
+      console.log(`${file} was deleted`)
+      sendSuccessResponse(res, 200, `${file} was succesfully deleted`)
+    }
+  })
+}
