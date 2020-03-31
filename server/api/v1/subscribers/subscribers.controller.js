@@ -32,6 +32,8 @@ exports.create = function (req, res) {
           .catch(err => {
             sendErrorResponse(res, 500, err)
           })
+      } else {
+        sendSuccessResponse(res, 200, subscribers[0])
       }
     })
     .catch(err => {
