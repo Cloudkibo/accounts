@@ -6,7 +6,6 @@ var stripeCustomer = require('./stripecustomer')
 var config = require('../../../config/environment/index')
 
 var CompanyprofileSchema = new Schema({
-
   companyName: String,
   companyDetail: String,
   ownerId: { type: Schema.ObjectId, ref: 'users' },
@@ -18,7 +17,7 @@ var CompanyprofileSchema = new Schema({
   },
   twilio: Schema.Types.Mixed,
   twilioWhatsApp: Schema.Types.Mixed,
-  saveBroadcastInChat: {type: Boolean, default: false}
+  saveAutomationMessages: { type: Boolean, default: false }
 })
 
 var stripeOptions = config.stripeOptions
