@@ -1,7 +1,9 @@
 const PageModel = require('../../v1/pages/Pages.model')
+const UserModel = require('../../v1/user/user.model')
 const needle = require('needle')
 const logger = require('../../../components/logger')
 const TAG = '/api/scripts/pages/controller.js'
+const async = require('async')
 
 exports.changeBroadcastApiLimit = function (req, res) {
   let limit = req.body.limit
@@ -94,4 +96,70 @@ function updateConnectedFacebook (data) {
       resolve(connectedFacebook)
     }
   })
+}
+
+exports.putTasks = (req, res) => {
+  const limit = req.body.limit
+  const skip = req.body.skip
+  UserModel.aggregate([
+    {$match: {facebookInfo: {$exists: true}}},
+    {$skip: skip},
+    {$limit: limit}
+  ]).exec()
+    .then(users => {
+      if (users.length > 0) {
+        async.each(users, _handleUser, function (err) {
+          if (err) {
+            logger.serverLog(TAG, err, 'error')
+            return res.status(500).json({status: 'failed'})
+          } else {
+            return res.status(200).json({status: 'success'})
+          }
+        })
+      } else {
+        return res.status(200).json({status: 'success', description: 'No user found'})
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, err, 'error')
+      return res.status(500).json({status: 'failed'})
+    })
+}
+
+function _handleUser (user, cb) {
+  needle(
+    'get',
+    `https://graph.facebook.com/v6.0/${user.facebookInfo.fbId}/accounts?limit=50&access_token=${user.facebookInfo.fbToken}`
+  )
+    .then(accounts => {
+      logger.serverLog(TAG, user.name)
+      async.each(accounts.body.data, function (item, next) {
+        _putTasks(item, user._id, next)
+      }, function (err) {
+        if (err) {
+          logger.serverLog(TAG, err, 'error')
+        }
+        cb()
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, err, 'error')
+      cb()
+    })
+}
+
+function _putTasks (item, userId, cb) {
+  PageModel.update(
+    {pageId: item.id, userId},
+    {tasks: item.tasks},
+    {multi: true}
+  ).exec()
+    .then(updated => {
+      logger.serverLog(TAG, 'updated successfully!')
+      cb()
+    })
+    .catch(err => {
+      logger.serverLog(TAG, err, 'error')
+      cb()
+    })
 }

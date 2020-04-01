@@ -6,5 +6,6 @@ router.post('/changeBroadcastApiLimit', controller.changeBroadcastApiLimit)
 router.post('/changeBroadcastApiLimit/:id', controller.changeBroadcastApiLimitForOnePage)
 
 router.post('/addConnectedFacebook', controller.addConnectedFacebook)
+router.post('/putTasks', controller.putTasks)
 
 module.exports = router
