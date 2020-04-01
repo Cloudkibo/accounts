@@ -33,7 +33,7 @@ exports.pagePayload = {
     },
     connected: {
       type: 'boolean',
-      required: true
+      required: false
     },
     userId: {
       type: 'string',
