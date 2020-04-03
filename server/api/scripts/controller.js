@@ -74,7 +74,7 @@ exports.normalizeSubscribersDataLastActivity = function (req, res) {
       if (subscribers.length > 0) {
         subscribers.forEach((subscriber, index) => {
           requests.push(new Promise((resolve, reject) => {
-            SubscribersDataLayer.updateSubscriberObject(subscriber._id, {$set: {'last_activity_time': Date.now}})
+            SubscribersDataLayer.updateSubscriberObject(subscriber._id, {$set: {'last_activity_time': subscriber.datetime}})
               .then(update => {
                 resolve('success')
               })
@@ -83,6 +83,8 @@ exports.normalizeSubscribersDataLastActivity = function (req, res) {
               })
           }))
         })
+      } else {
+        res.status(200).json({status: 'success', payload: 'No Subscriber remaining for normalize'})
       }
       Promise.all(requests)
         .then((responses) => res.status(200).json({status: 'success', payload: responses}))
