@@ -63,6 +63,34 @@ function randomDate (start, end) {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }
 
+exports.normalizeSubscribersDataLastActivity = function (req, res) {
+  logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
+  SubscribersModel.aggregate([
+    {$match: {last_activity_time: {$exists: false}}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}]).exec()
+    .then(subscribers => {
+      let requests = []
+      if (subscribers.length > 0) {
+        subscribers.forEach((subscriber, index) => {
+          requests.push(new Promise((resolve, reject) => {
+            SubscribersDataLayer.updateSubscriberObject(subscriber._id, {$set: {'last_activity_time': Date.now}})
+              .then(update => {
+                resolve('success')
+              })
+              .catch(err => {
+                reject(err)
+              })
+          }))
+        })
+      }
+      Promise.all(requests)
+        .then((responses) => res.status(200).json({status: 'success', payload: responses}))
+        .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
+    }).catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch subscribers ${err}`})
+    })
+}
 exports.normalizeSubscribersDatetimeNull = function (req, res) {
   logger.serverLog(TAG, 'Hit the scripts normalizeDatetime')
   SubscribersModel.aggregate([
