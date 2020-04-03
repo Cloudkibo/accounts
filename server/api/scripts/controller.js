@@ -83,12 +83,12 @@ exports.normalizeSubscribersDataLastActivity = function (req, res) {
               })
           }))
         })
+        Promise.all(requests)
+          .then((responses) => res.status(200).json({status: 'success', payload: responses}))
+          .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
       } else {
         res.status(200).json({status: 'success', payload: 'No Subscriber remaining for normalize'})
       }
-      Promise.all(requests)
-        .then((responses) => res.status(200).json({status: 'success', payload: responses}))
-        .catch((err) => res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`}))
     }).catch(err => {
       return res.status(500).json({status: 'failed', payload: `Failed to fetch subscribers ${err}`})
     })
