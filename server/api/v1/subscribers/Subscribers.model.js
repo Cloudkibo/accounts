@@ -86,7 +86,7 @@ const subscriberSchema = new Schema({
   usingChatBot: {
     type: Boolean,
     default: false
-  },
+  }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
