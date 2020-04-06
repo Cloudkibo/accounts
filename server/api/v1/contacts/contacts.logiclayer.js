@@ -2,7 +2,6 @@ let mongoose = require('mongoose')
 
 exports.validateAndConvert = (body) => {
   let newBody = body
-
   body.forEach((obj, index) => {
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
@@ -14,6 +13,9 @@ exports.validateAndConvert = (body) => {
       if (obj.$match.datetime.$lt) {
         newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
       }
+    }
+    if (obj.$match && obj.$match.listIds) {
+      newBody[index].$match.listIds = mongoose.Types.ObjectId(newBody[index].$match.listIds)
     }
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
