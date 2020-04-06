@@ -82,7 +82,11 @@ const subscriberSchema = new Schema({
   awaitingCommentReply: {type: Schema.Types.Mixed},
   waitingForUserInput: {type: Schema.Types.Mixed},
   completeInfo: {type: Boolean, default: true},
-  siteInfo: { type: Schema.Types.Mixed }
+  siteInfo: { type: Schema.Types.Mixed },
+  usingChatBot: {
+    type: Boolean,
+    default: false
+  },
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
