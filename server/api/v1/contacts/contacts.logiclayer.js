@@ -14,9 +14,9 @@ exports.validateAndConvert = (body) => {
         newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
       }
     }
-    if (obj.$match && obj.$match.listIds) {
-      newBody[index].$match.listIds = mongoose.Types.ObjectId(newBody[index].$match.listIds)
-    }
+    // if (obj.$match && obj.$match.listIds) {
+    //   newBody[index].$match.listIds = mongoose.Types.ObjectId(newBody[index].$match.listIds)
+    // }
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
         if (object.companyId) {

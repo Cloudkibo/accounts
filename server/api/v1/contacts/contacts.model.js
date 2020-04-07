@@ -24,7 +24,8 @@ let contacts = new Schema({
   is_assigned: {
     type: Boolean,
     default: false
-  }
+  },
+  listIds: [String]
 })
 
 module.exports = mongoose.model('contacts', contacts)
