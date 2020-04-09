@@ -58,6 +58,9 @@ module.exports = function (app) {
   app.options('/uploadFile', cors(corsOptions))
   app.post('/uploadFile', cors(), multipartyMiddleware, controller.index)
 
+  app.options('/deleteFile/:id', cors(corsOptions))
+  app.delete('/deleteFile/:id', cors(), multipartyMiddleware, controller.deleteFile)
+
   app.options('/api/v1/files/download/:id', cors(corsOptions))
   app.get('/api/v1/files/download/:id', cors(), controller.download)
 
