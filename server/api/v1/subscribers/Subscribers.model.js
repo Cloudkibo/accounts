@@ -58,7 +58,8 @@ const subscriberSchema = new Schema({
     default: 'new'
   },
   last_activity_time: {
-    type: Date
+    type: Date,
+    default: Date.now
   },
   lastMessagedAt: {
     type: Date,
