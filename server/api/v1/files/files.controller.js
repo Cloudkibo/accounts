@@ -40,11 +40,6 @@ exports.index = function (req, res) {
       if (err) {
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
-      // saving this file to send files with its original name
-      // it will be deleted once it is successfully sent
-      let readData = fs.createReadStream(dir + '/userfiles/' + serverPath)
-      let writeData = fs.createWriteStream(dir + '/userfiles/' + req.files.file.name)
-      readData.pipe(writeData)
       logger.serverLog(TAG,
         `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
           id: serverPath,
