@@ -160,6 +160,9 @@ exports.uploadForTemplate = function (req, res) {
                     url: req.body.url
                   }
                   sendSuccessResponse(res, 200, payload)
+                  if (req.body.deleteLater) {
+                    deleteFile(req.body.id)
+                  }
                 }
               })
           })
@@ -170,6 +173,18 @@ exports.uploadForTemplate = function (req, res) {
   } else {
     sendErrorResponse(res, 500, `Failed to upload`)
   }
+}
+
+function deleteFile (id) {
+  let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
+  // unlink file
+  fs.unlink(dir + '/userfiles/' + id, function (err) {
+    if (err) {
+      logger.serverLog(TAG, err, 'error')
+    } else {
+      logger.serverLog(TAG, 'file deleted successfully', 'debug')
+    }
+  })
 }
 
 exports.download = function (req, res) {
