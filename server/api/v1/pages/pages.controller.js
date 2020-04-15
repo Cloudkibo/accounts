@@ -191,30 +191,32 @@ exports.genericUpdate = function (req, res) {
       return res.status(500).json({status: 'failed', payload: err})
     })
 }
+
 exports.fetchWhitelistedDomains = function (req, res) {
-  if (req.user.facebookInfo && req.user.facebookInfo.fbToken) {
-    needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${req.user.facebookInfo.fbToken}`,
-      (err, resp) => {
-        if (err) {
-          sendErrorResponse(res, 500, '', 'Error in getting accessToken')
-        }
-        var accessToken = resp.body.access_token
-        needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
-          if (err) {
-            sendErrorResponse(res, 500, '', 'Error in getting whitelisted_domains')
-          }
-          var whitelistDomains = []
-          var body = JSON.parse(JSON.stringify(resp.body))
-          if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
-            whitelistDomains = body.data[0].whitelisted_domains
-          }
-          sendSuccessResponse(res, 200, whitelistDomains)
-        })
-      })
-  } else {
-    sendSuccessResponse(res, 200, [])
+  let facebookInfo = req.user.facebookInfo
+  if (req.user.role !== 'buyer') {
+    facebookInfo = req.user.buyerInfo.facebookInfo
   }
+  needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${facebookInfo.fbToken}`,
+    (err, resp) => {
+      if (err) {
+        sendErrorResponse(res, 500, '', 'Error in getting accessToken')
+      }
+      var accessToken = resp.body.access_token
+      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+        if (err) {
+          sendErrorResponse(res, 500, '', 'Error in getting whitelisted_domains')
+        }
+        var whitelistDomains = []
+        var body = JSON.parse(JSON.stringify(resp.body))
+        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
+          whitelistDomains = body.data[0].whitelisted_domains
+        }
+        sendSuccessResponse(res, 200, whitelistDomains)
+      })
+    })
 }
+
 exports.whitelistDomain = function (req, res) {
   dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
     .then(page => {

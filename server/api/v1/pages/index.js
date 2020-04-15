@@ -5,6 +5,7 @@ const validate = require('express-jsonschema').validate
 const validationSchema = require('./validationSchema')
 const controller = require('./pages.controller')
 const auth = require('./../../../auth/auth.service')
+const attachBuyerInfo = require('./../../global/utility').attachBuyerInfo
 
 router.get('/:_id',
   auth.isAuthenticated(),
@@ -57,16 +58,19 @@ router.post('/update',
 
 router.get('/whitelistDomain/:_id',
   auth.isAuthenticated(),
+  attachBuyerInfo(),
   controller.fetchWhitelistedDomains)
 
 router.post('/whitelistDomain',
   auth.isAuthenticated(),
   validate({body: validationSchema.whiteListPayload}),
+  attachBuyerInfo(),
   controller.whitelistDomain)
 
 router.post('/deleteWhitelistDomain',
   auth.isAuthenticated(),
   validate({body: validationSchema.deleteWhitelistDomain}),
+  attachBuyerInfo(),
   controller.deleteWhitelistDomain)
 
 router.get('/script/updatePageNames', controller.updatePageNames)
