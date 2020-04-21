@@ -344,7 +344,7 @@ exports.aggregateFetch = function (req, res) {
   logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
   dataLayer
-    .findPostObjectUsingAggregate(req.body)
+    .findPostObjectUsingAggregate(logicLayer.validateAndConvert(req.body))
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
