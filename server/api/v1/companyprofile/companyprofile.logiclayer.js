@@ -4,6 +4,7 @@ By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
 const config = require('./../../../config/environment')
+let mongoose = require('mongoose')
 
 exports.preparePostPayload = (body) => {
   return {
@@ -99,4 +100,14 @@ exports.prepareUpdatePostPayload = (body) => {
   if (body.includedKeywords) temp.includedKeywords = body.includedKeywords
   if (body.excludedKeywords) temp.excludedKeywords = body.excludedKeywords
   return temp
+}
+exports.validateAndConvert = (body) => {
+  let newBody = body
+
+  body.forEach((obj, index) => {
+    if (obj.$match && obj.$match._id) {
+      newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
+    }
+  })
+  return newBody
 }
