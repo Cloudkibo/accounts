@@ -692,6 +692,8 @@ exports.normalizePagePermissions = function (req, res) {
                 logger.serverLog(TAG, `Failed to check subscription_messaging permission status ${err}`, 'error')
               })
           )
+        } else {
+          requests2.push(PagesModel.updateOne({_id: page._id}, {gotPageSubscriptionPermission: false}))
         }
       })
       Promise.all(requests1)
