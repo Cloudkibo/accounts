@@ -440,7 +440,6 @@ function updatePlatform (user, callback) {
 }
 
 function setPagesField_isApproved_InInterval (pages, delay, res) {
-
   let i = -1
   let errorMessage = `permission must be granted`
   let count = 0
@@ -450,8 +449,7 @@ function setPagesField_isApproved_InInterval (pages, delay, res) {
       clearInterval(interval)
       console.log('sending response')
       res.status(200).json({status: 'success', payload: count})
-    }
-    else {
+    } else {
       if (pages[i].accessToken) {
         needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
           .then(response => {
@@ -663,5 +661,53 @@ exports.normalizeCommentCapture = function (req, res) {
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', payload: err})
+    })
+}
+
+exports.normalizePagePermissions = function (req, res) {
+  PagesModel.find({gotPageSubscriptionPermission: true})
+    .then(pages => {
+      let requests1 = []
+      let requests2 = []
+      pages.forEach((page, index) => {
+        if (page.accessToken) {
+          requests1.push(
+            needle('get', `https://graph.facebook.com/v6.0/me/messaging_feature_review?access_token=${page.accessToken}`)
+              .then(response => {
+                if (response.body.error) {
+                  logger.serverLog(TAG, `Failed to check subscription_messaging permission status ${response.body.error}`, 'error')
+                  requests2.push(PagesModel.updateOne({_id: page._id}, {gotPageSubscriptionPermission: false}))
+                } else {
+                  let data = response.body.data
+                  let smp = data.filter((d) => d.feature === 'subscription_messaging')
+                  logger.serverLog(TAG, `Updating gotPageSubscriptionPermission for page ${page._id} ${JSON.stringify(data)}`)
+                  if (smp.length > 0 && smp[0].status.toLowerCase() === 'approved') {
+                    requests2.push(PagesModel.updateOne({_id: page._id}, {gotPageSubscriptionPermission: true}))
+                  } else {
+                    requests2.push(PagesModel.updateOne({_id: page._id}, {gotPageSubscriptionPermission: false}))
+                  }
+                }
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Failed to check subscription_messaging permission status ${err}`, 'error')
+              })
+          )
+        } else {
+          requests2.push(PagesModel.updateOne({_id: page._id}, {gotPageSubscriptionPermission: false}))
+        }
+      })
+      Promise.all(requests1)
+        .then(() => {
+          Promise.all(requests2)
+            .then(results => {
+              return res.status(200).json({status: 'success', payload: `Updated ${results.length} records`})
+            })
+            .catch(err => {
+              return res.status(500).json({status: 'failed', payload: `Failed to update page ${err}`})
+            })
+        })
+        .catch(err => {
+          return res.status(500).json({status: 'failed', payload: `Failed to check subscription_messaging permission status ${err}`})
+        })
     })
 }
