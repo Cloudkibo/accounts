@@ -68,7 +68,7 @@ router.post('/', function (req, res, next) {
   //           if (!user) return res.json(404).json({message: 'User Not Found'})
   //           req.user = user
   //           if (user.facebookInfo) {
-  //             auth.fetchPages(`https://graph.facebook.com/v2.10/${
+  //             auth.fetchPages(`https://graph.facebook.com/v6.0/${
   //               user.facebookInfo.fbId}/accounts?access_token=${
   //               user.facebookInfo.fbToken}`, user)
   //           }
@@ -115,7 +115,7 @@ router.post('/', function (req, res, next) {
             if (!user) return res.json(404).json({message: 'User Not Found'})
             req.user = user
             if (user.facebookInfo) {
-              auth.fetchPages(`https://graph.facebook.com/v2.10/${
+              auth.fetchPages(`https://graph.facebook.com/v6.0/${
                 user.facebookInfo.fbId}/accounts?access_token=${
                 user.facebookInfo.fbToken}`, user)
             }

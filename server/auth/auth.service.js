@@ -182,7 +182,7 @@ function fetchPages (url, user, req, token) {
         logger.serverLog(TAG, `foreach ${JSON.stringify(item.name)}`)
         //  createMenuForPage(item)
         const options2 = {
-          url: `https://graph.facebook.com/v2.10/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
+          url: `https://graph.facebook.com/v6.0/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
           qs: {access_token: item.access_token},
           method: 'GET'
         }
@@ -211,7 +211,7 @@ function fetchPages (url, user, req, token) {
                         userId: user._id,
                         companyId: companyUser.companyId,
                         likes: fanCount.body.fan_count,
-                        pagePic: `https://graph.facebook.com/v2.10/${item.id}/picture`,
+                        pagePic: `https://graph.facebook.com/v6.0/${item.id}/picture`,
                         connected: false
                       }
                       if (fanCount.body.username) {
@@ -232,7 +232,7 @@ function fetchPages (url, user, req, token) {
                     } else {
                       let updatedPayload = {
                         likes: fanCount.body.fan_count,
-                        pagePic: `https://graph.facebook.com/v2.10/${item.id}/picture`,
+                        pagePic: `https://graph.facebook.com/v6.0/${item.id}/picture`,
                         accessToken: item.access_token
                       }
                       if (fanCount.body.username) {
