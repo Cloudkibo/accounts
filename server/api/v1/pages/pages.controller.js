@@ -86,7 +86,7 @@ exports.connect = function (req, res) {
           logger.serverLog(TAG, `Error at find default tags ${util.inspect(err)}`)
         })
       // initiate reach estimation
-      needle('post', `https://graph.facebook.com/v2.11/me/broadcast_reach_estimations?access_token=${page.pageAccessToken}`)
+      needle('post', `https://graph.facebook.com/v6.0/me/broadcast_reach_estimations?access_token=${page.pageAccessToken}`)
         .then(reachEstimation => {
           if (reachEstimation.reach_estimation_id) {
             dataLayer.updatePageObject(req.params._id, {connected: true, reachEstimationId: reachEstimation.reach_estimation_id})
@@ -197,13 +197,13 @@ exports.fetchWhitelistedDomains = function (req, res) {
   if (req.user.role !== 'buyer') {
     facebookInfo = req.user.buyerInfo.facebookInfo
   }
-  needle.get(`https://graph.facebook.com/v2.10/${req.params._id}?fields=access_token&access_token=${facebookInfo.fbToken}`,
+  needle.get(`https://graph.facebook.com/v6.0/${req.params._id}?fields=access_token&access_token=${facebookInfo.fbToken}`,
     (err, resp) => {
       if (err) {
         sendErrorResponse(res, 500, '', 'Error in getting accessToken')
       }
       var accessToken = resp.body.access_token
-      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+      needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
           sendErrorResponse(res, 500, '', 'Error in getting whitelisted_domains')
         }
@@ -222,7 +222,7 @@ exports.whitelistDomain = function (req, res) {
     .then(page => {
       logger.serverLog(TAG, `page in whitelistDomain ${page}`)
       var accessToken = page.accessToken
-      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+      needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
         }
         var body = JSON.parse(JSON.stringify(resp.body))
@@ -236,7 +236,7 @@ exports.whitelistDomain = function (req, res) {
         let whitelistedDomains = {
           whitelisted_domains: temp
         }
-        let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+        let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
         needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
           if (err) {
           }
@@ -257,7 +257,7 @@ exports.deleteWhitelistDomain = function (req, res) {
   dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
     .then(page => {
       var accessToken = page.accessToken
-      needle.get(`https://graph.facebook.com/v2.6/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
+      needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
         }
         var body = JSON.parse(JSON.stringify(resp.body))
@@ -276,7 +276,7 @@ exports.deleteWhitelistDomain = function (req, res) {
             whitelisted_domains: temp
           }
           if (temp.length < 1) {
-            let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+            let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
             needle.request('delete', requesturl, {'fields': ['whitelisted_domains']}, {json: true}, function (err, resp) {
               if (err) {
               }
@@ -288,7 +288,7 @@ exports.deleteWhitelistDomain = function (req, res) {
               }
             })
           } else {
-            let requesturl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`
+            let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
             needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
               if (err) {
               }
@@ -320,7 +320,7 @@ exports.updatePageNames = function (req, res) {
         logger.serverLog(TAG,
           `Page#${index} user access token - ${page.userId.facebookInfo.fbToken}`, 'info')
         needle.get(
-          `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+          `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp) => {
             console.log('Page', page.pageId)
             console.log('Page response from Graph API', resp.body)
@@ -339,7 +339,7 @@ exports.updatePageNames = function (req, res) {
                 `Page#${index} current Access Token ${JSON.stringify(
                   resp.body.access_token)}`, 'info')
               needle.get(
-                `https://graph.facebook.com/v2.10/${page.pageId}?fields=name&access_token=${resp.body.access_token}`,
+                `https://graph.facebook.com/v6.0/${page.pageId}?fields=name&access_token=${resp.body.access_token}`,
                 (err, pageResponse) => {
                   console.log('Page Info Respone', pageResponse.body)
                   if (err) {
@@ -383,7 +383,7 @@ exports.updatePageNames = function (req, res) {
 }
 
 function createTag (user, page, tag) {
-  needle('post', `https://graph.facebook.com/v2.11/me/custom_labels?accessToken=${page.pageAccessToken}`)
+  needle('post', `https://graph.facebook.com/v6.0/me/custom_labels?accessToken=${page.pageAccessToken}`)
     .then(label => {
       if (label.id) {
         let tagData = {

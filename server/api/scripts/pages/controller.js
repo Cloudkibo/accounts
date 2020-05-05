@@ -52,7 +52,7 @@ exports.addConnectedFacebook = function (req, res) {
           clearInterval(interval)
           return res.status(200).json({status: 'success', payload: 'Updated successfully!'})
         } else {
-          needle('get', `https://graph.facebook.com/v2.6/${pages[current].pageId}/subscribed_apps?access_token=${pages[current].accessToken}`)
+          needle('get', `https://graph.facebook.com/v6.0/${pages[current].pageId}/subscribed_apps?access_token=${pages[current].accessToken}`)
             .then(resp => {
               logger.serverLog(TAG, `response from facebook ${resp.body}`)
               updateConnectedFacebook(resp.body.data)

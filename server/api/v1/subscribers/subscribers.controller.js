@@ -115,12 +115,12 @@ exports.genericUpdate = function (req, res) {
 exports.updatePicture = function (req, res) {
   let subscriber = req.body.subscriber
   let accessToken = subscriber.pageId.accessToken
-  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken}`)
+  logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`)
   needle.get(
-    `https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken}`,
+    `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`,
     (err, resp) => {
       if (err) {
-        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${subscriber.senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
       }
       if (resp.body.profile_pic) {
         subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
@@ -150,12 +150,12 @@ exports.updateData = function (req, res) {
               pagesDataLayer.findOnePageObject(users[i].pageId)
                 .then(page => {
                   let accessToken = page.accessToken
-                  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken}`)
+                  logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken}`)
                   needle.get(
-                    `https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken}`,
+                    `https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken}`,
                     (err, resp) => {
                       if (err) {
-                        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+                        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
                       }
                       subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {})
                         .then(updated => {

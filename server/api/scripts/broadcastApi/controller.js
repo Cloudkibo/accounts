@@ -89,7 +89,7 @@ function createTag (list, callback) {
 }
 
 function validAccessToken (page) {
-  needle('get', `https://graph.facebook.com/v2.6/me?access_token=${page.accessToken}`)
+  needle('get', `https://graph.facebook.com/v6.0/me?access_token=${page.accessToken}`)
     .then(resp => {
       if (resp.body.error) {
         logger.serverLog(TAG, `Failed to validAccessToken ${resp.body.error}`)
@@ -119,7 +119,7 @@ exports.normalizeTagsData = function (req, res) {
                 if (page && validAccessToken(page)) {
                   createTagOnFacebook(tags, page.accessToken, 300, res)
                 } else if (page && !validAccessToken(page) && page.userId && page.userId.facebookInfo) {
-                  needle('get', `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
+                  needle('get', `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`)
                     .then(resp => {
                       let accessToken = resp.body.access_token
                       if (accessToken) {
@@ -160,7 +160,7 @@ function createTagOnFacebook (array, accessToken, delay, res) {
     } else {
       needle(
         'post',
-        `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${accessToken}`,
+        `https://graph.facebook.com/v6.0/me/custom_labels?access_token=${accessToken}`,
         {'name': array[current].tag}
       )
         .then(label => {
@@ -199,7 +199,7 @@ exports.normalizePagesData = function (req, res) {
 }
 
 function updatePage (page, callback) {
-  needle('post', `https://graph.facebook.com/v2.11/me/broadcast_reach_estimations?access_token=${page.accessToken}`)
+  needle('post', `https://graph.facebook.com/v6.0/me/broadcast_reach_estimations?access_token=${page.accessToken}`)
     .then(reachEstimation => {
       if (reachEstimation.body.error) {
         callback(reachEstimation.body.error)
@@ -346,7 +346,7 @@ function createDefaultTagUnsubscribe (pages, delay) {
     if (current === pages.length) {
       clearInterval(interval)
     } else {
-      needle('get', `https://graph.facebook.com/v2.11/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
+      needle('get', `https://graph.facebook.com/v6.0/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
         .then(labelResp => {
           if (labelResp.body.error) {
             logger.serverLog(TAG, `Failed to fetch labels ${JSON.stringify(labelResp.body.error)}`)
@@ -422,7 +422,7 @@ function createDefaultTags (pages, delay) {
     if (current === pages.length) {
       clearInterval(interval)
     } else {
-      needle('get', `https://graph.facebook.com/v2.11/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
+      needle('get', `https://graph.facebook.com/v6.0/me/custom_labels?fields=name&access_token=${pages[current].accessToken}&limit=50`)
         .then(labelResp => {
           if (labelResp.body.error) {
             logger.serverLog(TAG, `Failed to fetch labels ${JSON.stringify(labelResp.body.error)}`)
@@ -510,7 +510,7 @@ function createDefaultTag (label, page, fbid) {
 }
 
 function createDefaultTagFb (page, label) {
-  needle('post', `https://graph.facebook.com/v2.11/me/custom_labels?access_token=${page.accessToken}`, {'name': label})
+  needle('post', `https://graph.facebook.com/v6.0/me/custom_labels?access_token=${page.accessToken}`, {'name': label})
     .then(response => {
       if (response.body.error) {
         logger.serverLog(TAG, `Failed to create tag on facebook ${JSON.stringify(response.body.error)}`)
@@ -560,7 +560,7 @@ function associateDefaultTag (subscribers, tags, delay) {
     if (current === subscribers.length) {
       clearInterval(interval)
     } else {
-      needle('get', `https://graph.facebook.com/v2.11/${subscribers[current].senderId}/custom_labels?fields=name&access_token=${subscribers[current].pageId.accessToken}&limit=50`)
+      needle('get', `https://graph.facebook.com/v6.0/${subscribers[current].senderId}/custom_labels?fields=name&access_token=${subscribers[current].pageId.accessToken}&limit=50`)
         .then(response => {
           if (response.body.error) {
             logger.serverLog(TAG, `Failed to fetch assigned tags from facebook ${JSON.stringify(response.body.error)}`)
@@ -587,7 +587,7 @@ function associateDefaultTag (subscribers, tags, delay) {
 }
 
 function assignTag (fbid, subscriber) {
-  needle('post', `https://graph.facebook.com/v2.11/${fbid}/label?access_token=${subscriber.pageId.accessToken}`, {'user': subscriber.senderId})
+  needle('post', `https://graph.facebook.com/v6.0/${fbid}/label?access_token=${subscriber.pageId.accessToken}`, {'user': subscriber.senderId})
     .then(response => {
       if (response.body.error) {
         logger.serverLog(TAG, `Failed to assign tag ${JSON.stringify(response.body.error)}`)
@@ -630,7 +630,7 @@ function associateUnsubscribeTag (subscribers, res, delay) {
       TagsModel.findOne({tag: `_${subscribers[current].pageId.pageId}_unsubscribe`, companyId: subscribers[current].companyId}).exec()
         .then(tag => {
           if (tag) {
-            needle('post', `https://graph.facebook.com/v2.11/${tag.labelFbId}/label?access_token=${subscribers[current].pageId.accessToken}`, {'user': subscribers[current].senderId})
+            needle('post', `https://graph.facebook.com/v6.0/${tag.labelFbId}/label?access_token=${subscribers[current].pageId.accessToken}`, {'user': subscribers[current].senderId})
               .then(response => {
                 if (response.body.error) {
                   logger.serverLog(TAG, `Failed to assign unsubscribeTag ${JSON.stringify(response.body.error)}`)
