@@ -451,7 +451,7 @@ function setPagesField_isApproved_InInterval (pages, delay, res) {
       res.status(200).json({status: 'success', payload: count})
     } else {
       if (pages[i].accessToken) {
-        needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
+        needle('get', `https://graph.facebook.com/v6.0/me?access_token=${pages[i].accessToken}`)
           .then(response => {
             if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
               count++
@@ -478,7 +478,7 @@ function intervalForEach (array, delay, res) {
       return res.status(200).json({status: 'success', payload: data, count})
     } else {
       if (array[current].userId && array[current].userId.facebookInfo) {
-        needle('get', `https://graph.facebook.com/v2.10/${array[current].pageId}?fields=access_token&access_token=${array[current].userId.facebookInfo.fbToken}`)
+        needle('get', `https://graph.facebook.com/v6.0/${array[current].pageId}?fields=access_token&access_token=${array[current].userId.facebookInfo.fbToken}`)
           .then(resp => {
             if (!resp.body.error && !resp.body.access_token) {
               count++
@@ -521,7 +521,7 @@ exports.deleteUnapprovedPages = function (req, res) {
     .then(pages => {
       setPagesField_isApproved_InInterval(pages, 500, res)
       // for (let i = 0; i < pages.length; i++) {
-      //   needle('get', `https://graph.facebook.com/v2.6/me?access_token=${pages[i].accessToken}`)
+      //   needle('get', `https://graph.facebook.com/v6.0/me?access_token=${pages[i].accessToken}`)
       //     .then(response => {
       //       if (response.body && response.body.error && response.body.error.message.includes(errorMessage)) {
       //         PagesModel.update({_id: pages[i]._id}, {isApproved: false}).exec().then(updated => {

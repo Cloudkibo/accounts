@@ -51,7 +51,7 @@ exports.index = function (req, res) {
         pageDataLayer.findOnePageObject(pages[0])
           .then(page => {
             needle.get(
-              `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+              `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
               (err, resp2) => {
                 if (err) {
                   sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
@@ -74,7 +74,7 @@ exports.index = function (req, res) {
                     'method': 'POST',
                     'json': true,
                     'formData': messageData,
-                    'uri': 'https://graph.facebook.com/v2.6/me/message_attachments?access_token=' + pageAccessToken
+                    'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
                   },
                   function (err, resp) {
                     if (err) {
@@ -114,7 +114,7 @@ exports.uploadForTemplate = function (req, res) {
     pageDataLayer.findOnePageObject(req.body.pages[0])
       .then(page => {
         needle.get(
-          `https://graph.facebook.com/v2.10/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+          `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp2) => {
             if (err) {
               sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
@@ -140,7 +140,7 @@ exports.uploadForTemplate = function (req, res) {
                 'method': 'POST',
                 'json': true,
                 'formData': messageData,
-                'uri': 'https://graph.facebook.com/v2.6/me/message_attachments?access_token=' + pageAccessToken
+                'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
               },
               function (err, resp) {
                 if (err) {

@@ -612,12 +612,12 @@ exports.fetchGeneral = function (req, res) {
 exports.updatePicture = function (req, res) {
   let userFbId = req.body.user.facebookInfo.fbId
   let userFbToken = req.body.user.facebookInfo.fbToken
-  logger.serverLog(TAG, `https://graph.facebook.com/v2.10/${userFbId}/picture`)
+  logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${userFbId}/picture`)
   needle.get(
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
     (err, resp) => {
       if (err) {
-        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v2.10/${userFbId}/picture ${JSON.stringify(err)}`)
+        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture ${JSON.stringify(err)}`)
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
         dataLayer.genericUpdateUserObject({_id: req.body.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})

@@ -159,7 +159,7 @@ function _fetchAssignedTags (data, next) {
       clearInterval(interval)
       next()
     } else {
-      needle('get', `https://graph.facebook.com/v2.11/${data.subscribers[current].senderId}/custom_labels?fields=name&access_token=${data.subscribers[current].pageId.accessToken}&limit=50`)
+      needle('get', `https://graph.facebook.com/v6.0/${data.subscribers[current].senderId}/custom_labels?fields=name&access_token=${data.subscribers[current].pageId.accessToken}&limit=50`)
         .then(response => {
           if (response.body.error) {
             data.permissionErrors.push({error: response.body.error, subscriberId: data.subscribers[current]._id})
@@ -208,7 +208,7 @@ function _correctAssignedTags (data, next) {
       clearInterval(interval)
       next()
     } else {
-      needle('get', `https://graph.facebook.com/v2.11/${data.subscribers[current].senderId}/custom_labels?fields=name&access_token=${data.subscribers[current].pageId.accessToken}&limit=50`)
+      needle('get', `https://graph.facebook.com/v6.0/${data.subscribers[current].senderId}/custom_labels?fields=name&access_token=${data.subscribers[current].pageId.accessToken}&limit=50`)
         .then(response => {
           if (response.body.error) {
             current++
@@ -266,7 +266,7 @@ function _correctAssignedTags (data, next) {
 }
 
 function _assignTag (fbid, subscriber) {
-  needle('post', `https://graph.facebook.com/v2.11/${fbid}/label?access_token=${subscriber.pageId.accessToken}`, {'user': subscriber.senderId})
+  needle('post', `https://graph.facebook.com/v6.0/${fbid}/label?access_token=${subscriber.pageId.accessToken}`, {'user': subscriber.senderId})
     .then(response => {
       if (response.body.error) {
         logger.serverLog(TAG, `Failed to assign tag ${JSON.stringify(response.body.error)}`)
@@ -280,7 +280,7 @@ function _assignTag (fbid, subscriber) {
 }
 
 function _unassignTag (fbid, subscriber) {
-  needle('delete', `https://graph.facebook.com/v2.11/${fbid}/label?user=${subscriber.senderId}&access_token=${subscriber.pageId.accessToken}`)
+  needle('delete', `https://graph.facebook.com/v6.0/${fbid}/label?user=${subscriber.senderId}&access_token=${subscriber.pageId.accessToken}`)
     .then(response => {
       if (response.body.error) {
         logger.serverLog(TAG, `Failed to assign tag ${JSON.stringify(response.body.error)}`)
