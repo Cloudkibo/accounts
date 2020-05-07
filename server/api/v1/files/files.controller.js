@@ -40,6 +40,9 @@ exports.index = function (req, res) {
       if (err) {
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
+      let readData = fs.createReadStream(dir + '/userfiles/' + serverPath)
+      let writeData = fs.createWriteStream(dir + '/userfiles/' + req.files.file.name)
+      readData.pipe(writeData)
       logger.serverLog(TAG,
         `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
           id: serverPath,
@@ -57,7 +60,7 @@ exports.index = function (req, res) {
                   sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
                 }
                 let pageAccessToken = resp2.body.access_token
-                let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + serverPath)
+                let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.files.file.name)
                 const messageData = {
                   'message': JSON.stringify({
                     'attachment': {
