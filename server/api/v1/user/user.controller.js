@@ -19,6 +19,7 @@ const util = require('util')
 const _ = require('lodash')
 const moment = require('moment')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const { updateCompanyUsage } = require('../../global/billingPricing')
 
 exports.index = function (req, res) {
   logger.serverLog(TAG, 'Hit the find user controller index')
@@ -322,6 +323,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdUser => {
       user = createdUser
+      updateCompanyUsage(invitationToken.companyId, 'members', 1)
       logger.serverLog(TAG, `Created User : ${util.inspect(createdUser)}`)
       let companyUserData = {
         companyId: invitationToken.companyId,
