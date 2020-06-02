@@ -1,0 +1,605 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+UserSchema.path.pre.methods.authenticate	server/api/v1/user/user.model.js	/^  authenticate: function (plainText) {$/;"	m
+UserSchema.path.pre.methods.encryptPassword	server/api/v1/user/user.model.js	/^  encryptPassword: function (password) {$/;"	m
+_fetchTags	server/api/scripts/tags/controller.js	/^function _fetchTags (data, next) {$/;"	f
+_populateDefaultField	server/api/v1/custom_fields/scripts.js	/^function _populateDefaultField (defaultField) {$/;"	f
+createTag	server/api/scripts/broadcastApi/controller.js	/^function createTag (list, callback) {$/;"	f
+criteria1.default_individual	server/api/v1/plans/plans.controller.js	/^    criteria1 = {default_individual: true}$/;"	p
+criteria1.default_team	server/api/v1/plans/plans.controller.js	/^    criteria1 = {default_team: true}$/;"	p
+criteria2.default_individual	server/api/v1/plans/plans.controller.js	/^    criteria2 = {default_individual: false}$/;"	p
+criteria2.default_team	server/api/v1/plans/plans.controller.js	/^    criteria2 = {default_team: false}$/;"	p
+dateFilterAggregates.$gte	server/api/v1/kiboDash/kiboDash.controller.js	/^    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }$/;"	p
+exports.addAccountType	server/api/v1/user/user.controller.js	/^exports.addAccountType = function (req, res) {$/;"	f
+exports.addConnectedFacebook	server/api/scripts/pages/controller.js	/^exports.addConnectedFacebook = function (req, res) {$/;"	f
+exports.addFullName	server/api/scripts/controller.js	/^exports.addFullName = function (req, res) {$/;"	f
+exports.agentPayload.properties	server/api/v1/teams/validationSchema.js	/^  properties: {$/;"	p
+exports.agentPayload.type	server/api/v1/teams/validationSchema.js	/^  type: 'object',$/;"	p
+exports.aggregate	server/api/v1/menu/menu.controller.js	/^exports.aggregate = function (req, res) {$/;"	f
+exports.aggregate	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.aggregate = function (req, res) {$/;"	f
+exports.aggregate	server/api/v1/phone/phone.controller.js	/^exports.aggregate = function (req, res) {$/;"	f
+exports.aggregate	server/api/v1/webhooks/webhooks.controller.js	/^exports.aggregate = function (req, res) {$/;"	f
+exports.aggregateAgentsFetch	server/api/v1/teams/team_agents.controller.js	/^exports.aggregateAgentsFetch = function (req, res) {$/;"	f
+exports.aggregateFetch	server/api/v1/comment_capture/comments.controller.js	/^exports.aggregateFetch = function (req, res) {$/;"	f
+exports.aggregateFetch	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.aggregateFetch = function (req, res) {$/;"	f
+exports.aggregatePagesFetch	server/api/v1/teams/team_pages.controller.js	/^exports.aggregatePagesFetch = function (req, res) {$/;"	f
+exports.aggregateTeamFetch	server/api/v1/teams/teams.controller.js	/^exports.aggregateTeamFetch = function (req, res) {$/;"	f
+exports.authenticatePassword	server/api/v1/user/user.controller.js	/^exports.authenticatePassword = function (req, res) {$/;"	f
+exports.authenticatePassword.$schema	server/api/v1/user/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.authenticatePassword.properties	server/api/v1/user/validationSchema.js	/^  'properties': {$/;"	p
+exports.authenticatePassword.type	server/api/v1/user/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.cancel	server/api/v1/invitations/invitations.controller.js	/^exports.cancel = function (req, res) {$/;"	f
+exports.cancelDeletion	server/api/v1/user/user.controller.js	/^exports.cancelDeletion = function (req, res) {$/;"	f
+exports.changeBroadcastApiLimitForOnePage	server/api/scripts/pages/controller.js	/^exports.changeBroadcastApiLimitForOnePage = function (req, res) {$/;"	f
+exports.changeDefaultPlan.$schema	server/api/v1/plans/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.changeDefaultPlan.properties	server/api/v1/plans/validationSchema.js	/^  'properties': {$/;"	p
+exports.changeDefaultPlan.type	server/api/v1/plans/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.clientLog	server/components/logger.js	/^exports.clientLog = function (label, data) {$/;"	f
+exports.commentPayload.$schema	server/api/v1/comment_capture/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.commentPayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  'properties': {$/;"	p
+exports.commentPayload.type	server/api/v1/comment_capture/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.companyWiseData	server/api/v1/kiboDash/kiboDash.controller.js	/^exports.companyWiseData = function (req, res) {$/;"	f
+exports.companyWisePageCount.$group	server/api/v1/kiboDash/pipeline.js	/^  $group: {$/;"	p
+exports.countResults.$group	server/api/v1/kiboDash/pipeline.js	/^exports.countResults = { $group: { _id: null, count: { $sum: 1 } } }$/;"	p
+exports.create	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/custom_field_subscribers/custom_field_subscriber.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/custom_fields/custom_field.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/lists/lists.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/menu/menu.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/pages/pages.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/phone/phone.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/plans/plans.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/subscribers/subscribers.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/tags/tags.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/teams/team_agents.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/teams/team_pages.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/teams/teams.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create	server/api/v1/webhooks/webhooks.controller.js	/^exports.create = function (req, res) {$/;"	f
+exports.create.$schema	server/api/v1/contacts/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.create.$schema	server/api/v1/jsonAd/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.create.$schema	server/api/v1/whatsAppContacts/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.create.properties	server/api/v1/contacts/validationSchema.js	/^  'properties': {$/;"	p
+exports.create.properties	server/api/v1/jsonAd/validationSchema.js	/^  'properties': {$/;"	p
+exports.create.properties	server/api/v1/whatsAppContacts/validationSchema.js	/^  'properties': {$/;"	p
+exports.create.type	server/api/v1/contacts/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.create.type	server/api/v1/jsonAd/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.create.type	server/api/v1/whatsAppContacts/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createCompanyUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.createCompanyUsage = function (req, res) {$/;"	f
+exports.createLandingPageState	server/api/v1/landingPage/landingPage.controller.js	/^exports.createLandingPageState = function (req, res) {$/;"	f
+exports.createPayload.$schema	server/api/v1/contactLists/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.$schema	server/api/v1/custom_field_subscribers/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.$schema	server/api/v1/custom_fields/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.$schema	server/api/v1/messenger_code/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.$schema	server/api/v1/tags/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.$schema	server/api/v1/tags_subscriber/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.createPayload.properties	server/api/v1/contactLists/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/custom_field_subscribers/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/custom_fields/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/integrationUsage/validationSchema.js	/^  properties: {$/;"	p
+exports.createPayload.properties	server/api/v1/integrations/validationSchema.js	/^  properties: {$/;"	p
+exports.createPayload.properties	server/api/v1/landingPage/validationSchema.js	/^  properties: {$/;"	p
+exports.createPayload.properties	server/api/v1/messenger_code/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/overlayWidgets/validationSchema.js	/^  properties: {$/;"	p
+exports.createPayload.properties	server/api/v1/pageReferrals/validationSchema.js	/^  properties: {$/;"	p
+exports.createPayload.properties	server/api/v1/plans/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/tags/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.properties	server/api/v1/tags_subscriber/validationSchema.js	/^  'properties': {$/;"	p
+exports.createPayload.type	server/api/v1/contactLists/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/custom_field_subscribers/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/custom_fields/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/integrationUsage/validationSchema.js	/^  type: 'object',$/;"	p
+exports.createPayload.type	server/api/v1/integrations/validationSchema.js	/^  type: 'object',$/;"	p
+exports.createPayload.type	server/api/v1/landingPage/validationSchema.js	/^  type: 'object',$/;"	p
+exports.createPayload.type	server/api/v1/messenger_code/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/overlayWidgets/validationSchema.js	/^  type: 'object',$/;"	p
+exports.createPayload.type	server/api/v1/pageReferrals/validationSchema.js	/^  type: 'object',$/;"	p
+exports.createPayload.type	server/api/v1/plans/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/tags/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPayload.type	server/api/v1/tags_subscriber/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.createPlanUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.createPlanUsage = function (req, res) {$/;"	f
+exports.createStatePayload.properties	server/api/v1/landingPage/validationSchema.js	/^  properties: {$/;"	p
+exports.createStatePayload.type	server/api/v1/landingPage/validationSchema.js	/^  type: 'object',$/;"	p
+exports.dateFilterAutoposting	server/api/v1/kiboDash/pipeline.js	/^exports.dateFilterAutoposting = function (ISODateString) {$/;"	f
+exports.delete	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/comment_capture/comments.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/contactLists/contactLists.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/custom_field_subscribers/custom_field_subscriber.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/custom_fields/custom_field.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/integrationUsage/integrationUsage.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/integrations/integrations.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/landingPage/landingPage.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/lists/lists.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/menu/menu.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/messenger_code/m_code.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/overlayWidgets/overlayWidgets.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/pageReferrals/pageReferrals.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/pages/pages.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/phone/phone.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/plans/plans.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/subscribers/subscribers.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/tags/tags.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/tags_subscriber/tags_subscriber.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/teams/team_agents.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/teams/team_pages.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/teams/teams.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.delete	server/api/v1/webhooks/webhooks.controller.js	/^exports.delete = function (req, res) {$/;"	f
+exports.deleteAgent	server/api/v1/teams/team_agents.controller.js	/^exports.deleteAgent = function (req, res) {$/;"	f
+exports.deleteLandingPageState	server/api/v1/landingPage/landingPage.controller.js	/^exports.deleteLandingPageState = function (req, res) {$/;"	f
+exports.deleteLocally	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.deleteLocally = function (req, res) {$/;"	f
+exports.deleteMany	server/api/v1/whatsAppContacts/whatsAppContacts.controller.js	/^exports.deleteMany = function (req, res) {$/;"	f
+exports.deleteOne	server/api/v1/jsonAd/jsonAd.controller.js	/^exports.deleteOne = function (req, res) {$/;"	f
+exports.deletePayload.$schema	server/api/v1/contactLists/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.deletePayload.$schema	server/api/v1/custom_fields/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.deletePayload.properties	server/api/v1/contactLists/validationSchema.js	/^  'properties': {$/;"	p
+exports.deletePayload.properties	server/api/v1/custom_fields/validationSchema.js	/^  'properties': {$/;"	p
+exports.deletePayload.type	server/api/v1/contactLists/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.deletePayload.type	server/api/v1/custom_fields/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.deleteWhitelistDomain.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.deleteWhitelistDomain.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+exports.distinctAgentsFetch	server/api/v1/teams/team_agents.controller.js	/^exports.distinctAgentsFetch = function (req, res) {$/;"	f
+exports.distinctPagesFetch	server/api/v1/teams/team_pages.controller.js	/^exports.distinctPagesFetch = function (req, res) {$/;"	f
+exports.download.downloadVideo	server/api/v1/files/files.controller.js	/^function downloadVideo (data) {$/;"	f
+exports.downloadYouTubeVideo	server/api/v1/files/files.controller.js	/^exports.downloadYouTubeVideo = function (req, res) {$/;"	f
+exports.edit	server/api/v1/jsonAd/jsonAd.controller.js	/^exports.edit = function (req, res) {$/;"	f
+exports.edit.$schema	server/api/v1/jsonAd/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.edit.properties	server/api/v1/jsonAd/validationSchema.js	/^  'properties': {$/;"	p
+exports.edit.type	server/api/v1/jsonAd/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.enable	server/api/v1/api_ngp/api_ngp.controller.js	/^exports.enable = function (req, res) {$/;"	f
+exports.enableDelete	server/api/v1/user/user.controller.js	/^exports.enableDelete = function (req, res) {$/;"	f
+exports.enableGDPRDelete.properties	server/api/v1/user/validationSchema.js	/^  properties: {$/;"	p
+exports.enableGDPRDelete.type	server/api/v1/user/validationSchema.js	/^  type: 'object',$/;"	p
+exports.fbAppId	server/api/v1/user/user.controller.js	/^exports.fbAppId = function (req, res) {$/;"	f
+exports.fetchAll	server/api/v1/plans/plans.controller.js	/^exports.fetchAll = function (req, res) {$/;"	f
+exports.fetchGeneral	server/api/v1/user/user.controller.js	/^exports.fetchGeneral = function (req, res) {$/;"	f
+exports.fetchGeneralCompanyUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.fetchGeneralCompanyUsage = function (req, res) {$/;"	f
+exports.fetchGeneralPlanUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.fetchGeneralPlanUsage = function (req, res) {$/;"	f
+exports.filterCompanySubscribers.$project	server/api/v1/kiboDash/pipeline.js	/^  $project: {$/;"	p
+exports.filterConnectedPages.$match	server/api/v1/kiboDash/pipeline.js	/^exports.filterConnectedPages = { $match: { connected: true } }$/;"	p
+exports.filterDate.$match	server/api/v1/kiboDash/pipeline.js	/^  $match: {$/;"	p
+exports.filterPageSubscribers.$project	server/api/v1/kiboDash/pipeline.js	/^  $project: {$/;"	p
+exports.filterUserDate.$match	server/api/v1/kiboDash/pipeline.js	/^  $match: {$/;"	p
+exports.findOne	server/api/v1/tags/tags.controller.js	/^exports.findOne = function (req, res) {$/;"	f
+exports.findOne	server/api/v1/tags_subscriber/tags_subscriber.controller.js	/^exports.findOne = function (req, res) {$/;"	f
+exports.findOne	server/api/v1/teams/teams.controller.js	/^exports.findOne = function (req, res) {$/;"	f
+exports.forgotPasswordSchema.properties	server/api/v1/passwordresettoken/validationSchema.js	/^  properties: {$/;"	p
+exports.forgotPasswordSchema.type	server/api/v1/passwordresettoken/validationSchema.js	/^  type: 'object',$/;"	p
+exports.forgotWorkspaceName	server/api/v1/passwordresettoken/passwordresettoken.controller.js	/^exports.forgotWorkspaceName = function (req, res) {$/;"	f
+exports.genericAgentsFetch	server/api/v1/teams/team_agents.controller.js	/^exports.genericAgentsFetch = function (req, res) {$/;"	f
+exports.genericFetch	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.genericFetch = function (req, res) {$/;"	f
+exports.genericFetch	server/api/v1/comment_capture/comments.controller.js	/^exports.genericFetch = function (req, res) {$/;"	f
+exports.genericFetch	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.genericFetch = function (req, res) {$/;"	f
+exports.genericFetch	server/api/v1/plans/plans.controller.js	/^exports.genericFetch = function (req, res) {$/;"	f
+exports.genericFetchAll	server/api/v1/companyuser/companyuser.controller.js	/^exports.genericFetchAll = function (req, res) {$/;"	f
+exports.genericFind	server/api/v1/permissions/permissions.controller.js	/^exports.genericFind = function (req, res) {$/;"	f
+exports.genericPagesFetch	server/api/v1/teams/team_pages.controller.js	/^exports.genericPagesFetch = function (req, res) {$/;"	f
+exports.genericQueryPayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericQueryPayload.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericQueryPayload.properties	server/api/v1/teams/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericQueryPayload.type	server/api/v1/comment_capture/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericQueryPayload.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericQueryPayload.type	server/api/v1/teams/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericTeamFetch	server/api/v1/teams/teams.controller.js	/^exports.genericTeamFetch = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/comment_capture/comments.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/contacts/contacts.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/integrationUsage/integrationUsage.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/integrations/integrations.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/lists/lists.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/menu/menu.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/overlayWidgets/overlayWidgets.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/phone/phone.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/subscribers/subscribers.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/tags/tags.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/tags_subscriber/tags_subscriber.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/teams/team_agents.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/teams/team_pages.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/teams/teams.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/user/user.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdate	server/api/v1/whatsAppContacts/whatsAppContacts.controller.js	/^exports.genericUpdate = function (req, res) {$/;"	f
+exports.genericUpdateCompany	server/api/v1/featureUsage/usage.controller.js	/^exports.genericUpdateCompany = function (req, res) {$/;"	f
+exports.genericUpdatePayload.$schema	server/api/v1/comment_capture/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/contacts/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/featureUsage/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/integrationUsage/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/integrations/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/lists/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/menu/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/overlayWidgets/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/pages/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/phone/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/subscribers/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/tags/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/tags_subscriber/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/teams/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/user/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.$schema	server/api/v1/whatsAppContacts/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/contacts/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/featureUsage/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/integrationUsage/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/integrations/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/lists/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/menu/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/overlayWidgets/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/pages/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/phone/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/subscribers/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/tags/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/tags_subscriber/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/teams/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/user/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.properties	server/api/v1/whatsAppContacts/validationSchema.js	/^  'properties': {$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/comment_capture/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/contacts/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/featureUsage/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/integrationUsage/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/integrations/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/lists/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/menu/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/overlayWidgets/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/pages/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/phone/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/subscribers/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/tags/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/tags_subscriber/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/teams/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/user/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.genericUpdatePayload.type	server/api/v1/whatsAppContacts/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.getAll	server/api/v1/jsonAd/jsonAd.controller.js	/^exports.getAll = function (req, res) {$/;"	f
+exports.getAutomatedOptions	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.getAutomatedOptions = function (req, res) {$/;"	f
+exports.getFacebookAutoposting	server/api/v1/kiboDash/kiboDash.controller.js	/^exports.getFacebookAutoposting = function (req, res) {$/;"	f
+exports.getJsonAdResponse	server/api/v1/jsonAd/jsonAd.controller.js	/^exports.getJsonAdResponse = function (req, res) {$/;"	f
+exports.getKeys	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.getKeys = function (req, res) {$/;"	f
+exports.getTwitterAutoposting	server/api/v1/kiboDash/kiboDash.controller.js	/^exports.getTwitterAutoposting = function (req, res) {$/;"	f
+exports.getWordpressAutoposting	server/api/v1/kiboDash/kiboDash.controller.js	/^exports.getWordpressAutoposting = function (req, res) {$/;"	f
+exports.groupCompanyWiseAggregates.$group	server/api/v1/kiboDash/pipeline.js	/^  $group: {$/;"	p
+exports.index	server/api/scripts/gcp.controller.js	/^exports.index = function (req, res) {$/;"	f
+exports.indexPayload.$schema	server/api/v1/comment_capture/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.indexPayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  'properties': {$/;"	p
+exports.indexPayload.type	server/api/v1/comment_capture/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.invite	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.invite = function (req, res) {$/;"	f
+exports.invitePayload.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.invitePayload.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.invitePayload.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.isWhitelisted.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.isWhitelisted.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+exports.joinAutpostingMessages.$lookup	server/api/v1/kiboDash/pipeline.js	/^  $lookup:$/;"	p
+exports.joinCompany	server/api/v1/user/user.controller.js	/^exports.joinCompany = function (req, res) {$/;"	f
+exports.joinCompany.$schema	server/api/v1/user/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.joinCompany.properties	server/api/v1/user/validationSchema.js	/^  'properties': {$/;"	p
+exports.joinCompany.type	server/api/v1/user/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.joinCompanyWithSubscribers.$lookup	server/api/v1/kiboDash/pipeline.js	/^  $lookup:$/;"	p
+exports.joinPageWithSubscribers.$lookup	server/api/v1/kiboDash/pipeline.js	/^  $lookup:$/;"	p
+exports.listPayload.properties	server/api/v1/lists/validationSchema.js	/^  properties: {$/;"	p
+exports.listPayload.type	server/api/v1/lists/validationSchema.js	/^  type: 'object',$/;"	p
+exports.members	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.members = function (req, res) {$/;"	f
+exports.menuPayload.properties	server/api/v1/menu/validationSchema.js	/^  properties: {$/;"	p
+exports.menuPayload.type	server/api/v1/menu/validationSchema.js	/^  type: 'object',$/;"	p
+exports.migrateCompanies	server/api/v1/plans/plans.controller.js	/^exports.migrateCompanies = function (req, res) {$/;"	f
+exports.migrateCompanies.$schema	server/api/v1/plans/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.migrateCompanies.properties	server/api/v1/plans/validationSchema.js	/^  'properties': {$/;"	p
+exports.migrateCompanies.type	server/api/v1/plans/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.normalizeCommentUrls	server/api/scripts/controller.js	/^exports.normalizeCommentUrls = function (req, res) {$/;"	f
+exports.normalizeForFbDisconnect	server/api/scripts/controller.js	/^exports.normalizeForFbDisconnect = function (req, res) {$/;"	f
+exports.normalizeForPlatform	server/api/scripts/controller.js	/^exports.normalizeForPlatform = function (req, res) {$/;"	f
+exports.normalizeListsData	server/api/scripts/broadcastApi/controller.js	/^exports.normalizeListsData = function (req, res) {$/;"	f
+exports.normalizePageUrls	server/api/scripts/controller.js	/^exports.normalizePageUrls = function (req, res) {$/;"	f
+exports.normalizePersistentMenu	server/api/scripts/controller.js	/^exports.normalizePersistentMenu = function (req, res) {$/;"	f
+exports.normalizeReferralUrls	server/api/scripts/controller.js	/^exports.normalizeReferralUrls = function (req, res) {$/;"	f
+exports.normalizeSubscribersDataLastActivity	server/api/scripts/controller.js	/^exports.normalizeSubscribersDataLastActivity = function (req, res) {$/;"	f
+exports.normalizeSubscribersDatetime	server/api/scripts/controller.js	/^exports.normalizeSubscribersDatetime = function (req, res) {$/;"	f
+exports.normalizeSubscribersDatetimeNull	server/api/scripts/controller.js	/^exports.normalizeSubscribersDatetimeNull = function (req, res) {$/;"	f
+exports.pagePayload.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.pagePayload.properties	server/api/v1/teams/validationSchema.js	/^  properties: {$/;"	p
+exports.pagePayload.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+exports.pagePayload.type	server/api/v1/teams/validationSchema.js	/^  type: 'object',$/;"	p
+exports.pageUpdatePayload.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.pageUpdatePayload.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+exports.pageWiseAggregate.$group	server/api/v1/kiboDash/pipeline.js	/^  $group: {$/;"	p
+exports.pageWiseData	server/api/v1/kiboDash/kiboDash.controller.js	/^exports.pageWiseData = function (req, res) {$/;"	f
+exports.permissionPlanPayload.properties	server/api/v1/permissions_plan/validationSchema.js	/^  properties: {$/;"	p
+exports.permissionPlanPayload.type	server/api/v1/permissions_plan/validationSchema.js	/^  type: 'object',$/;"	p
+exports.phonePayload.properties	server/api/v1/phone/validationSchema.js	/^  properties: {$/;"	p
+exports.phonePayload.type	server/api/v1/phone/validationSchema.js	/^  type: 'object',$/;"	p
+exports.populateCompanyUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.populateCompanyUsage = function (req, res) {$/;"	f
+exports.populatePlanPermissions	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.populatePlanPermissions = function (req, res) {$/;"	f
+exports.populatePlanUsage	server/api/v1/featureUsage/usage.controller.js	/^exports.populatePlanUsage = function (req, res) {$/;"	f
+exports.postPayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  properties: {$/;"	p
+exports.postPayload.type	server/api/v1/comment_capture/validationSchema.js	/^  type: 'object',$/;"	p
+exports.putSessionDetails	server/api/scripts/controller.js	/^exports.putSessionDetails = function (req, res) {$/;"	f
+exports.query	server/api/v1/contactLists/contactLists.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/contacts/contacts.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/custom_field_subscribers/custom_field_subscriber.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/custom_fields/custom_field.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/integrationUsage/integrationUsage.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/integrations/integrations.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/jsonAd/jsonAd.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/landingPage/landingPage.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/lists/lists.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/menu/menu.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/messenger_code/m_code.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/overlayWidgets/overlayWidgets.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/pageReferrals/pageReferrals.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/phone/phone.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/tags/tags.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/tags_subscriber/tags_subscriber.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/webhooks/webhooks.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.query	server/api/v1/whatsAppContacts/whatsAppContacts.controller.js	/^exports.query = function (req, res) {$/;"	f
+exports.queryPayload.$schema	server/api/v1/contactLists/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/custom_field_subscribers/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/custom_fields/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/jsonAd/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/landingPage/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/lists/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/menu/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/messenger_code/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/pageReferrals/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/pages/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/phone/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/subscribers/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/tags/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.$schema	server/api/v1/tags_subscriber/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.queryPayload.properties	server/api/v1/contactLists/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/custom_field_subscribers/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/custom_fields/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/jsonAd/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/landingPage/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/lists/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/menu/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/messenger_code/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/pageReferrals/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/pages/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/phone/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/subscribers/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/tags/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.properties	server/api/v1/tags_subscriber/validationSchema.js	/^  'properties': {$/;"	p
+exports.queryPayload.type	server/api/v1/contactLists/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/custom_field_subscribers/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/custom_fields/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/jsonAd/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/landingPage/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/lists/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/menu/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/messenger_code/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/pageReferrals/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/pages/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/phone/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/subscribers/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/tags/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.queryPayload.type	server/api/v1/tags_subscriber/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.removeMember	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.removeMember = function (req, res) {$/;"	f
+exports.removeMember.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.removeMember.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.removeMember.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.resetPasswordSchema.properties	server/api/v1/passwordresettoken/validationSchema.js	/^  properties: {$/;"	p
+exports.resetPasswordSchema.type	server/api/v1/passwordresettoken/validationSchema.js	/^  type: 'object',$/;"	p
+exports.save	server/api/v1/api_ngp/api_ngp.controller.js	/^exports.save = function (req, res) {$/;"	f
+exports.scriptNormalizeAnalytics	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.scriptNormalizeAnalytics = function (req, res) {$/;"	f
+exports.selectAutoPostingFields.$project	server/api/v1/kiboDash/pipeline.js	/^  $project: {$/;"	p
+exports.selectCompanyFields.$project	server/api/v1/kiboDash/pipeline.js	/^  $project: {$/;"	p
+exports.selectFacebookType.$match	server/api/v1/kiboDash/pipeline.js	/^exports.selectFacebookType = { $match: { subscriptionType: 'facebook' } }$/;"	p
+exports.selectPageFields.$project	server/api/v1/kiboDash/pipeline.js	/^  $project: {$/;"	p
+exports.selectTwitterType.$match	server/api/v1/kiboDash/pipeline.js	/^exports.selectTwitterType = { $match: { subscriptionType: 'twitter' } }$/;"	p
+exports.selectWordpressType.$match	server/api/v1/kiboDash/pipeline.js	/^exports.selectWordpressType = { $match: { subscriptionType: 'wordpress' } }$/;"	p
+exports.sendToClient	server/config/socketio.js	/^exports.sendToClient = function (data) {$/;"	f
+exports.setCard	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.setCard = function (req, res) {$/;"	f
+exports.setCard.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.setCard.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.setCard.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.subscriberPayload.properties	server/api/v1/subscribers/validationSchema.js	/^  properties: {$/;"	p
+exports.subscriberPayload.type	server/api/v1/subscribers/validationSchema.js	/^  type: 'object',$/;"	p
+exports.teamPayload.properties	server/api/v1/teams/validationSchema.js	/^  properties: {$/;"	p
+exports.teamPayload.type	server/api/v1/teams/validationSchema.js	/^  type: 'object',$/;"	p
+exports.teamUpdatePayload.properties	server/api/v1/teams/validationSchema.js	/^  properties: {$/;"	p
+exports.teamUpdatePayload.type	server/api/v1/teams/validationSchema.js	/^  type: 'object',$/;"	p
+exports.testPayload.properties	server/api/v1/test/validationSchema.js	/^  properties: {$/;"	p
+exports.testPayload.type	server/api/v1/test/validationSchema.js	/^  type: 'object',$/;"	p
+exports.update	server/api/v1/comment_capture/comment_capture.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/contactLists/contactLists.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/custom_field_subscribers/custom_field_subscriber.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/custom_fields/custom_field.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/featureUsage/usage.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/landingPage/landingPage.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/lists/lists.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/menu/menu.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/messenger_code/m_code.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/pageReferrals/pageReferrals.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/pages/pages.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/permissions/permissions.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/permissions_plan/permissions_plan.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/phone/phone.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/plans/plans.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/subscribers/subscribers.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/teams/teams.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/user/user.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update	server/api/v1/webhooks/webhooks.controller.js	/^exports.update = function (req, res) {$/;"	f
+exports.update.updatePayload.title	server/api/v1/comment_capture/comment_capture.controller.js	/^    title: req.body.newPayload.title,$/;"	p
+exports.updateAutomatedOptions	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.updateAutomatedOptions = function (req, res) {$/;"	f
+exports.updateAutomatedOptions.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updateAutomatedOptions.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.updateAutomatedOptions.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updateChecks	server/api/v1/user/user.controller.js	/^exports.updateChecks = function (req, res) {$/;"	f
+exports.updateGreetingText.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.updateGreetingText.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateLandingPageState	server/api/v1/landingPage/landingPage.controller.js	/^exports.updateLandingPageState = function (req, res) {$/;"	f
+exports.updateListPayload.properties	server/api/v1/lists/validationSchema.js	/^  properties: {$/;"	p
+exports.updateListPayload.type	server/api/v1/lists/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateMode.$schema	server/api/v1/user/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updateMode.properties	server/api/v1/user/validationSchema.js	/^  'properties': {$/;"	p
+exports.updateMode.type	server/api/v1/user/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updatePasswordSchema.properties	server/api/v1/passwordresettoken/validationSchema.js	/^  properties: {$/;"	p
+exports.updatePasswordSchema.type	server/api/v1/passwordresettoken/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updatePayload.$schema	server/api/v1/contactLists/validationSchema.js	/^    '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updatePayload.$schema	server/api/v1/custom_field_subscribers/validationSchema.js	/^    '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updatePayload.$schema	server/api/v1/custom_fields/validationSchema.js	/^    '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updatePayload.$schema	server/api/v1/messenger_code/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updatePayload.properties	server/api/v1/contactLists/validationSchema.js	/^    'properties': {$/;"	p
+exports.updatePayload.properties	server/api/v1/custom_field_subscribers/validationSchema.js	/^    'properties': {$/;"	p
+exports.updatePayload.properties	server/api/v1/custom_fields/validationSchema.js	/^    'properties': {$/;"	p
+exports.updatePayload.properties	server/api/v1/messenger_code/validationSchema.js	/^  'properties': {$/;"	p
+exports.updatePayload.properties	server/api/v1/plans/validationSchema.js	/^  'properties': {$/;"	p
+exports.updatePayload.type	server/api/v1/contactLists/validationSchema.js	/^    'type': 'object',$/;"	p
+exports.updatePayload.type	server/api/v1/custom_field_subscribers/validationSchema.js	/^    'type': 'object',$/;"	p
+exports.updatePayload.type	server/api/v1/custom_fields/validationSchema.js	/^    'type': 'object',$/;"	p
+exports.updatePayload.type	server/api/v1/messenger_code/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updatePayload.type	server/api/v1/plans/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updatePermissionPlanPayload.properties	server/api/v1/permissions_plan/validationSchema.js	/^  properties: {$/;"	p
+exports.updatePermissionPlanPayload.type	server/api/v1/permissions_plan/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updatePermissions	server/api/v1/permissions/permissions.controller.js	/^exports.updatePermissions = function (req, res) {$/;"	f
+exports.updatePlan	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.updatePlan = function (req, res) {$/;"	f
+exports.updatePlan.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updatePlan.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.updatePlan.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updatePostPayload.properties	server/api/v1/comment_capture/validationSchema.js	/^  properties: {$/;"	p
+exports.updatePostPayload.properties	server/api/v1/featureUsage/validationSchema.js	/^  properties: {$/;"	p
+exports.updatePostPayload.type	server/api/v1/comment_capture/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updatePostPayload.type	server/api/v1/featureUsage/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateRole	server/api/v1/companyprofile/companyprofile.controller.js	/^exports.updateRole = function (req, res) {$/;"	f
+exports.updateRole.$schema	server/api/v1/companyprofile/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updateRole.properties	server/api/v1/companyprofile/validationSchema.js	/^  'properties': {$/;"	p
+exports.updateRole.type	server/api/v1/companyprofile/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updateRolePermissionPayload.properties	server/api/v1/permissions/validationSchema.js	/^  properties: {$/;"	p
+exports.updateRolePermissionPayload.type	server/api/v1/permissions/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateSkipConnect	server/api/v1/user/user.controller.js	/^exports.updateSkipConnect = function (req, res) {$/;"	f
+exports.updateSubscriberPayload.properties	server/api/v1/subscribers/validationSchema.js	/^  properties: {$/;"	p
+exports.updateSubscriberPayload.type	server/api/v1/subscribers/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateUserPayload.properties	server/api/v1/user/validationSchema.js	/^  properties: {$/;"	p
+exports.updateUserPayload.type	server/api/v1/user/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateUserPermissionsPayload.properties	server/api/v1/permissions/validationSchema.js	/^  properties: {$/;"	p
+exports.updateUserPermissionsPayload.type	server/api/v1/permissions/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updateWebhookPayload.$schema	server/api/v1/webhooks/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.updateWebhookPayload.properties	server/api/v1/webhooks/validationSchema.js	/^  'properties': {$/;"	p
+exports.updateWebhookPayload.type	server/api/v1/webhooks/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.updatedMenuPayload.properties	server/api/v1/menu/validationSchema.js	/^  properties: {$/;"	p
+exports.updatedMenuPayload.type	server/api/v1/menu/validationSchema.js	/^  type: 'object',$/;"	p
+exports.updatedphonePayload.properties	server/api/v1/phone/validationSchema.js	/^  properties: {$/;"	p
+exports.updatedphonePayload.type	server/api/v1/phone/validationSchema.js	/^  type: 'object',$/;"	p
+exports.userPayload.properties	server/api/v1/user/validationSchema.js	/^  properties: {$/;"	p
+exports.userPayload.type	server/api/v1/user/validationSchema.js	/^  type: 'object',$/;"	p
+exports.verify	server/api/v1/passwordresettoken/passwordresettoken.controller.js	/^exports.verify = function (req, res) {$/;"	f
+exports.webhookPayload.$schema	server/api/v1/webhooks/validationSchema.js	/^  '$schema': 'http:\/\/json-schema.org\/draft-04\/schema#',$/;"	p
+exports.webhookPayload.properties	server/api/v1/webhooks/validationSchema.js	/^  'properties': {$/;"	p
+exports.webhookPayload.type	server/api/v1/webhooks/validationSchema.js	/^  'type': 'object',$/;"	p
+exports.whiteListPayload.properties	server/api/v1/pages/validationSchema.js	/^  properties: {$/;"	p
+exports.whiteListPayload.type	server/api/v1/pages/validationSchema.js	/^  type: 'object',$/;"	p
+headers.content-type	server/api/scripts/apiCaller.js	/^      'content-type': 'application\/json',$/;"	p
+headers.is_kibo_product	server/api/scripts/apiCaller.js	/^      'is_kibo_product': true$/;"	p
+insertPageId	server/api/scripts/broadcastApi/controller.js	/^function insertPageId (tag, callback) {$/;"	f
+isAuthorizedWebHookTrigger.isAuthorizedSuperUser	server/auth/auth.service.js	/^function isAuthorizedSuperUser () {$/;"	f
+isAuthorizedWebHookTrigger.setTokenCookie	server/auth/auth.service.js	/^function setTokenCookie (req, res) {$/;"	f
+isAuthorizedWebHookTrigger.signToken	server/auth/auth.service.js	/^function signToken (id) {$/;"	f
+let.$match	server/api/v1/kiboDash/kiboDash.controller.js	/^  let dateFilterAggregates = {$match: {}}$/;"	p
+let.$set	server/api/v1/plans/plans.controller.js	/^  let updated = {$set: {name: req.body.name,$/;"	p
+let.Authorization	server/api/scripts/apiCaller.js	/^      'Authorization': token$/;"	p
+let.amount	server/api/v1/plans/plans.logiclayer.js	/^    amount: body.amount * 100,$/;"	p
+let.apiPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    apiPermission: false$/;"	p
+let.apiPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    apiPermission: true$/;"	p
+let.autopostingPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    autopostingPermission: true,$/;"	p
+let.billingPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    billingPermission: false,$/;"	p
+let.billingPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    billingPermission: true,$/;"	p
+let.broadcastPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    broadcastPermission: true,$/;"	p
+let.ca	server/config/setup.js	/^    ca: '',$/;"	p
+let.cert	server/config/setup.js	/^    cert: ''$/;"	p
+let.companyId	server/api/v1/featureUsage/usage.logiclayer.js	/^    companyId: company._id,$/;"	p
+let.companyPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    companyPermission: true,$/;"	p
+let.companyUpdatePermission	server/api/v1/permissions/permissions.logiclayer.js	/^    companyUpdatePermission: false,$/;"	p
+let.companyUpdatePermission	server/api/v1/permissions/permissions.logiclayer.js	/^    companyUpdatePermission: true,$/;"	p
+let.content-type	server/api/scripts/apiCaller.js	/^      'content-type': 'application\/json',$/;"	p
+let.customerMatchingPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    customerMatchingPermission: false,$/;"	p
+let.customerMatchingPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    customerMatchingPermission: true,$/;"	p
+let.dashboardPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    dashboardPermission: true,$/;"	p
+let.deleteAdminPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    deleteAdminPermission: false,$/;"	p
+let.deleteAdminPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    deleteAdminPermission: true,$/;"	p
+let.deleteAgentPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    deleteAgentPermission: false,$/;"	p
+let.deleteAgentPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    deleteAgentPermission: true,$/;"	p
+let.delete_option	server/api/v1/user/user.controller.js	/^  let deleteInformation = {delete_option: req.body.delete_option, deletion_date: req.body.deletion_date}$/;"	p
+let.domain_email	server/api/v1/companyprofile/companyprofile.controller.js	/^  let query = {domain_email: req.body.domain_email}$/;"	p
+let.downgradeService	server/api/v1/permissions/permissions.logiclayer.js	/^    downgradeService: false,$/;"	p
+let.downgradeService	server/api/v1/permissions/permissions.logiclayer.js	/^    downgradeService: true,$/;"	p
+let.invitationsPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    invitationsPermission: false,$/;"	p
+let.invitationsPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    invitationsPermission: true,$/;"	p
+let.inviteAdminPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    inviteAdminPermission: false,$/;"	p
+let.inviteAdminPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    inviteAdminPermission: true,$/;"	p
+let.inviteAgentPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    inviteAgentPermission: false,$/;"	p
+let.inviteAgentPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    inviteAgentPermission: true,$/;"	p
+let.key	server/config/setup.js	/^    key: '',$/;"	p
+let.livechatPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    livechatPermission: true,$/;"	p
+let.match	server/api/v1/custom_fields/scripts.js	/^    match: {$/;"	p
+let.match	server/api/v1/kiboDash/datalayer.js	/^    match: match.$match$/;"	p
+let.membersPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    membersPermission: true,$/;"	p
+let.menuPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    menuPermission: true,$/;"	p
+let.multi	server/api/v1/plans/plans.controller.js	/^  let options = {multi: true}$/;"	p
+let.name	server/api/v1/plans/plans.logiclayer.js	/^    name: body.name,$/;"	p
+let.pagesAccessPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    pagesAccessPermission: true,$/;"	p
+let.pagesPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    pagesPermission: false,$/;"	p
+let.pagesPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    pagesPermission: true,$/;"	p
+let.planId	server/api/v1/featureUsage/usage.logiclayer.js	/^    planId: plan._id,$/;"	p
+let.planId	server/api/v1/plans/plans.controller.js	/^  let updated = {planId: req.body.to.id}$/;"	p
+let.pollsPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    pollsPermission: true,$/;"	p
+let.promoteToAdminPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    promoteToAdminPermission: true,$/;"	p
+let.purpose	server/api/v1/custom_fields/scripts.js	/^    purpose: 'findOne',$/;"	p
+let.purpose	server/api/v1/kiboDash/datalayer.js	/^    purpose: 'aggregate'$/;"	p
+let.purpose	server/api/v1/kiboDash/datalayer.js	/^    purpose: 'aggregate',$/;"	p
+let.role	server/api/v1/permissions/permissions.logiclayer.js	/^    role: 'admin',$/;"	p
+let.role	server/api/v1/permissions/permissions.logiclayer.js	/^    role: 'agent',$/;"	p
+let.role	server/api/v1/permissions/permissions.logiclayer.js	/^    role: 'buyer',$/;"	p
+let.subscriberPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    subscriberPermission: true,$/;"	p
+let.surveyPermission	server/api/v1/permissions/permissions.logiclayer.js	/^    surveyPermission: true,$/;"	p
+let.tagId	server/api/v1/tags_subscriber/tags_subscriber.logiclayer.js	/^    tagId: body.tagId,$/;"	p
+let.terminateService	server/api/v1/permissions/permissions.logiclayer.js	/^    terminateService: false,$/;"	p
+let.terminateService	server/api/v1/permissions/permissions.logiclayer.js	/^    terminateService: true,$/;"	p
+let.updateRolePermission	server/api/v1/permissions/permissions.logiclayer.js	/^    updateRolePermission: false,$/;"	p
+let.updateRolePermission	server/api/v1/permissions/permissions.logiclayer.js	/^    updateRolePermission: true,$/;"	p
+let.upgradeService	server/api/v1/permissions/permissions.logiclayer.js	/^    upgradeService: false,$/;"	p
+let.upgradeService	server/api/v1/permissions/permissions.logiclayer.js	/^    upgradeService: true,$/;"	p
+logger.serverLog._id	server/api/v1/tags/tags.controller.js	/^  let query = { _id: req.params.id ? req.params.id : '' }$/;"	p
+logger.serverLog._id	server/api/v1/tags_subscriber/tags_subscriber.controller.js	/^  let query = { _id: req.params.id ? req.params.id : '' }$/;"	p
+logger.serverLog.delete_option	server/api/v1/user/user.controller.js	/^  let deleteInformation = {delete_option: 'NONE', deletion_date: ''}$/;"	p
+logger.serverLog.deletion_date	server/api/v1/user/user.controller.js	/^  let deleteInformation = {delete_option: 'NONE', deletion_date: ''}$/;"	p
+logger.serverLog.domain_email	server/api/v1/companyprofile/companyprofile.controller.js	/^  let companyUserQuery = {domain_email: req.user.domain_email, populate: 'companyId'}$/;"	p
+logger.serverLog.domain_email	server/api/v1/companyprofile/companyprofile.controller.js	/^  let query = {domain_email: req.user.domain_email}$/;"	p
+logger.serverLog.match	server/api/v1/custom_fields/custom_field.controller.js	/^    match: {$/;"	p
+logger.serverLog.planId	server/api/v1/plans/plans.controller.js	/^  let query = {planId: req.body.from.id}$/;"	p
+logger.serverLog.purpose	server/api/v1/custom_fields/custom_field.controller.js	/^    purpose: 'findOne',$/;"	p
+logger.serverLog.unique_ID	server/api/v1/plans/plans.controller.js	/^  let query = {unique_ID: req.body.unique_id}$/;"	p
+loopOnSubMenu	server/api/scripts/controller.js	/^function loopOnSubMenu (submenus) {$/;"	f
+module.exports	server/api/v1/companyprofile/stripeEvents.js	/^module.exports = function (req, res, next) {$/;"	f
+module.exports.port	server/config/environment/production.js	/^  port: process.env.PORT || 3001,$/;"	p
+onConnect	server/config/socketio.js	/^function onConnect (socket) {$/;"	f
+options.ca	server/config/setup.js	/^        ca: fs.readFileSync('\/root\/certs\/accounts.ca-bundle'),$/;"	p
+populateSubmittedState	server/api/v1/landingPage/landingPage.controller.js	/^function populateSubmittedState (result) {$/;"	f
+randomDate	server/api/scripts/controller.js	/^function randomDate (start, end) {$/;"	f
+redirect	views/pages/change_password.html	/^  function redirect()$/;"	f
+redirect	views/pages/change_password_failed.html	/^    function redirect()$/;"	f
+schema.methods.cancelStripe	server/api/v1/companyprofile/stripecustomer.js	/^  schema.methods.cancelStripe = function (cb) {$/;"	f
+schema.methods.setPlan	server/api/v1/companyprofile/stripecustomer.js	/^  schema.methods.setPlan = function (plan, stripeToken, cb) {$/;"	f
+schema.methods.setPlan.createSubscription	server/api/v1/companyprofile/stripecustomer.js	/^    var createSubscription = function () {$/;"	f
+schema.methods.updateStripeEmail	server/api/v1/companyprofile/stripecustomer.js	/^  schema.methods.updateStripeEmail = function (cb) {$/;"	f
+schema.statics.getPlans	server/api/v1/companyprofile/stripecustomer.js	/^  schema.statics.getPlans = function () {$/;"	f
+setTokenCookie.const.headers	server/auth/auth.service.js	/^    headers: {$/;"	p
+setTokenCookie.fetchPages	server/auth/auth.service.js	/^function fetchPages (url, user, req, token) {$/;"	f
+updateCards	server/api/scripts/controller.js	/^function updateCards (cards) {$/;"	f
+updatePayload	server/api/scripts/controller.js	/^function updatePayload (payloads) {$/;"	f
+updatePaylodForComments	server/api/scripts/controller.js	/^function updatePaylodForComments (payloads) {$/;"	f
+updatePaylodForMenu	server/api/scripts/controller.js	/^function updatePaylodForMenu (jsonStructures) {$/;"	f
+updatePlatform	server/api/scripts/controller.js	/^function updatePlatform (user, callback) {$/;"	f
+updateSubscriber	server/api/scripts/controller.js	/^function updateSubscriber (session, callback) {$/;"	f
+updateUser	server/api/scripts/controller.js	/^function updateUser (user, callback) {$/;"	f
+use strict.exports.domain	server/config/environment/development.js	/^  domain: `${process.env.DOMAIN || 'http:\/\/localhost:3024'}`,$/;"	p
+use strict.exports.domain	server/config/environment/testing.js	/^  domain: `${process.env.DOMAIN || 'http:\/\/localhost:3024'}`,$/;"	p
+use strict.exports.port	server/config/environment/development.js	/^  port: 3024,$/;"	p
+use strict.exports.port	server/config/environment/staging.js	/^  port: process.env.PORT || 3001,$/;"	p
+use strict.exports.port	server/config/environment/testing.js	/^  port: 3024,$/;"	p
+use strict.exports.secure_port	server/config/environment/development.js	/^  secure_port: 8444,$/;"	p
+use strict.exports.secure_port	server/config/environment/testing.js	/^  secure_port: 8444,$/;"	p
