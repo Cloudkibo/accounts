@@ -6,6 +6,7 @@ const TAG = '/api/v1/pages/pages.controller.js'
 const needle = require('needle')
 const { callApi } = require('../../scripts/apiCaller')
 const util = require('util')
+const async = require('async')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
@@ -18,6 +19,15 @@ exports.index = function (req, res) {
     .catch(err => {
       sendErrorResponse(res, 500, err)
     })
+}
+
+exports.refreshPages = function (req, res) {
+  logger.serverLog(TAG, 'Hit the refresh page controller index')
+  if (req.user.facebookInfo) {
+    fetchPages(`https://graph.facebook.com/v6.0/${
+      req.user.facebookInfo.fbId}/accounts?access_token=${
+      req.user.facebookInfo.fbToken}`, req.user, res)
+  } 
 }
 
 exports.create = function (req, res) {
@@ -34,6 +44,7 @@ exports.create = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 
 exports.update = function (req, res) {
   logger.serverLog(TAG, 'Hit the update page controller index')
@@ -407,4 +418,134 @@ function createTag (user, page, tag) {
     .catch(err => {
       logger.serverLog(TAG, `Error at create tag on Facebook ${util.inspect(err)}`)
     })
+}
+
+function fetchPages (url, user, res) {
+  const options = {
+    headers: {
+      'X-Custom-Header': 'CloudKibo Web Application'
+    },
+    json: true
+  }
+  needle.get(url, options, (err, resp) => {
+    if (err !== null) {
+      logger.serverLog(TAG, 'error from graph api to get pages list data: ')
+      logger.serverLog(TAG, JSON.stringify(err))
+      return
+    }
+    logger.serverLog(TAG, 'resp from graph api to get pages list data: ')
+    logger.serverLog(TAG, JSON.stringify(resp.body))
+    const data = resp.body.data
+    const cursor = resp.body.paging
+    if (data) {
+      async.each(data, updatePages.bind(null, user), function (err) {
+        if (err) {
+          return res.status(500).json({status: 'failed', payload: err})
+        } else
+        if (!cursor.next) {
+          return res.status(200).json({status: 'success', payload: 'success'})
+        }
+      })
+    } else {
+      logger.serverLog(TAG, 'Empty response from graph API to get pages list data')
+      return res.status(200).json({status: 'success', payload: []})
+    }
+    if (cursor && cursor.next) {
+      fetchPages(cursor.next, user)
+    } else {
+      logger.serverLog(TAG, 'Undefined Cursor from graph API')
+    }
+  })
+}
+function updatePages (user, item, callback) {
+  logger.serverLog(TAG, `foreach ${JSON.stringify(item)}`)
+    const options2 = {
+      url: `https://graph.facebook.com/v6.0/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
+      qs: {access_token: item.access_token},
+      method: 'GET'
+    }
+    needle.get(options2.url, options2, (error, fanCount) => {
+      if (error !== null) {
+         logger.serverLog(TAG, `Error occurred ${error}`)
+         callback(error)
+      } else {
+        CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
+          .then(companyUser => {
+            if (!companyUser) {
+               logger.serverLog(TAG, {
+                status: 'failed',
+                description: 'The user account does not belong to any company. Please contact support'
+              })
+            } else {
+              dataLayer.findPageObjects({pageId: item.id, userId: user._id, companyId: companyUser.companyId})
+              .then(pages => {
+                let page = pages[0]
+                if (!page) {
+                  let payloadPage = {
+                    pageId: item.id,
+                    pageName: item.name,
+                    accessToken: item.access_token,
+                    userId: user._id,
+                    companyId: companyUser.companyId,
+                    likes: fanCount.body.fan_count,
+                    pagePic: `https://graph.facebook.com/v6.0/${item.id}/picture`,
+                    connected: false
+                  }
+                  if (fanCount.body.username) {
+                    payloadPage = _.merge(payloadPage,
+                      {pageUserName: fanCount.body.username})
+                  }
+                  dataLayer.savePageObject(payloadPage)
+                    .then(page => {
+                    logger.serverLog(TAG,
+                      `Page ${item.name} created with id ${page.pageId}`)
+                      callback()
+                  })
+                  .catch(err => {
+                    logger.serverLog(TAG, {
+                      status: 'failed',
+                      description: `Unable to create Page Object ${err}`
+                    })
+                    callback(err)
+                  })
+                } else {
+                  let updatedPayload = {
+                    likes: fanCount.body.fan_count,
+                    pagePic: `https://graph.facebook.com/v6.0/${item.id}/picture`,
+                    accessToken: item.access_token
+                  }
+                  if (fanCount.body.username) {
+                    updatedPayload['pageUserName'] = fanCount.body.username
+                  }
+                  dataLayer.updatePageObjectUsingQuery({_id: page._id}, updatedPayload, {})
+                    .then(updated => {
+                      logger.serverLog(TAG,
+                        `page updated successfuly ${JSON.stringify(updated)}`)
+                      callback()
+                    })
+                    .catch(err => {
+                      logger.serverLog(TAG,
+                        `failed to update page ${err}`)
+                      callback(err)
+                    })
+                }
+              })
+              .catch(err => {
+                 logger.serverLog(TAG, {
+                  status: 'failed',
+                  description: `Error while fetching pages ${err}`
+                })
+                callback(err)
+              })
+            }
+          })
+          .catch(err => {
+              logger.serverLog(TAG, {
+              status: 'failed',
+              description: `Error while fetching company user${err}`
+            })
+            callback(err)
+          })
+        }
+      })
 }
