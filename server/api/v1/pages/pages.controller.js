@@ -451,7 +451,7 @@ function fetchPages (url, user, res) {
       return res.status(200).json({status: 'success', payload: []})
     }
     if (cursor && cursor.next) {
-      fetchPages(cursor.next, user, rs)
+      fetchPages(cursor.next, user, res)
     } else {
       logger.serverLog(TAG, 'Undefined Cursor from graph API')
     }
