@@ -439,7 +439,7 @@ function fetchPages (url, user, res) {
     const cursor = resp.body.paging
     if (data) {
       async.each(data, updatePages.bind(null, user), function (err) {
-        if (err) {
+        if (err) {          
           return res.status(500).json({status: 'failed', payload: err})
         } else
         if (!cursor.next) {
@@ -451,7 +451,7 @@ function fetchPages (url, user, res) {
       return res.status(200).json({status: 'success', payload: []})
     }
     if (cursor && cursor.next) {
-      fetchPages(cursor.next, user)
+      fetchPages(cursor.next, user, res)
     } else {
       logger.serverLog(TAG, 'Undefined Cursor from graph API')
     }
