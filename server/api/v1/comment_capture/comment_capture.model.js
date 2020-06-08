@@ -20,7 +20,8 @@ let facebookPostSchema = new Schema({
   title: String,
   existingPostUrl: String,
   secondReply: Schema.Types.Mixed,
-  waitingReply: {type: Number, default: 0}
+  waitingReply: {type: Number, default: 0},
+  sendOnlyToNewSubscribers: {type: Boolean, default: false}
 })
 
 facebookPostSchema.virtual('negativeMatchCount').get(function () {

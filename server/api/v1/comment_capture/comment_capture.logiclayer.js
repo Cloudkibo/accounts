@@ -13,7 +13,8 @@ exports.preparePostPayload = (body) => {
     payload: body.payload,
     reply: body.reply,
     includedKeywords: body.includedKeywords,
-    excludedKeywords: body.excludedKeywords
+    excludedKeywords: body.excludedKeywords,
+    sendOnlyToNewSubscribers: body.sendOnlyToNewSubscribers
   }
 }
 
