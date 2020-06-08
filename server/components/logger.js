@@ -9,7 +9,8 @@ exports.serverLog = function (label, data) {
     // todo use log levels like info, warn, error and debug
     // logger.info(`${namespace} - ${data}`)
   } else {
-    logger.info(`${namespace} - ${data}`) 
+    console.log(`${namespace} - ${data}`)
+    // logger.info(`${namespace} - ${data}`) 
   }
 }
 
