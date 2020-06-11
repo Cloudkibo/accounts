@@ -27,7 +27,7 @@ exports.forgot = function (req, res) {
             let email = resetTokenLogicLayer
               .getEmailObject(
                 fetchedUser.email,
-                'support@cloudkibo.com',
+                'admin@cloudkibo.com',
                 'KiboPush: Password Reset',
                 'Password Reset'
               )
@@ -145,7 +145,7 @@ exports.forgotWorkspaceName = function (req, res) {
 
       var email = new sendgrid.Email({
         to: user.email,
-        from: 'support@cloudkibo.com',
+        from: 'admin@cloudkibo.com',
         subject: 'KiboPush: Workspace Name',
         text: 'Workspace Name'
       })
