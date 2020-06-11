@@ -33,3 +33,16 @@ exports.genericFetchAll = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'generic update endpoint')
+
+  dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
+    .then(result => {
+      sendSuccessResponse(res, 200, result)
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}

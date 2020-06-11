@@ -7,4 +7,8 @@ router.post('/query', auth.isAuthenticated(), controller.genericFetch)
 
 router.post('/queryAll', auth.isAuthenticated(), controller.genericFetchAll)
 
+router.put('/update',
+  auth.isAuthenticated(),
+  controller.genericUpdate)
+
 module.exports = router
