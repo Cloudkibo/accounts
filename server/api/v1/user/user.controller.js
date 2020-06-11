@@ -501,7 +501,7 @@ exports.enableDelete = function (req, res) {
       let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
-        from: 'support@cloudkibo.com',
+        from: 'admin@cloudkibo.com',
         subject: 'KiboPush: Delete Confirmation',
         text: ' Delete Confirmation'
       })
@@ -516,7 +516,7 @@ exports.enableDelete = function (req, res) {
       })
       let emailAdmin = new sendgrid.Email({
         to: 'sojharo@cloudkibo.com',
-        from: 'support@cloudkibo.com',
+        from: 'admin@cloudkibo.com',
         subject: 'KiboPush: Delete User Information',
         text: 'Delete User Information',
         cc: 'jekram@cloudkibo.com'
@@ -547,7 +547,7 @@ exports.cancelDeletion = function (req, res) {
       let sendgrid = require('sendgrid')(config.sendgrid.username, config.sendgrid.password)
       let email = new sendgrid.Email({
         to: req.user.email,
-        from: 'support@cloudkibo.com',
+        from: 'admin@cloudkibo.com',
         subject: 'KiboPush: Delete Confirmation',
         text: ' Delete Confirmation'
       })
@@ -562,7 +562,7 @@ exports.cancelDeletion = function (req, res) {
       })
       let emailAdmin = new sendgrid.Email({
         to: 'sojharo@cloudkibo.com',
-        from: 'support@cloudkibo.com',
+        from: 'admin@cloudkibo.com',
         subject: 'KiboPush: Cancel Deletion Process',
         text: 'Cancel Deletion Process',
         cc: 'jekram@cloudkibo.com'
