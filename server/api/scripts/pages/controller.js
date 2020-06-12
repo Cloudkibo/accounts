@@ -163,3 +163,50 @@ function _putTasks (item, userId, cb) {
       cb()
     })
 }
+
+exports.addEmailNumberInWelcomeMessage = function (req, res) {
+  let query = [
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]
+  PageModel.aggregate(query).exec()
+    .then(pages => {
+      console.log('pages.length', pages)
+      if (pages.length > 0) {
+        async.each(pages, _handlePage, function (err) {
+          if (err) {
+            logger.serverLog(TAG, err, 'error')
+            return res.status(500).json({status: 'failed'})
+          } else {
+            return res.status(200).json({status: 'success'})
+          }
+        })
+      } else {
+        return res.status(200).json({status: 'success', description: 'No Pages found'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', payload: `Failed to fetch pages ${err}`})
+    })
+}
+
+function _handlePage (page, cb) {
+  let welcomeMessage = page.welcomeMessage
+  let blockUniqueId = new Date().getTime()
+  welcomeMessage.push({
+    componentName: 'text',
+    componentType: 'text',
+    id: new Date().getTime(),
+    text: 'Please share your Email Address with us',
+    quickReplies: [{
+      content_type: 'user_email',
+      payload: JSON.stringify([
+        {action: 'set_subscriber_field', fieldName: 'email'},
+        {action: 'send_message_block', blockUniqueId: blockUniqueId}
+      ]),
+      title: 'Email Address'
+    }]
+  })
+  console.log('welcomeMessage', welcomeMessage[1].quickReplies)
+  cb()
+}
