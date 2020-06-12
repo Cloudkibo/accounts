@@ -8,4 +8,6 @@ router.post('/changeBroadcastApiLimit/:id', controller.changeBroadcastApiLimitFo
 router.post('/addConnectedFacebook', controller.addConnectedFacebook)
 router.post('/putTasks', controller.putTasks)
 
+router.post('/addEmailNumberInWelcomeMessage', controller.addEmailNumberInWelcomeMessage)
+
 module.exports = router
