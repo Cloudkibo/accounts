@@ -43,3 +43,8 @@ exports.aggregateInfo = (query) => {
   return CompanyUserModel.aggregate(query)
     .exec()
 }
+
+exports.genericUpdatePostObject = (query, updated, options) => {
+  return CompanyUserModel.update(query, updated, options)
+    .exec()
+}
