@@ -192,12 +192,13 @@ exports.addEmailNumberInWelcomeMessage = function (req, res) {
 
 function _handlePage (page, cb) {
   let welcomeMessage = page.welcomeMessage ? page.welcomeMessage : []
-  let blockUniqueId = new Date().getTime()
+  let blockUniqueId = new Date().getTime() + (Math.floor(Math.random() * 100))
   welcomeMessage.push({
     componentName: 'text',
     componentType: 'text',
     id: new Date().getTime(),
     text: 'Please share your Email Address with us',
+    isEmailPhoneComponent: true,
     quickReplies: [{
       content_type: 'user_email',
       payload: JSON.stringify([
@@ -245,8 +246,9 @@ const _createLinkedMessage = (data, next) => {
     payload: [{
       componentName: 'text',
       componentType: 'text',
-      id: new Date().getTime(),
+      id: new Date().getTime() + (Math.floor(Math.random() * 100)),
       text: 'Please share your Phone Number with us',
+      isEmailPhoneComponent: true,
       quickReplies: [{
         content_type: 'user_phone_number',
         payload: JSON.stringify([
