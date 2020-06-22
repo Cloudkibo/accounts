@@ -43,7 +43,6 @@ const prepareUserPayload = (body, isTeam, domain) => {
   let payload = {
     name: body.name,
     password: body.password,
-    emailVerified: true,             // temprory fix for send Gridemail problem
     email: body.email.toLowerCase(),
     uiMode: body.uiMode,
     accountType: isTeam ? 'team' : 'individual',
