@@ -167,7 +167,7 @@ exports.invite = function (req, res) {
                 sendgrid.send(emailParam, (err, json) => {
                   logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
-                    ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
+                    ? logger.serverLog(TAG, `error at sendgrid send ${(err)}`)
                     : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
 
                   json
