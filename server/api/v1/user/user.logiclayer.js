@@ -147,7 +147,7 @@ const sendEmailUsingMailChimp = (body) => {
 const emailHeader = (body) => {
   return {
     to: body.email,
-    from: 'admin@cloudkibo.com',
+    from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account Verification',
     text: 'Welcome to KiboPush'
   }
@@ -156,7 +156,7 @@ const emailHeader = (body) => {
 const inHouseEmailHeader = (body) => {
   return {
     to: ['sojharo@cloudkibo.com', 'jawaid@cloudkibo.com', 'jekram@hotmail.com', 'imran@cloudkibo.com', 'faizan@cloudkibo.com'],
-    from: 'admin@cloudkibo.com',
+    from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account created by ' + body.name,
     text: 'New Account Created'
   }

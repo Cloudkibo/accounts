@@ -21,7 +21,7 @@ exports.preparePostPayload = (body) => {
 exports.getEmailParameters = (email) => {
   return {
     to: email,
-    from: 'admin@cloudkibo.com',
+    from: 'support@cloudkibo.com',
     subject: 'KiboPush: Invitation',
     text: 'Welcome to KiboPush'
   }

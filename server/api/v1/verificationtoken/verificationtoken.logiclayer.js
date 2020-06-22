@@ -8,7 +8,7 @@ const config = require('./../../../config/environment/index')
 exports.getEmailHeader = (user) => {
   return {
     to: user.email,
-    from: 'admin@cloudkibo.com',
+    from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account verified',
     text: 'Welcome to KiboPush',
     bcc: 'accounts@cloudibo.com'
@@ -18,7 +18,7 @@ exports.getEmailHeader = (user) => {
 exports.getEmailResendHeader = (user) => {
   return {
     to: user.email,
-    from: 'admin@cloudkibo.com',
+    from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account Verification',
     text: 'Welcome to KiboPush'
   }
