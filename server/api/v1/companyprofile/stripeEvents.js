@@ -42,7 +42,7 @@ var knownEvents = {
 
         let email = new sendgrid.Email({
           to: company.ownerId.email,
-          from: 'admin@cloudkibo.com',
+          from: 'support@cloudkibo.com',
           subject: 'KiboPush: Payment Successful',
           text: 'Welcome to KiboPush'
         })
@@ -75,7 +75,7 @@ var knownEvents = {
 
         let email = new sendgrid.Email({
           to: company.ownerId.email,
-          from: 'admin@cloudkibo.com',
+          from: 'support@cloudkibo.com',
           subject: 'KiboPush: Payment Failed',
           text: 'Welcome to KiboPush'
         })
