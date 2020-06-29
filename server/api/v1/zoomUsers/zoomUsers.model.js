@@ -17,6 +17,7 @@ let ZoomUsers = new Schema({
   phoneNumber: String,
   accessToken: String,
   refreshToken: String,
+  connected: { type: Boolean, default: true },
   datetime: {type: Date, default: Date.now}
 })
 
