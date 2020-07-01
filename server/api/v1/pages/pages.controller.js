@@ -50,7 +50,7 @@ exports.refreshPages = function (req, res) {
         })
       })
       .catch(err => {
-        sendErrorResponse(res, 500, `Unable to fetch company profile of the user. ${err}`)
+        sendErrorResponse(res, 500, `Unable to fetch company of the user. ${err}`)
       })
   } 
 }
