@@ -15,7 +15,7 @@ let util = require('util')
 
 exports.forgot = function (req, res) {
   userDataLayer
-    .findOneUserByEmail({email: {$regex: `^${req.body.email}$`, $options: 'i'}})
+    .findOneUserByEmail(req.body)
     .then(fetchedUser => {
       if (!fetchedUser) {
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
