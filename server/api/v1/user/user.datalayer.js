@@ -35,12 +35,12 @@ exports.createUserObject = (payload) => {
 }
 
 exports.findOneUserByEmail = (body) => {
-  return UserModel.findOne({email: body.email})
+  return UserModel.findOne({email: {$regex: `^${body.email}$`, $options: 'i'}})
     .exec()
 }
 
 exports.findOneUserByDomain = (body) => {
-  return UserModel.findOne({domain: body.domain})
+  return UserModel.findOne({domain: {$regex: `^${body.domain}$`, $options: 'i'}})
     .exec()
 }
 
