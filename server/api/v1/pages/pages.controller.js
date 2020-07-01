@@ -2,7 +2,6 @@ const logger = require('../../../components/logger')
 const dataLayer = require('./pages.datalayer')
 const logicLayer = require('./pages.logiclayer')
 const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
-const CompanyProfileDataLayer = require('./../companyprofile/companyprofile.datalayer')
 const UserDataLayer = require('./../user/user.datalayer')
 const TAG = '/api/v1/pages/pages.controller.js'
 const needle = require('needle')
@@ -33,31 +32,25 @@ exports.refreshPages = function (req, res) {
     } else {
       logger.serverLog('User facebook Info not found')
     }
-  } else {
-    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
+  } else { 
+    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({companyId: req.user.companyId, role: 'buyer'})
       .then(companyUser => {
-        CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, false, null)
-        .then(foundCompany => {
-          UserDataLayer.findOneUserObject(foundCompany.ownerId)
-          .then(owner => {
-            if (owner.facebookInfo) {
-            fetchPages(`https://graph.facebook.com/v6.0/${
-              owner.facebookInfo.fbId}/accounts?access_token=${
-              owner.facebookInfo.fbToken}`, owner, res)
-            } else {
-              logger.serverLog('Owner Facebook Info not found')
-            }
-          })
-          .catch(err => {
-            sendErrorResponse(res, 500, `Unable to fetch owner details of the company. ${err}`)
-          })
+        UserDataLayer.findOneUserObject(companyUser.userId)
+        .then(owner => {
+          if (owner.facebookInfo) {
+          fetchPages(`https://graph.facebook.com/v6.0/${
+            owner.facebookInfo.fbId}/accounts?access_token=${
+            owner.facebookInfo.fbToken}`, owner, res)
+          } else {
+            logger.serverLog('Owner Facebook Info not found')
+          }
         })
         .catch(err => {
-          sendErrorResponse(res, 500, `Unable to fetch company profile of the user. ${err}`)
+          sendErrorResponse(res, 500, `Unable to fetch owner details of the company. ${err}`)
         })
       })
       .catch(err => {
-        sendErrorResponse(res, 500, `Unable to fetch company of the user. ${err}`)
+        sendErrorResponse(res, 500, `Unable to fetch company profile of the user. ${err}`)
       })
   } 
 }
