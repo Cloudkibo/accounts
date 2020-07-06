@@ -7,8 +7,10 @@
 </head>
 <body class="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark
                 m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default"  >
-                
-<% if (verification) { %>
+ 
+<% if (isAlreadyVerified) { %>
+  <%- include('../pages/verifiedAlready') %>
+<% } else if (verification) { %>
   <%- include('../pages/verificationSuccess') %>
 <% } else { %>
   <%- include('../pages/verificationFailure') %>

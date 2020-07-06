@@ -41,31 +41,35 @@ exports.verify = function (req, res) {
                   .findOneCPWithPlanPop({_id: companyuser.companyId}, true, 'planId')
               })
               .then(company => {
-                logger.serverLog(TAG, `Company Profile found ${company}`)
-                user.emailVerified = true
-                let sendgrid = utility.getSendGridObject()
-                let email = new sendgrid.Email(logiclayer.getEmailHeader(user))
-                if (company.planId.unique_ID === 'plan_C' || company.planId.unique_ID === 'plan_D') {
-                  if (user.role === 'buyer') {
-                    logiclayer.setTeamBuyerEmailBody(email, user)
+                if (!user.emailVerified) {
+                  logger.serverLog(TAG, `Company Profile found ${company}`)
+                  user.emailVerified = true
+                  let sendgrid = utility.getSendGridObject()
+                  let email = new sendgrid.Email(logiclayer.getEmailHeader(user))
+                  if (company.planId.unique_ID === 'plan_C' || company.planId.unique_ID === 'plan_D') {
+                    if (user.role === 'buyer') {
+                      logiclayer.setTeamBuyerEmailBody(email, user)
+                    } else {
+                      logiclayer.setTeamAgentEmailBody(email, user)
+                    }
                   } else {
-                    logiclayer.setTeamAgentEmailBody(email, user)
+                    logiclayer.setIndividualEmailBody(email, user)
                   }
-                } else {
-                  logiclayer.setIndividualEmailBody(email, user)
-                }
 
-                sendgrid.send(email, function (err, json) {
-                  if (err) logger.serverLog(TAG, {status: 'failed', description: 'Internal Server Error'})
-                })
-                logger.serverLog(TAG, `Going to save user object ${user}`)
-                UserDataLayer.saveUserObject(user)
-                  .then(updatedUser => {
-                    // Update the UI path
-                    // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
-                    logger.serverLog(TAG, `Updated User: ${user}`)
-                    return res.render('layouts/verification', {verification: true})
+                  sendgrid.send(email, function (err, json) {
+                    if (err) logger.serverLog(TAG, {status: 'failed', description: 'Internal Server Error'})
                   })
+                  logger.serverLog(TAG, `Going to save user object ${user}`)
+                  UserDataLayer.saveUserObject(user)
+                    .then(updatedUser => {
+                      // Update the UI path
+                      // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
+                      logger.serverLog(TAG, `Updated User: ${user}`)
+                      return res.render('layouts/verification', {verification: true})
+                    })
+                } else {
+                  return res.render('layouts/verification', {isAlreadyVerified: true})
+                }
               })
           }
         })
@@ -80,18 +84,21 @@ exports.verify = function (req, res) {
 
 exports.resend = function (req, res) {
   logger.serverLog(TAG, `Resending verification email`)
-
-  let tokenString = UserLogicLayer.getRandomString()
-  datalayer.createVerificationToken({ userId: req.user._id, token: tokenString })
-    .then(result => {
-      let sendgrid = utility.getSendGridObject()
-      let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
-      logiclayer.getResendEmailBody(email, tokenString)
-      sendgrid.send(email, (err) => {
-        if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
-        logger.serverLog(TAG, `verification email resent: ${JSON.stringify(email)}`)
-        sendSuccessResponse(res, 200, 'Verification email has been sent')
+  if (!req.user.emailVerified) {
+    let tokenString = UserLogicLayer.getRandomString()
+    datalayer.createVerificationToken({ userId: req.user._id, token: tokenString })
+      .then(result => {
+        let sendgrid = utility.getSendGridObject()
+        let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
+        logiclayer.getResendEmailBody(email, tokenString)
+        sendgrid.send(email, (err) => {
+          if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
+          logger.serverLog(TAG, `verification email resent: ${JSON.stringify(email)}`)
+          sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
+        })
       })
-    })
-    .catch(err => { sendErrorResponse(res, 500, '', err) })
+      .catch(err => { sendErrorResponse(res, 500, '', err) })
+  } else {
+    sendSuccessResponse(res, 200, 'You have already verified your email address. Please refresh your page')
+  }
 }
