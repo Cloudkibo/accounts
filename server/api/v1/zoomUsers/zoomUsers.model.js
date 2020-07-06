@@ -18,6 +18,7 @@ let ZoomUsers = new Schema({
   accessToken: String,
   refreshToken: String,
   connected: { type: Boolean, default: true },
+  meetingsPerDay: Schema.Types.Mixed,
   datetime: {type: Date, default: Date.now}
 })
 
