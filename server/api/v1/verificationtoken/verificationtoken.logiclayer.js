@@ -11,7 +11,7 @@ exports.getEmailHeader = (user) => {
     from: 'support@cloudkibo.com',
     subject: 'KiboPush: Account verified',
     text: 'Welcome to KiboPush',
-    bcc: 'accounts@cloudibo.com'
+    bcc: 'accounts@cloudkibo.com'
   }
 }
 

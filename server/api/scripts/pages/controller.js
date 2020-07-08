@@ -4,6 +4,7 @@ const needle = require('needle')
 const logger = require('../../../components/logger')
 const TAG = '/api/scripts/pages/controller.js'
 const async = require('async')
+const { callApi } = require('../apiCaller')
 
 exports.changeBroadcastApiLimit = function (req, res) {
   let limit = req.body.limit
@@ -171,7 +172,6 @@ exports.addEmailNumberInWelcomeMessage = function (req, res) {
   ]
   PageModel.aggregate(query).exec()
     .then(pages => {
-      console.log('pages.length', pages)
       if (pages.length > 0) {
         async.each(pages, _handlePage, function (err) {
           if (err) {
@@ -191,13 +191,14 @@ exports.addEmailNumberInWelcomeMessage = function (req, res) {
 }
 
 function _handlePage (page, cb) {
-  let welcomeMessage = page.welcomeMessage
-  let blockUniqueId = new Date().getTime()
+  let welcomeMessage = page.welcomeMessage ? page.welcomeMessage : []
+  let blockUniqueId = new Date().getTime() + (Math.floor(Math.random() * 100))
   welcomeMessage.push({
     componentName: 'text',
     componentType: 'text',
     id: new Date().getTime(),
     text: 'Please share your Email Address with us',
+    isEmailPhoneComponent: true,
     quickReplies: [{
       content_type: 'user_email',
       payload: JSON.stringify([
@@ -207,6 +208,63 @@ function _handlePage (page, cb) {
       title: 'Email Address'
     }]
   })
-  console.log('welcomeMessage', welcomeMessage[1].quickReplies)
-  cb()
+  let data = {
+    blockUniqueId: blockUniqueId,
+    welcomeMessage: welcomeMessage,
+    page: page
+  }
+  async.series([
+    _updateWelcomeMessage.bind(null, data),
+    _createLinkedMessage.bind(null, data)
+  ], function (err) {
+    if (err) {
+      cb()
+    } else {
+      cb()
+    }
+  })
+}
+
+const _updateWelcomeMessage = (data, next) => {
+  PageModel.updateOne({_id: data.page._id}, {welcomeMessage: data.welcomeMessage}).exec()
+    .then(updated => {
+      next()
+    })
+    .catch(err => {
+      next(err)
+    })
+}
+
+const _createLinkedMessage = (data, next) => {
+  let payloadToSave = {
+    module: {
+      id: data.page._id,
+      type: 'welcomeMessage'
+    },
+    title: 'Email Address',
+    uniqueId: data.blockUniqueId.toString(),
+    payload: [{
+      componentName: 'text',
+      componentType: 'text',
+      id: new Date().getTime() + (Math.floor(Math.random() * 100)),
+      text: 'Please share your Phone Number with us',
+      isEmailPhoneComponent: true,
+      quickReplies: [{
+        content_type: 'user_phone_number',
+        payload: JSON.stringify([
+          {action: 'set_subscriber_field', fieldName: 'phoneNumber'}
+        ]),
+        title: 'Email Address'
+      }]
+    }],
+    userId: data.page.userId,
+    companyId: data.page.companyId
+  }
+  callApi('messageBlocks/', 'post', payloadToSave, '', 'kiboengage')
+    .then(linkedMessage => {
+      next()
+    })
+    .catch(err => {
+      next(err)
+    })
 }

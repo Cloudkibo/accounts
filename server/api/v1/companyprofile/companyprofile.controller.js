@@ -111,9 +111,9 @@ exports.invite = function (req, res) {
         : sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
 
       // Query Objects
-      let InvitationCountQuery = {email: req.body.email, companyId: companyUser.companyId._id}
-      let UserCountQuery = {email: req.body.email}
-      let UserDomainCount = {email: req.body.email, domain: req.user.domain}
+      let InvitationCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}, companyId: companyUser.companyId._id}
+      let UserCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}}
+      let UserDomainCount = {email: {$regex: `^${req.body.email}$`, $options: 'i'}, domain: req.user.domain}
       // Promise Objects
       let InvitationCountPromise = InvitationDataLayer
         .CountInvitationObjectUsingQuery(InvitationCountQuery)
@@ -132,12 +132,12 @@ exports.invite = function (req, res) {
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
             sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
-          } else if (gotCountAgentWithEmail > 0) {
-            logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
-            sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
             sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
+          } else if (gotCountAgentWithEmail > 0) {
+            logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
+            sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
             let getTokenPayload = {
@@ -167,7 +167,7 @@ exports.invite = function (req, res) {
                 sendgrid.send(emailParam, (err, json) => {
                   logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
-                    ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
+                    ? logger.serverLog(TAG, `error at sendgrid send ${(err)}`)
                     : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
 
                   json

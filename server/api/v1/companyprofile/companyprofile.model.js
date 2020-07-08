@@ -17,7 +17,9 @@ var CompanyprofileSchema = new Schema({
   },
   twilio: Schema.Types.Mixed,
   twilioWhatsApp: Schema.Types.Mixed,
-  saveAutomationMessages: { type: Boolean, default: false }
+  flockSendWhatsApp: Schema.Types.Mixed,
+  saveAutomationMessages: { type: Boolean, default: false },
+  showAgentName: { type: Boolean, default: false }
 })
 
 var stripeOptions = config.stripeOptions

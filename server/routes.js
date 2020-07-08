@@ -49,6 +49,8 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
+  app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
+  app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
@@ -117,7 +119,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // signup page
@@ -129,7 +133,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // login page
