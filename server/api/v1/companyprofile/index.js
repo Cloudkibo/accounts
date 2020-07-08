@@ -19,6 +19,10 @@ router.get('/',
   auth.isAuthenticated(),
   controller.index)
 
+router.get('/switchToBasicPlan',
+  auth.isAuthenticated(),
+  controller.switchToBasicPlan)
+
 router.post('/invite',
   validate({body: validationSchema.invitePayload}),
   auth.isAuthenticated(),
