@@ -13,11 +13,11 @@ let mongoose = require('mongoose')
 const TAG = '/api/v1/user/user.logiclayer.js'
 
 const prepareUpdateUserPayload = (name, email, uiMode) => {
-  let flag = true
-  let temp = {}
-  name ? temp.name = name : flag = false
-  email ? temp.email = email : flag = false
-  uiMode ? temp.uiMode = uiMode : flag = false
+  let temp = {
+    name,
+    email,
+    uiMode
+  }
 
   return temp
 }
@@ -62,21 +62,20 @@ const isTeamAccount = (body) => {
   return flag
 }
 
-const defaultPlans = (plans) => {
-  let defaultPlanTeam, defaultPlanIndividual
-  plans.forEach(doc => {
-    if (doc.unique_ID === 'plan_D') defaultPlanTeam = doc
-    if (doc.unique_ID === 'plan_B') defaultPlanIndividual = doc
-  })
-  return { defaultPlanIndividual, defaultPlanTeam }
-}
-
 const prepareCompanyProfile = (body, userId, isTeam, domain, defaultPlan) => {
+  const currentDate = new Date()
+  let date = currentDate
+  date.setDate(date.getDate() + 30)
   return {
     companyName: isTeam ? body.company_name : 'Pending ' + domain,
     companyDetail: isTeam ? body.company_description : 'Pending ' + domain,
     ownerId: userId,
-    planId: defaultPlan._id
+    planId: defaultPlan._id,
+    trialPeriod: {
+      status: true,
+      startDate: currentDate,
+      endDate: date
+    }
   }
 }
 
@@ -349,7 +348,6 @@ exports.isEmailAndDomainFound = isEmailAndDomainFound
 exports.isTeamAccount = isTeamAccount
 exports.prepareUserPayload = prepareUserPayload
 exports.prepareUpdateUserPayload = prepareUpdateUserPayload
-exports.defaultPlans = defaultPlans
 exports.prepareCompanyProfile = prepareCompanyProfile
 exports.companyUsageData = companyUsageData
 exports.createCustomerOnStripe = createCustomerOnStripe

@@ -64,6 +64,24 @@ exports.setCard = function (req, res) {
     })
 }
 
+exports.switchToBasicPlan = function (req, res) {
+  PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: 'plan_A'})
+    .then(plan => {
+      dataLayer.findOneProfileAndUpdate({_id: req.user.companyId}, {planId: plan._id, 'trialPeriod.status': false}, {})
+        .then(updatedProfile => {
+          sendSuccessResponse(res, 200, updatedProfile)
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
+          sendErrorResponse(res, 500, err)
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in fetch plan ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}
+
 exports.updatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatePlan controller index')
   if (req.user.plan.unique_ID === req.body.plan) {

@@ -53,6 +53,7 @@ exports.index = function (req, res) {
           user.companyId = companyUser.companyId
           user.permissions = permissions
           user.currentPlan = company.planId
+          user.trialPeriod = company.trialPeriod
           user.last4 = company.stripe.last4
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
@@ -190,15 +191,11 @@ exports.create = function (req, res) {
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
-            PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
-              .then(result => {
-                logger.serverLog(TAG, `Plans Found: ${util.inspect(result)}`)
-                // Separate default plans
-                let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
-                let companyprofileData = logicLayer
-                  .prepareCompanyProfile(
-                    req.body, user._id, isTeam, domain,
-                    isTeam ? defaultPlanTeam : defaultPlanIndividual)
+            PlanDataLayer.findAllPlanObjectsUsingQuery({default: true})
+              .then(plans => {
+                const defaultPlan = plans[0]
+                logger.serverLog(TAG, `Default plan Found: ${util.inspect(defaultPlan)}`)
+                let companyprofileData = logicLayer.prepareCompanyProfile(req.body, user._id, isTeam, domain, defaultPlan)
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
