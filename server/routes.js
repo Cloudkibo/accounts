@@ -119,7 +119,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // signup page
@@ -131,7 +133,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // login page
