@@ -20,8 +20,8 @@ require('./local/passport').setup(Users, config)
 router.use('/local', require('./local'))
 
 router.get('/scripts/jsonp', (req, res) => {
-  logger.serverLog(TAG, req.query.callback)
-  logger.serverLog(TAG, req.cookies)
+  logger.serverLog(TAG, JSON.stringify(req.query.callback))
+  logger.serverLog(TAG, JSON.stringify(req.cookies))
 
   let token = req.cookies.token
   let callbackOfClient = req.query.callback
