@@ -332,15 +332,19 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdCompanyUser => {
       companyUserSaved = createdCompanyUser
-      logger.serverLog(TAG, `Created Company User : ${util.inspect(createdCompanyUser)}`)
-      let permissionsPayload = { companyId: invitationToken.companyId, userId: user._id }
-
-      permissionsPayload = _.merge(permissionsPayload, config.permissions[invitationToken.role] || {})
+      logger.serverLog(TAG, `Created Company User : ${util.inspect(companyUserSaved)}`)
+      return PermissionDataLayer.findOneRolePermissionObject(invitationToken.role)
+    })
+    .then(rolePermissions => {
+      delete rolePermissions._id
+      delete rolePermissions.__v
+      delete rolePermissions.role
+      let permissionsPayload = _.merge({ companyId: invitationToken.companyId, userId: user._id }, rolePermissions)
       return PermissionDataLayer.createUserPermission(permissionsPayload)
     })
     .then(createdPermissions => {
       permissionSaved = createdPermissions
-      logger.serverLog(TAG, `Created Permissions: ${util.inspect(createdPermissions)}`)
+      logger.serverLog(TAG, `Created Permissions: ${util.inspect(permissionSaved)}`)
 
       let token = auth.signToken(user._id)
       res.clearCookie('email')
