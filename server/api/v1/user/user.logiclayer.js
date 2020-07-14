@@ -100,7 +100,27 @@ const companyUsageData = (companyId) => {
     wordpress_autoposting: 0,
     broadcast_sequences: 0,
     messages_per_sequence: 0,
-    segmentation_lists: 0
+    segmentation_lists: 0,
+    custom_fields: 0,
+    tags: 0,
+    tags_per_subscriber: 0,
+    template_categories: 0,
+    rss_feeds: 0,
+    news_integration_feeds: 0,
+    broadcast_levels: 0,
+    comment_capture_rules: 0,
+    messenger_codes: 0,
+    landing_pages: 0,
+    json_ads: 0,
+    messenger_ref_urls: 0,
+    overlay_widgets: 0,
+    members: 0,
+    teams: 0,
+    external_integrations: 0,
+    intents_per_bot: 0,
+    sponsored_broadcasts: 0,
+    chatbot_automation: 0,
+    chatbot_automation_levels: 0
   }
 }
 
