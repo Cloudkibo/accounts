@@ -3,6 +3,7 @@ const logicLayer = require('./whatsAppContacts.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
+  console.log('in create whatsapp contact', req.body)
   dataLayer.createContactObject(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
