@@ -3,7 +3,6 @@ const logicLayer = require('./whatsAppContacts.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
-  console.log('in create whatsapp contact', req.body)
   dataLayer.createContactObject(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -12,6 +11,7 @@ exports.create = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.query = function (req, res) {
   dataLayer.findContactObjects(req.body)
     .then(result => {
@@ -21,6 +21,7 @@ exports.query = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.aggregate = function (req, res) {
   let query = logicLayer.validateAndConvert(req.body)
   dataLayer.aggregateInfo(query)
@@ -31,6 +32,7 @@ exports.aggregate = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.genericUpdate = function (req, res) {
   dataLayer.genericUpdate(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
@@ -40,6 +42,7 @@ exports.genericUpdate = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.deleteMany = function (req, res) {
   dataLayer.deleteMany(req.body)
     .then(result => {
