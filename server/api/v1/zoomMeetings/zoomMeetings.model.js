@@ -12,7 +12,8 @@ let ZoomMeetings = new Schema({
   agenda: String,
   invitationMessage: String,
   meetingUrl: String,
-  datetime: {type: Date, default: Date.now}
+  datetime: {type: Date, default: Date.now},
+  platform: String
 })
 
 module.exports = mongoose.model('zoommeetings', ZoomMeetings)
