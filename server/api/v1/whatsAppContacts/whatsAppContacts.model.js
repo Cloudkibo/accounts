@@ -6,7 +6,7 @@ let contacts = new Schema({
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   number: {type: String},
   datetime: { type: Date, default: Date.now },
-  last_activity_time: { type: Date },
+  last_activity_time: { type: Date, default: Date.now },
   isSubscribed: {type: Boolean, default: true},
   status: {type: String, default: 'new'},
   unreadCount: {type: Number, default: 0},
@@ -15,10 +15,7 @@ let contacts = new Schema({
   is_assigned: {type: Boolean, default: false},
   assigned_to: { type: Schema.Types.Mixed },
   unSubscribedBy: {type: String, default: 'subscriber'},
-  lastMessagedAt: {
-    type: Date,
-    default: Date.now
-  }
+  lastMessagedAt: { type: Date }
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)

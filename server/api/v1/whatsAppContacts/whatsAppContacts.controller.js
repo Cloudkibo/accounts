@@ -11,6 +11,7 @@ exports.create = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.query = function (req, res) {
   dataLayer.findContactObjects(req.body)
     .then(result => {
@@ -20,6 +21,7 @@ exports.query = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.aggregate = function (req, res) {
   let query = logicLayer.validateAndConvert(req.body)
   dataLayer.aggregateInfo(query)
@@ -30,6 +32,7 @@ exports.aggregate = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.genericUpdate = function (req, res) {
   dataLayer.genericUpdate(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
@@ -39,6 +42,7 @@ exports.genericUpdate = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
 exports.deleteMany = function (req, res) {
   dataLayer.deleteMany(req.body)
     .then(result => {
