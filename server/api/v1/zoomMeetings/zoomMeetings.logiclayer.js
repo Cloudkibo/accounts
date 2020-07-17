@@ -4,6 +4,7 @@ By separating it from controller, we are separating the concerns.
 Thus we can use it from other non express callers like cron etc
 */
 // const mongoose = require('mongoose')
+let mongoose = require('mongoose')
 
 exports.validateCreatePayload = (body) => {
   let bool = true
@@ -23,11 +24,14 @@ exports.prepareMongoAggregateQuery = (body) => {
   let query = []
 
   if (body.match) {
+    if (body.match.companyId) {
+      body.match.companyId = mongoose.Types.ObjectId(body.match.companyId)
+    }
     if (body.match.datetime && body.match.datetime.$gte && body.match.datetime.$lt) {
       body.match.datetime.$gte = new Date(body.match.datetime.$gte)
       body.match.datetime.$lt = new Date(body.match.datetime.$lt)
-      query.push({$match: body.match})
-    } else query.push({$match: body.match})
+    }
+    query.push({$match: body.match})
   } else return 'Match Criteria Not Found'
 
   if (body.group) {
