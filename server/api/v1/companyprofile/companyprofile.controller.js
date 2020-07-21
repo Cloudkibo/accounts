@@ -6,6 +6,7 @@ const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
 const UserDataLayer = require('./../user/user.datalayer')
+const SubscribersDataLayer = require('./../subscribers/subscribers.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
@@ -236,22 +237,23 @@ exports.updateRole = function (req, res) {
     })
 }
 
-exports.removeMember = function (req, res) {
-  logger.serverLog(TAG, 'Hit the removeMember controller index')
+exports.disableMember = function (req, res) {
+  logger.serverLog(TAG, 'Hit the disableMember controller index')
   if (config.userRoles.indexOf(req.user.role) > 1) {
-    sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
+    return sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
-  if (config.userRoles.indexOf(req.body.role) < 0) {
-    sendErrorResponse(res, 404, '', 'Invalid role')
+  let queryRemovingAssignment = {
+    is_assigned: true,
+    'assigned_to.type': 'agent',
+    'assigned_to.id': req.body.memberId
   }
+  
+  let userDisabled = UserDataLayer.updateOneUserObjectUsingQuery({_id:req.body.memberId}, {disableMember: true}, {upsert: true})
+  let removeAssignment = SubscribersDataLayer.genericUpdateSubscriberObject(queryRemovingAssignment, {is_assigned: false, assigned_to: null}, {multi: true})
 
-  let query = {domain_email: req.body.domain_email}
-  let companyUserRemove = CompanyUserDataLayer.removeOneCompanyUserObjectUsingQuery(query)
-  let userRemove = UserDataLayer.deleteUserObjectUsingQuery(query)
-
-  Promise.all([companyUserRemove, userRemove])
+  Promise.all([userDisabled, removeAssignment])
     .then(result => {
-      sendSuccessResponse(res, 200, '', 'Account removed')
+      sendSuccessResponse(res, 200, result, 'User has been disabled')
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting promise all remove member ${util.inspect(err)}`)
