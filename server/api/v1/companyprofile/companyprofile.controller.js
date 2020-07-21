@@ -239,9 +239,7 @@ exports.updateRole = function (req, res) {
 
 exports.disableMember = function (req, res) {
   logger.serverLog(TAG, 'Hit the disableMember controller index')
-  if (config.userRoles.indexOf(req.user.role) > 1) {
-    return sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
-  }
+  
   let queryRemovingAssignment = {
     is_assigned: true,
     'assigned_to.type': 'agent',
