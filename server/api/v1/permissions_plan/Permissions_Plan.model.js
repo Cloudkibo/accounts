@@ -3,25 +3,25 @@ var Schema = mongoose.Schema
 
 var PermissionsSchema = new Schema({
   plan_id: {type: Schema.ObjectId, ref: 'plans'},
-  customer_matching: Boolean, // done
-  dashboard: Boolean, // done
-  broadcasts: Boolean, // done
+  customer_matching: Boolean,
+  dashboard: Boolean,
+  broadcasts: Boolean,
   broadcasts_templates: Boolean,
-  polls: Boolean, // done
+  polls: Boolean,
   polls_reports: Boolean,
-  surveys: Boolean, // done
+  surveys: Boolean,
   surveys_reports: Boolean,
   csv_exports: Boolean,
-  livechat: Boolean, // done
-  autoposting: Boolean, // done
+  livechat: Boolean,
+  autoposting: Boolean,
   menu: Boolean,
   manage_pages: Boolean,
-  manage_subscribers: Boolean, // done
-  subscribe_to_messenger: Boolean, // done
+  manage_subscribers: Boolean,
+  subscribe_to_messenger: Boolean,
   team_members_management: Boolean,
-  messenger_links: Boolean, // done
-  comment_capture: Boolean, // done
-  messenger_code: Boolean, // done
+  messenger_links: Boolean,
+  comment_capture: Boolean,
+  messenger_code: Boolean,
   analytics: Boolean,
   buy_button: Boolean,
   segmentation_lists: Boolean,
@@ -31,20 +31,20 @@ var PermissionsSchema = new Schema({
   webhook: Boolean,
   survey_templates: Boolean,
   poll_templates: Boolean,
-  custom_fields: Boolean, // done
-  tags: Boolean, // done
+  custom_fields: Boolean,
+  tags: Boolean,
   unsubscribe_subscribers: Boolean,
   user_input: Boolean,
   flow_builder: Boolean,
-  sponsored_broadcast: Boolean, // done
+  sponsored_broadcast: Boolean,
   scheduled_sponsored_broadcast: Boolean,
   autoposting_history: Boolean,
-  rss_integration: Boolean, // done
-  news_integration: Boolean, // done
-  sequence_messaging: Boolean, // done
-  landing_pages: Boolean, // done
-  json_ads: Boolean, // done
-  customer_chat_plugin: Boolean, // done
+  rss_integration: Boolean,
+  news_integration: Boolean,
+  sequence_messaging: Boolean,
+  landing_pages: Boolean,
+  json_ads: Boolean,
+  customer_chat_plugin: Boolean,
   checkbox_plugin: Boolean,
   overlay_widgets: Boolean,
   invite_members: Boolean,
@@ -58,7 +58,7 @@ var PermissionsSchema = new Schema({
   assign_sessions: Boolean,
   pending_chat_flag: Boolean,
   smart_replies: Boolean,
-  chatbot_automation: Boolean, // done
+  chatbot_automation: Boolean,
   delete_account_information: Boolean
 })
 
