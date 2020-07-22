@@ -28,10 +28,10 @@ router.post('/updateRole',
   auth.isAuthenticated(),
   controller.updateRole)
 
-router.post('/removeMember',
-  validate({body: validationSchema.removeMember}),
+router.post('/disableMember',
+  validate({body: validationSchema.disableMember}),
   auth.isAuthenticated(),
-  controller.removeMember)
+  controller.disableMember)
 
 router.get('/members',
   auth.isAuthenticated(),
