@@ -63,9 +63,6 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$gt) {
       newBody[index].$match.lastMessagedAt.$gt = new Date(newBody[index].$match.lastMessagedAt.$gt)
     }
-    if (obj.$match && obj.$match.$in && obj.$match._id.$lt) {
-      newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
-    }
     if (obj.$match && obj.$match._id && obj.$match._id.$lt) {
       newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
     }
