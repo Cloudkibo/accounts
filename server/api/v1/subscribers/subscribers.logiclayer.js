@@ -44,7 +44,6 @@ exports.validateAndConvert = (body) => {
         let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
         newBody[index].$match.pageId.$in = pageIds
       }
-      console.log(JSON.stringify(newBody))
     }
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
