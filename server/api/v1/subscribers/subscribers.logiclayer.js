@@ -39,6 +39,13 @@ exports.validateAndConvert = (body) => {
         newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
       }
     }
+    if (obj.$match && obj.$match.pageId) {
+      if (obj.$match.pageId.$in) {
+        let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
+        newBody[index].$match.pageId.$in = pageIds
+      }
+      console.log(JSON.stringify(newBody))
+    }
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
@@ -56,6 +63,9 @@ exports.validateAndConvert = (body) => {
     }
     if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$gt) {
       newBody[index].$match.lastMessagedAt.$gt = new Date(newBody[index].$match.lastMessagedAt.$gt)
+    }
+    if (obj.$match && obj.$match.$in && obj.$match._id.$lt) {
+      newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
     }
     if (obj.$match && obj.$match._id && obj.$match._id.$lt) {
       newBody[index].$match._id.$lt = mongoose.Types.ObjectId(newBody[index].$match._id.$lt)
