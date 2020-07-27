@@ -17,6 +17,9 @@ exports.createPayload = {
     'subscriberId': {
       'type': 'string'
     },
+    'zoomUserId': {
+      'type': 'string'
+    },
     'topic': {
       'type': 'string'
     },
@@ -34,6 +37,7 @@ exports.createPayload = {
     'userId',
     'companyId',
     'subscriberId',
+    'zoomUserId',
     'topic',
     'agenda',
     'invitationMessage',
@@ -59,6 +63,9 @@ exports.queryPayload = {
           'type': 'string'
         },
         'subscriberId': {
+          'type': 'string'
+        },
+        'zoomUserId': {
           'type': 'string'
         },
         'topic': {
@@ -97,6 +104,9 @@ exports.updatePayload =
           'type': 'string'
         },
         'subscriberId': {
+          'type': 'string'
+        },
+        'zoomUserId': {
           'type': 'string'
         },
         'topic': {
