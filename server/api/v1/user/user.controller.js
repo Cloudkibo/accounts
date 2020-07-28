@@ -659,3 +659,17 @@ exports.distinct = function (req, res) {
       sendErrorResponse(res, 500, err)
     })
 }
+
+exports.markAccountAsDisabled = (req, res) => {
+  console.log(req.body)
+  dataLayer.genericUpdateUserObject({email: {$in: req.body.emails}},
+    {$set: {disableMember: true}},
+    {multi: true})
+    .then(data => {
+      console.log(data)
+      sendSuccessResponse(res, 200, req.body)
+    })
+    .catch(err => {
+      sendErrorResponse(res, 500, err)
+    })
+}
