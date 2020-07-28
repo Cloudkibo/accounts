@@ -18,7 +18,7 @@ router.post('/authenticatePassword',
   controller.authenticatePassword)
 
 router.post('/markAccountAsDisabled',
-//  auth.isAuthorizedSuperUser(),
+  auth.isAuthorizedSuperUser(),
   controller.markAccountAsDisabled)
 
 router.post('/updateMode',
