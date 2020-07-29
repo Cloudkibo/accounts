@@ -8,6 +8,7 @@ let contacts = new Schema({
   otherColumns: Schema.Types.Mixed,
   datetime: { type: Date, default: Date.now },
   last_activity_time: { type: Date, default: Date.now },
+  lastMessagedAt: { type: Date, default: Date.now },
   hasChat: {type: Boolean, default: false},
   isSubscribed: {type: Boolean, default: true},
   unreadCount: {type: Number, default: 0},
