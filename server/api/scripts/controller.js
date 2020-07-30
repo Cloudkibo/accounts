@@ -8,6 +8,8 @@ const ReferralModel = require('../v1/pageReferrals/pageReferrals.model')
 const MenuModel = require('../v1/menu/Menu.model')
 const UserModel = require('../v1/user/user.model')
 const CompanyUsers = require('../v1/companyuser/companyuser.model')
+const CompanyProfilesModel = require('../v1/companyprofile/companyprofile.model')
+
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
@@ -710,4 +712,50 @@ exports.normalizePagePermissions = function (req, res) {
           return res.status(500).json({status: 'failed', payload: `Failed to check subscription_messaging permission status ${err}`})
         })
     })
+}
+exports.normalizeCompanyProfiles = function (req, res) {
+  CompanyProfilesModel.find({}).then(companyProfiles => {
+    async.each(companyProfiles, updateCompanyProfile, function (err) {
+      if (err) {
+        res.status(500).json({status: 'failed', payload: err})
+      } else {
+        res.status(200).json({status: 'success', payload: 'updated successfully'})
+      }
+    })
+  })
+}
+function updateCompanyProfile (companyProfileData, callback) {
+  let companyProfile = JSON.parse(JSON.stringify(companyProfileData))
+  let data = {}
+  if (companyProfile.flockSendWhatsApp) {
+    data = {
+      provider: 'flockSend',
+      accessToken: companyProfile.flockSendWhatsApp.accessToken,
+      businessNumber: companyProfile.flockSendWhatsApp.number
+    }
+  } else if (companyProfile.twilioWhatsApp) {
+    data = {
+      provider: 'twilio',
+      accessToken: companyProfile.twilioWhatsApp.authToken,
+      businessNumber: companyProfile.twilioWhatsApp.sandboxNumber,
+      sandboxCode: companyProfile.twilioWhatsApp.sandboxCode,
+      accountSID: companyProfile.twilioWhatsApp.accountSID
+    }
+  }
+  if (data.provider) {
+    CompanyProfilesModel.update(
+      {_id: companyProfile._id},
+      { $unset: {flockSendWhatsApp: '', twilioWhatsApp: ''},
+        $set: {whatsApp: data} },
+      {strict: false}
+    ).exec()
+      .then(result => {
+        callback()
+      })
+      .catch(err => {
+        callback(err)
+      })
+  } else {
+    callback()
+  }
 }
