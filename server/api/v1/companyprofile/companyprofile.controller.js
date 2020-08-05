@@ -53,10 +53,12 @@ exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
       if (!profile) { sendErrorResponse(res, 404, '', 'Company not found') }
-      // Instance Level Method. No Idea if it supports promise. so keeping original callback
-      let result = logicLayer.setCard(profile, req.body.stripeToken)
-      if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
-      else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
+      logicLayer.setCard(profile, req.body.stripeToken)
+        .then(result => {
+          console.log(result)
+          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
+          else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
+        })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in set Card ${util.inspect(err)}`)
@@ -386,5 +388,5 @@ exports.genericUpdate = function (req, res) {
 }
 
 exports.getKeys = function (req, res) {
-  res.status(200).json({status: 'success', captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
+  sendSuccessResponse(res, 200, {captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
 }
