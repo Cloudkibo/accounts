@@ -13,6 +13,7 @@ const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
+const async = require('async')
 
 /*
 ......Review Comments.....
@@ -84,34 +85,52 @@ exports.switchToBasicPlan = function (req, res) {
     })
 }
 
+const _updateCompanyPlan = (data, callback) => {
+  const query = {_id: data.companyId}
+  const update = {planId: data.planObject._id, 'stripe.plan': data.plan}
+  dataLayer.genericUpdatePostObject(query, update, {})
+    .then(result => callback())
+    .catch(err => callback(err))
+}
+
+const _updateStripePlan = (data, callback) => {
+  dataLayer.findOneCPWithPlanPop({_id: data.companyId})
+    .then(company => {
+      if (!company) callback(new Error('Company not found'))
+      logicLayer.setPlan(company, data.stripeToken, data.plan)
+        .then(result => {
+          console.log(result)
+          if (result.status === 'failed') callback(result)
+          else if (result.status === 'success') callback()
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
+      callback(err)
+    })
+}
+
 exports.updatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatePlan controller index')
   if (req.user.plan.unique_ID === req.body.plan) {
     sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
   }
-  if (!req.user.last4 && !req.body.stripeToken) {
+  if (!req.user.last4) {
     sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
-    .then(plan => {
-      let query = {_id: req.body.companyId}
-      let update = {planId: plan._id, 'stripe.plan': req.body.plan}
-      dataLayer.genericUpdatePostObject(query, update, {})
-        .then(result => { logger.serverLog(TAG, `update: ${result}`) })
-        .catch(err => { logger.serverLog(TAG, err) })
-
-      dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
-        .then(company => {
-          if (!company) sendErrorResponse(res, 500, '', 'Company not found')
-
-          let result = logicLayer.setPlan(company, req.body.stripeToken, plan)
-          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
-          else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
-          sendErrorResponse(res, 500, err)
-        })
+    .then(planObject => {
+      const data = {...req.body, planObject}
+      async.parallelLimit([
+        _updateCompanyPlan.bind(null, data),
+        _updateStripePlan.bind(null, data)
+      ], 10, function (err) {
+        if (err) {
+          sendErrorResponse(res, 500, '', err.description)
+        } else {
+          sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+        }
+      })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
