@@ -17,8 +17,7 @@ var CompanyprofileSchema = new Schema({
     default: 'MIX_CHAT'
   },
   twilio: Schema.Types.Mixed,
-  twilioWhatsApp: Schema.Types.Mixed,
-  flockSendWhatsApp: Schema.Types.Mixed,
+  whatsApp: Schema.Types.Mixed,
   saveAutomationMessages: { type: Boolean, default: false },
   showAgentName: { type: Boolean, default: false }
 })
