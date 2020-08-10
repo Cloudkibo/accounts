@@ -239,10 +239,10 @@ exports.planPermissions = function (req, res) {
     delete_account_information: true
   }
 
-  const updateBasic = PlanPermissionsModel.update({plan_id: '5bb5abc95c9926528c1c3bed'}, basicPlan).exec()
-  const updateStandard = PlanPermissionsModel.update({plan_id: '5bb5abc95c9926528c1c3bee'}, standardPlan).exec()
-  const updatePremium = PlanPermissionsModel.update({plan_id: '5bb5abc95c9926528c1c3bef'}, premiumPlan).exec()
-  const updateEnterprise = PlanPermissionsModel.update({plan_id: '5bb5abc95c9926528c1c3bf0'}, enterprisePlan).exec()
+  const updateBasic = PlanPermissionsModel.update({plan_id: '5cac6798ad864163a0b37459'}, basicPlan).exec()
+  const updateStandard = PlanPermissionsModel.update({plan_id: '5cac6798ad864163a0b3745a'}, standardPlan).exec()
+  const updatePremium = PlanPermissionsModel.update({plan_id: '5cac6798ad864163a0b3745b'}, premiumPlan).exec()
+  const updateEnterprise = PlanPermissionsModel.update({plan_id: '5cac6798ad864163a0b3745c'}, enterprisePlan).exec()
 
   Promise.all([updateBasic, updateStandard, updatePremium, updateEnterprise])
     .then(done => {
@@ -411,10 +411,10 @@ exports.planUsage = function (req, res) {
     chatbot_automation_levels: 5
   }
 
-  const updateBasic = PlanUsageModel.update({planId: '5bb5abc95c9926528c1c3bed'}, basicPlan).exec()
-  const updateStandard = PlanUsageModel.update({planId: '5bb5abc95c9926528c1c3bee'}, standardPlan).exec()
-  const updatePremium = PlanUsageModel.update({planId: '5bb5abc95c9926528c1c3bef'}, premiumPlan).exec()
-  const updateEnterprise = PlanUsageModel.update({planId: '5bb5abc95c9926528c1c3bf0'}, enterprisePlan).exec()
+  const updateBasic = PlanUsageModel.update({planId: '5cac6798ad864163a0b37459'}, basicPlan).exec()
+  const updateStandard = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745a'}, standardPlan).exec()
+  const updatePremium = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745b'}, premiumPlan).exec()
+  const updateEnterprise = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745c'}, enterprisePlan).exec()
 
   Promise.all([updateBasic, updateStandard, updatePremium, updateEnterprise])
     .then(done => {
