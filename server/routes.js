@@ -24,6 +24,7 @@ module.exports = function (app) {
   app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
   app.use('/api/v1/permissions', require('./api/v1/permissions'))
   app.use('/api/v1/companyprofile', require('./api/v1/companyprofile'))
+  app.use('/api/v1/companypreferences', require('./api/v1/companyPreferences'))
   app.use('/api/v1/companyUser', require('./api/v1/companyuser'))
   app.use('/api/v1/featureUsage', require('./api/v1/featureUsage'))
   app.use('/api/v1/invitations', require('./api/v1/invitations'))
