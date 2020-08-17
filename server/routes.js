@@ -51,6 +51,7 @@ module.exports = function (app) {
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
+  app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
