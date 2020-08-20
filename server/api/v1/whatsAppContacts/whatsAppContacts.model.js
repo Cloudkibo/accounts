@@ -16,7 +16,9 @@ let contacts = new Schema({
   assigned_to: { type: Schema.Types.Mixed },
   unSubscribedBy: { type: String, default: 'subscriber' },
   lastMessagedAt: { type: Date },
-  lastMessageSentByBot: { type: Schema.Types.Mixed }
+  lastMessageSentByBot: { type: Schema.Types.Mixed },
+  customerShopifyId: { type: String },
+  shoppingCart: { type: Array, default: [] }
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)
