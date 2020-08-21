@@ -116,7 +116,7 @@ exports.updatePlan = function (req, res) {
   if (req.user.plan.unique_ID === req.body.plan) {
     sendErrorResponse(res, 500, `The selected plan is the same as the current plan.`)
   }
-  if (req.user.plan.unique_ID !== 'plan_A' && !req.user.last4) {
+  if (req.body.plan !== 'plan_A' && !req.user.last4) {
     sendErrorResponse(res, 500, `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
