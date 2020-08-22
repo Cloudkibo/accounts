@@ -13,6 +13,23 @@ exports.updateRolePermissionPayload = {
     }
   }
 }
+exports.genericUpdate = {
+  '$schema': 'http://json-schema.org/draft-04/schema#',
+  'type': 'object',
+  'properties': {
+    'query': {
+      'type': 'object'
+    },
+    'newPayload': {
+      'type': 'object'
+    },
+    'options': {
+      'type': 'object'
+    }
+  },
+  'required': [
+  ]
+}
 
 exports.updateUserPermissionsPayload = {
   type: 'object',
