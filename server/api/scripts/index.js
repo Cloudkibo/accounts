@@ -27,5 +27,6 @@ router.get('/normalizeCompanyProfiles', controller.normalizeCompanyProfiles)
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
 router.use('/tags/normalize', require('./tags'))
+router.use('/billingPricing', require('./billingPricing'))
 
 module.exports = router
