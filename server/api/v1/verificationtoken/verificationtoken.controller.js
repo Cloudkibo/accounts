@@ -22,7 +22,7 @@ exports.verify = function (req, res) {
         // Change the path according to requirement
         // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
         logger.serverLog(TAG, `Verification token not found`)
-        return res.render('layouts/verification', {verification: false})
+        return res.render('layouts/verification', {verification: false, isAlreadyVerified: false})
       }
 
       UserDataLayer.findOneUserObjectUsingQuery({_id: verificationtoken.userId})
@@ -31,7 +31,7 @@ exports.verify = function (req, res) {
             // Change the path according to requirement
             // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
             logger.serverLog(TAG, `User Object not found`)
-            return res.render('layouts/verification', {verification: false})
+            return res.render('layouts/verification', {verification: false, isAlreadyVerified: false})
           } else {
             CompanyUsersDataLayer
               .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
@@ -65,7 +65,7 @@ exports.verify = function (req, res) {
                       // Update the UI path
                       // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
                       logger.serverLog(TAG, `Updated User: ${user}`)
-                      return res.render('layouts/verification', {verification: true})
+                      return res.render('layouts/verification', {verification: true, isAlreadyVerified: false})
                     })
                 } else {
                   return res.render('layouts/verification', {isAlreadyVerified: true})
