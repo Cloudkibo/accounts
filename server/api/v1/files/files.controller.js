@@ -159,6 +159,8 @@ exports.uploadForTemplate = function (req, res) {
                 deleteFile(req.body.name)
                 if (err) {
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
+                } else if (resp.body.error) {
+                  sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
                 } else {
                   logger.serverLog(TAG,
                     `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
@@ -236,7 +238,6 @@ function downloadVideo (data) {
     let stream2
 
     video.on('info', (info) => {
-      // console.log('youtube video info', info)
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
       let serverPath = 'f' + uid + '' + today.getFullYear() + '' +
@@ -289,7 +290,6 @@ exports.deleteFile = function (req, res) {
     if (err) {
       sendErrorResponse(res, 500, `Failed to delete file ${err}`)
     } else {
-      console.log(`${file} was deleted`)
       sendSuccessResponse(res, 200, `${file} was succesfully deleted`)
     }
   })
