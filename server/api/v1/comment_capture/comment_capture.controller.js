@@ -135,7 +135,6 @@ exports.genericFetch = function (req, res) {
 
 exports.aggregateFetch = function (req, res) {
   var query = logicLayer.prepareMongoAggregateQuery(req.body)
-  console.log('query got', JSON.stringify(query))
   dataLayer
     .findPostObjectUsingAggregate(query)
     .then(result => {
