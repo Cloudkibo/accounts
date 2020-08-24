@@ -134,9 +134,8 @@ exports.genericFetch = function (req, res) {
 }
 
 exports.aggregateFetch = function (req, res) {
-  logger.serverLog(TAG, `Hit the genericFetch controller index ${util.inspect(req.body)}`)
   var query = logicLayer.prepareMongoAggregateQuery(req.body)
-  logger.serverLog(TAG, `Fetch Query ${util.inspect(query)}`)
+  console.log('query got', JSON.stringify(query))
   dataLayer
     .findPostObjectUsingAggregate(query)
     .then(result => {
@@ -198,7 +197,7 @@ exports.scriptNormalizeAnalytics = function (req, res) {
             logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
             sendErrorResponse(res, 500, err)
           })
-      
+
       }
       if (i === posts.length -1) {
         sendSuccessResponse(res, 200, posts)
