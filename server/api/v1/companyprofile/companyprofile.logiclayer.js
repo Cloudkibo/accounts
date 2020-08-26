@@ -107,8 +107,7 @@ exports.validateAndConvert = (body) => {
   body.forEach((obj, index) => {
     if (obj.$match && obj.$match._id && typeof obj.$match._id === 'string') {
       newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
-    }
-    if (obj.$match && obj.$match._id && obj.$match._id.$ne) {
+    } else if (obj.$match && obj.$match._id && obj.$match._id.$ne) {
       newBody[index].$match._id.$ne = mongoose.Types.ObjectId(newBody[index].$match._id.$ne)
     }
   })
