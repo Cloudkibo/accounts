@@ -16,6 +16,10 @@ router.post('/update',
   validate({body: validationSchema.updateRolePermissionPayload}),
   controller.update) // update role permission
 
+router.post('/genericUpdate',
+  validate({body: validationSchema.genericUpdate}),
+  controller.genericUpdate) // update user permission
+
 router.post('/create',
   validate({body: validationSchema.createRolePermissionPayload}),
   controller.create) // update role permission
