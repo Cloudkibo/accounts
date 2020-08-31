@@ -762,30 +762,40 @@ function updateCompanyProfile (companyProfileData, callback) {
 
 
 exports.normalizeWhatspContact = function (req, res) {
-  CompanyProfilesModel.find({'whatsApp.provider': 'flockSend'}).then(companyProfiles => {
-   let distinctNumber = []
-   let requests = []
-   let updated = {$unset: {whatsApp: 1}}
-   companyProfiles.forEach((companyProfile, index) => {
-    if(distinctNumber.includes(companyProfile.whatsApp.businessNumber)) {
-      requests.push(new Promise((resolve, reject) => {
-        CompanyProfilesModel.update({_id : companyProfile._id}, updated, {})
-        .exec().then(updated => {
-          ContactModel.deleteMany({companyId:companyProfile._id}).then(deleted=> {
-            resolve('success')
+  CompanyProfilesModel.find({whatsApp: { $exists: true }}).then(companyProfiles => {
+    console.log('companyProfiles', companyProfiles.length)
+    let distinctNumber = []
+    let requests = []
+    let updated = {$unset: {whatsApp: 1}}
+    companyProfiles.forEach((companyProfile, index) => {
+      if (distinctNumber.includes(companyProfile.whatsApp.businessNumber) && companyProfile._id != '5d2ed383ef2c170cd31470c2') {
+        let query = {
+          purpose: 'deleteMany',
+          match: {companyId: companyProfile._id}
+        }
+        requests.push(CompanyProfilesModel.update({_id: companyProfile._id}, updated, {}).exec())
+        requests.push(ContactModel.deleteMany({companyId: companyProfile._id}))
+        requests.push(callApi(`whatsAppBroadcasts`, 'delete', query, '', 'kiboengage'))
+        requests.push(callApi(`whatsAppChat`, 'delete', query, '', 'kibochat'))
+        requests.push(new Promise((resolve, reject) => {
+          CompanyUsers.find({companyId: companyProfile._id}).then(companyUsers => {
+            let userIds = companyUsers.map(companyUser => companyUser.userId)
+            UserModel.update({_id: {$in: userIds}}, { $set: {platform: 'messenger'} }, {})
+              .exec().then(updatedPlatform => {
+                resolve('success')
+              })
           })
-        })
-      }))
-    } else {
-      distinctNumber.push(companyProfile.whatsApp.businessNumber)
-    }
-   })
-   console.log('requests.length', requests.length)
-   Promise.all(requests)
-   .then((responses) => res.status(200).json({status: 'success', payload: 'Data normalized suceess'}))
-   .catch((err) => {
-     console.log('error', err)
-     res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+        }))
+      } else {
+        distinctNumber.push(companyProfile.whatsApp.businessNumber)
+      }
+    })
+    console.log('requests.length', requests.length)
+    Promise.all(requests)
+      .then((responses) => res.status(200).json({status: 'success', payload: 'Data normalized suceess'}))
+      .catch((err) => {
+        console.log('error', err)
+        res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+      })
   })
- })
 }
