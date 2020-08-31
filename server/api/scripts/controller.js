@@ -768,7 +768,7 @@ exports.normalizeWhatspContact = function (req, res) {
     let requests = []
     let updated = {$unset: {whatsApp: 1}}
     companyProfiles.forEach((companyProfile, index) => {
-      if (distinctNumber.includes(companyProfile.whatsApp.businessNumber) && companyProfile._id != '5d2ed383ef2c170cd31470c2') {
+      if (distinctNumber.includes(companyProfile.whatsApp.businessNumber) && companyProfile._id != '5a89ecdaf6b0460c552bf7fe') {
         let query = {
           purpose: 'deleteMany',
           match: {companyId: companyProfile._id}
