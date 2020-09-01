@@ -95,7 +95,8 @@ module.exports = function (app) {
   // })
 
   // signup page
-  app.get('/signup', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup/team', function (req, res) {
     res.render('layouts/index', {
       buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
@@ -127,7 +128,8 @@ module.exports = function (app) {
   })
 
   // signup page
-  app.get('/signup/team', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup', function (req, res) {
     res.render('layouts/signup', {individual: false,
       data: [
         {name: 'Customer Engagement', value: 'engage'},
