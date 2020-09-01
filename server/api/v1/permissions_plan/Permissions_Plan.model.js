@@ -59,7 +59,10 @@ var PermissionsSchema = new Schema({
   pending_chat_flag: Boolean,
   smart_replies: Boolean,
   chatbot_automation: Boolean,
-  delete_account_information: Boolean
+  delete_account_information: Boolean,
+  broadcast_levels: Number, // Number of levels allowed in broadcast (Flow Builder)
+  intents_per_bot: Number, // Number of intents created per bot
+  chatbot_automation_levels: Number // Number of chatbot automation levels
 })
 
 module.exports = mongoose.model('permissions_plan', PermissionsSchema)
