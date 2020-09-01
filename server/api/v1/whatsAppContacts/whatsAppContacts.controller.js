@@ -34,6 +34,7 @@ exports.aggregate = function (req, res) {
 }
 
 exports.genericUpdate = function (req, res) {
+  console.log('genericUpdate whatsappContact', JSON.stringify(req.body))
   dataLayer.genericUpdate(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)
