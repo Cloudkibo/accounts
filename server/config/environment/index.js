@@ -20,7 +20,7 @@ const all = {
     username: 'cloudkibo',
     password: 'cl0udk1b0'
   },
-  captchaKey: process.env.googleCaptchaKey || '6LckQ14UAAAAAFH2D15YXxH9o9EQvYP3fRsL2YOU',
+  captchaKey: process.env.googleCaptchaKey || '6LetXYIUAAAAACuNrn9vRPbZLuhI8l6a7LaJPW8j',
   stripeOptions: {
     apiKey: process.env.STRIPE_KEY || 'sk_test_gB8zWtkvbbYFbFFnuj3t4EZn',
     product: 'prod_CxuUOUCZj9ZqwG',
