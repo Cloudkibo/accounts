@@ -776,6 +776,7 @@ exports.normalizeWhatspContact = function (req, res) {
         requests.push(CompanyProfilesModel.update({_id: companyProfile._id}, updated, {}).exec())
         requests.push(ContactModel.deleteMany({companyId: companyProfile._id}))
         requests.push(callApi(`whatsAppBroadcasts`, 'delete', query, '', 'kiboengage'))
+        requests.push(callApi(`whatsAppBroadcastMessages`, 'delete', query, '', 'kiboengage'))
         requests.push(callApi(`whatsAppChat`, 'delete', query, '', 'kibochat'))
         requests.push(new Promise((resolve, reject) => {
           CompanyUsers.find({companyId: companyProfile._id}).then(companyUsers => {
