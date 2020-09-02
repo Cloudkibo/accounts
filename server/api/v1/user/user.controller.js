@@ -466,7 +466,7 @@ exports.authenticatePassword = function (req, res) {
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {
-        sendErrorResponse(res, 500, '', 'Incorrect password')
+        sendErrorResponse(res, 500, 'Incorrect password')
       } else {
         sendSuccessResponse(res, 200, '', 'Authenticated')
       }
