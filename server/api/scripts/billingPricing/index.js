@@ -3,6 +3,7 @@ const router = express.Router()
 const companyUsageController = require('./companyUsage.controller.js')
 const permissionsController = require('./permissions.controller.js')
 const planController = require('./plan.controller.js')
+const companyController = require('./company.controller.js')
 
 router.post('/normalize/companyUsage/engagement', companyUsageController.engagementFeatures)
 router.post('/normalize/companyUsage/support', companyUsageController.supportFeatures)
@@ -12,5 +13,6 @@ router.get('/normalize/rolePermissions', permissionsController.rolePermissions)
 router.post('/normalize/userPermissions', permissionsController.userPermissions)
 router.get('/normalize/planPermissions', planController.planPermissions)
 router.get('/normalize/planUsage', planController.planUsage)
+router.post('/normalize/connectedPages', companyController.connectedPages)
 
 module.exports = router
