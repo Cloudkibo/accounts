@@ -84,6 +84,8 @@ const subscriberSchema = new Schema({
   waitingForUserInput: {type: Schema.Types.Mixed},
   completeInfo: {type: Boolean, default: true},
   siteInfo: { type: Schema.Types.Mixed },
+  shopifyCustomer: { type: Schema.Types.Mixed },
+  shoppingCart: { type: Array, default: [] },
   usingChatBot: {
     type: Boolean,
     default: false
