@@ -802,7 +802,6 @@ exports.normalizeWhatspContact = function (req, res) {
 }
 
 exports.deleteWhatsappData = function (req, res) {
-  console.log('called deleteWhatsappData')
   CompanyProfilesModel.find({whatsApp: { $exists: true }}).then(companyProfiles => {
     console.log('companyProfiles', companyProfiles.length)
     let distinctNumber = []
