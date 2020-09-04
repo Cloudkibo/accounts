@@ -832,11 +832,9 @@ exports.deleteWhatsappData = function (req, res) {
         distinctNumber.push(companyProfile.whatsApp.businessNumber)
       }
     })
-    console.log('requests.length', requests.length)
     Promise.all(requests)
       .then((responses) => res.status(200).json({status: 'success', payload: 'Data normalized suceess'}))
       .catch((err) => {
-        console.log('error', err)
         res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
       })
   })
