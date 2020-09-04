@@ -10,6 +10,9 @@ const SubscribersDataLayer = require('./../subscribers/subscribers.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
+const CompanyUsageModel = require('./../featureUsage/companyUsage.model')
+const PlanUsageModel = require('./../featureUsage/planUsage.model')
+const PagesModel = require('./../pages/Pages.model')
 const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
@@ -71,14 +74,45 @@ exports.setCard = function (req, res) {
 exports.switchToBasicPlan = function (req, res) {
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: 'plan_A'})
     .then(plan => {
-      dataLayer.findOneProfileAndUpdate({_id: req.user.companyId}, {planId: plan._id, 'trialPeriod.status': false}, {})
-        .then(updatedProfile => {
-          sendSuccessResponse(res, 200, updatedProfile)
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
+      async.parallelLimit([
+        function (cb) {
+          dataLayer.findOneProfileAndUpdate({_id: req.user.companyId}, {planId: plan._id, 'trialPeriod.status': false}, {})
+            .then(updatedProfile => cb(null, updatedProfile))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          PlanUsageModel.findOne({planId: plan._id}).exec()
+            .then(planUsage => cb(null, planUsage))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          CompanyUsageModel.findOne({companyId: req.user.companyId}).exec()
+            .then(companyUsage => cb(null, companyUsage))
+            .catch(err => cb(err))
+        }
+      ], 10, function (err, result) {
+        if (err) {
           sendErrorResponse(res, 500, err)
-        })
+        } else {
+          const updatedProfile = result[0]
+          const planUsage = result[1]
+          const companyUsage = result[2]
+          if (companyUsage['facebook_pages'] > planUsage['facebook_pages']) {
+            PagesModel.update({companyId: req.user.companyId}, {connected: false}, {multi: true}).exec()
+              .then(updated => {
+                return CompanyUsageModel.update({companyId: req.user.companyId}, {facebook_pages: 0}).exec()
+              })
+              .then(updated => {
+                sendSuccessResponse(res, 200, updatedProfile)
+              })
+              .catch(err => {
+                sendErrorResponse(res, 500, err)
+              })
+          } else {
+            sendSuccessResponse(res, 200, updatedProfile)
+          }
+        }
+      })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in fetch plan ${util.inspect(err)}`)
@@ -114,22 +148,47 @@ const _updateStripePlan = (data, callback) => {
 exports.updatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatePlan controller index')
   if (req.user.plan.unique_ID === req.body.plan) {
-    sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
+    sendErrorResponse(res, 500, `The selected plan is the same as the current plan.`)
   }
-  if (!req.user.last4) {
-    sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
+  if (req.body.plan !== 'plan_A' && !req.user.last4) {
+    sendErrorResponse(res, 500, `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
     .then(planObject => {
       const data = {...req.body, planObject}
       async.parallelLimit([
+        function (cb) {
+          PlanUsageModel.findOne({planId: planObject._id}).exec()
+            .then(planUsage => cb(null, planUsage))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          CompanyUsageModel.findOne({companyId: req.user.companyId}).exec()
+            .then(companyUsage => cb(null, companyUsage))
+            .catch(err => cb(err))
+        },
         _updateCompanyPlan.bind(null, data),
         _updateStripePlan.bind(null, data)
-      ], 10, function (err) {
+      ], 10, function (err, result) {
         if (err) {
-          sendErrorResponse(res, 500, '', err.description)
+          sendErrorResponse(res, 500, err.description)
         } else {
-          sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+          const planUsage = result[0]
+          const companyUsage = result[1]
+          if (companyUsage['facebook_pages'] > planUsage['facebook_pages']) {
+            PagesModel.update({companyId: req.user.companyId}, {connected: false}, {multi: true}).exec()
+              .then(updated => {
+                return CompanyUsageModel.update({companyId: req.user.companyId}, {facebook_pages: 0}).exec()
+              })
+              .then(updated => {
+                sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+              })
+              .catch(err => {
+                sendErrorResponse(res, 500, err)
+              })
+          } else {
+            sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+          }
         }
       })
     })

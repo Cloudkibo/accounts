@@ -58,7 +58,6 @@ exports.index = function (req, res) {
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
 
-          logger.serverLog(TAG, `find index controller user ${util.inspect(user)}`)
           sendSuccessResponse(res, 200, user)
         })
         .catch(err => {
@@ -292,8 +291,29 @@ exports.joinCompany = function (req, res) {
       if (!invitationToken) {
         sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
       }
-      return CompanyUserDataLayer
-        .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: invitationToken.companyId})
+    })
+    .then(company => {
+      FeatureUsageDataLayer.findAllPlanUsageObjects({planId: company.planId})
+        .then(planUsage => {
+          planUsage = planUsage[0]
+          FeatureUsageDataLayer.findAllCompanyUsageObjects({companyId: company._id})
+            .then(companyUsage => {
+              companyUsage = companyUsage[0]
+              if (planUsage.members !== -1 && companyUsage.members >= planUsage.members) {
+                throw new Error('Members limit has been reached for this company. Please talk to company buyer/admin and ask them to upgrade their plan to let new members join.')
+              } else {
+                return CompanyUserDataLayer
+                  .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+              }
+            })
+            .catch(error => {
+              sendErrorResponse(res, 500, `Failed to company usage ${JSON.stringify(error)}`)
+            })
+        })
+        .catch(error => {
+          sendErrorResponse(res, 500, `Failed to plan usage ${JSON.stringify(error)}`)
+        })
     })
     .then(compUser => {
       logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
@@ -445,7 +465,7 @@ exports.authenticatePassword = function (req, res) {
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {
-        sendErrorResponse(res, 500, '', 'Incorrect password')
+        sendErrorResponse(res, 500, 'Incorrect password')
       } else {
         sendSuccessResponse(res, 200, '', 'Authenticated')
       }
