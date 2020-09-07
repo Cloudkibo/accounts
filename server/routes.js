@@ -49,7 +49,7 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
-
+  app.use('/api/v1/addOns', require('./api/v1/addOns'))
   // auth middleware go here
   app.use('/auth', require('./auth'))
 
