@@ -800,3 +800,41 @@ exports.normalizeWhatspContact = function (req, res) {
       })
   })
 }
+
+exports.deleteWhatsappData = function (req, res) {
+  CompanyProfilesModel.find({whatsApp: { $exists: true }}).then(companyProfiles => {
+    console.log('companyProfiles', companyProfiles.length)
+    let distinctNumber = []
+    let requests = []
+    let updated = {$unset: {whatsApp: 1}}
+    companyProfiles.forEach((companyProfile, index) => {
+      if (companyProfile.whatsApp.connected === false && ((new Date().getTime() - new Date(companyProfile.whatsApp.dateDisconnected).getTime()) / (1000 * 3600 * 24)) >= 60) {
+        let query = {
+          purpose: 'deleteMany',
+          match: {companyId: companyProfile._id}
+        }
+        requests.push(CompanyProfilesModel.update({_id: companyProfile._id}, updated, {}).exec())
+        requests.push(ContactModel.deleteMany({companyId: companyProfile._id}))
+        requests.push(callApi(`whatsAppBroadcasts`, 'delete', query, '', 'kiboengage'))
+        requests.push(callApi(`whatsAppBroadcastMessages`, 'delete', query, '', 'kiboengage'))
+        requests.push(callApi(`whatsAppChat`, 'delete', query, '', 'kibochat'))
+        requests.push(new Promise((resolve, reject) => {
+          CompanyUsers.find({companyId: companyProfile._id}).then(companyUsers => {
+            let userIds = companyUsers.map(companyUser => companyUser.userId)
+            UserModel.update({_id: {$in: userIds}}, { $set: {platform: 'messenger'} }, {})
+              .exec().then(updatedPlatform => {
+                resolve('success')
+              })
+          })
+        }))
+      } else {
+        distinctNumber.push(companyProfile.whatsApp.businessNumber)
+      }
+    })
+    Promise.all(requests)
+      .then((responses) => res.status(200).json({status: 'success', payload: 'Data normalized suceess'}))
+      .catch((err) => {
+        res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+      })
+  })
+}
