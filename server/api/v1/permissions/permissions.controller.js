@@ -36,6 +36,18 @@ exports.update = function (req, res) {
     })
 }
 
+exports.genericUpdate = function (req, res) {
+  logger.serverLog(TAG, 'Hit the permissions controller index to update permission')
+
+  dataLayer.updatUserPermissionsObjectUsingQuery(req.body.query, req.body.newPayload, req.body.options)
+    .then(permissions => {
+        sendSuccessResponse(res, 200, 'Permissions have been updated successfully!')
+    })
+    .catch(err => {
+      sendErrorResponse(res, 500, err)
+    })
+}
+
 exports.create = function (req, res) {
   let query = logicLayer.getAddPermissionObject(req.body)
   dataLayer.roleAggregate([{$addFields: query}, {$out: 'role_permissions'}])

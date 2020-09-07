@@ -13,7 +13,8 @@ exports.preparePostPayload = (body) => {
     payload: body.payload,
     reply: body.reply,
     includedKeywords: body.includedKeywords,
-    excludedKeywords: body.excludedKeywords
+    excludedKeywords: body.excludedKeywords,
+    sendOnlyToNewSubscribers: body.sendOnlyToNewSubscribers
   }
 }
 
@@ -36,7 +37,10 @@ exports.prepareMongoAggregateQuery = (body) => {
           newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
         }
       }
-      if (obj.$match && obj.$match.companyId) {
+      if (obj.$match && obj.$match.userId && !obj.$match.userId.$exists) {
+        newBody[index].$match.userId = mongoose.Types.ObjectId(newBody[index].$match.userId)
+      }
+      if (obj.$match && obj.$match.companyId && !obj.$match.companyId.$exists) {
         newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
       }
       if (obj.$match && obj.$match.pageId && obj.$match.pageId.$in) {

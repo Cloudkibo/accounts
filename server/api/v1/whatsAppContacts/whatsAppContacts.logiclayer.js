@@ -15,6 +15,18 @@ exports.validateAndConvert = (body) => {
         newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
       }
     }
+    if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$lt) {
+      newBody[index].$match.lastMessagedAt.$lt = new Date(newBody[index].$match.lastMessagedAt.$lt)
+    }
+    if (obj.$match && obj.$match.lastMessagedAt && obj.$match.lastMessagedAt.$gte) {
+      newBody[index].$match.lastMessagedAt.$gte = new Date(newBody[index].$match.lastMessagedAt.$gte)
+    }
+    if (obj.$match && obj.$match.last_activity_time && obj.$match.last_activity_time.$lt) {
+      newBody[index].$match.last_activity_time.$lt = new Date(newBody[index].$match.last_activity_time.$lt)
+    }
+    if (obj.$match && obj.$match.last_activity_time && obj.$match.last_activity_time.$gte) {
+      newBody[index].$match.last_activity_time.$gte = new Date(newBody[index].$match.last_activity_time.$gte)
+    }
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
         if (object.companyId) {

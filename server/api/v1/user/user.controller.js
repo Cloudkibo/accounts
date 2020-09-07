@@ -465,7 +465,7 @@ exports.authenticatePassword = function (req, res) {
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
       if (!user.authenticate(req.body.password)) {
-        sendErrorResponse(res, 500, '', 'Incorrect password')
+        sendErrorResponse(res, 500, 'Incorrect password')
       } else {
         sendSuccessResponse(res, 200, '', 'Authenticated')
       }
@@ -677,6 +677,20 @@ exports.distinct = function (req, res) {
   dataLayer.distinctQuery(req.body.distinct)
     .then(result => {
       sendSuccessResponse(res, 200, result)
+    })
+    .catch(err => {
+      sendErrorResponse(res, 500, err)
+    })
+}
+
+exports.markAccountAsDisabled = (req, res) => {
+  console.log(req.body)
+  dataLayer.genericUpdateUserObject({email: {$in: req.body.emails}},
+    {$set: {disableMember: true}},
+    {multi: true})
+    .then(data => {
+      console.log(data)
+      sendSuccessResponse(res, 200, req.body)
     })
     .catch(err => {
       sendErrorResponse(res, 500, err)

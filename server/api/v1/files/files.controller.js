@@ -40,12 +40,18 @@ exports.index = function (req, res) {
       if (err) {
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
+
       logger.serverLog(TAG,
         `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
           id: serverPath,
           url: `${config.domain}/api/v1/files/download/${serverPath}`
         })}`)
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
+        // saving this file to send files with its original name
+        // it will be deleted once it is successfully uploaded to facebook
+        let readData = fs.createReadStream(dir + '/userfiles/' + serverPath)
+        let writeData = fs.createWriteStream(dir + '/userfiles/' + req.files.file.name)
+        readData.pipe(writeData)
         let pages = JSON.parse(req.body.pages)
         logger.serverLog(TAG, `Pages in upload file ${pages}`)
         pageDataLayer.findOnePageObject(pages[0])
@@ -57,7 +63,7 @@ exports.index = function (req, res) {
                   sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
                 }
                 let pageAccessToken = resp2.body.access_token
-                let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + serverPath)
+                let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.files.file.name)
                 const messageData = {
                   'message': JSON.stringify({
                     'attachment': {
@@ -77,6 +83,7 @@ exports.index = function (req, res) {
                     'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
                   },
                   function (err, resp) {
+                    deleteFile(req.files.file.name)
                     if (err) {
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
@@ -111,6 +118,11 @@ exports.index = function (req, res) {
 exports.uploadForTemplate = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
   if (req.body.pages && req.body.pages.length > 0) {
+    // saving this file to send files with its original name
+    // it will be deleted once it is successfully uploaded to facebook
+    let readData = fs.createReadStream(dir + '/userfiles/' + req.body.id)
+    let writeData = fs.createWriteStream(dir + '/userfiles/' + req.body.name)
+    readData.pipe(writeData)
     pageDataLayer.findOnePageObject(req.body.pages[0])
       .then(page => {
         needle.get(
@@ -122,7 +134,8 @@ exports.uploadForTemplate = function (req, res) {
             logger.serverLog(TAG,
               `retrieved page access_token ${JSON.stringify(resp2.body)}`)
             let pageAccessToken = resp2.body.access_token
-            let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.id)
+
+            let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
             logger.serverLog(TAG, dir + '/userfiles/' + req.body.name)
             const messageData = {
               'message': JSON.stringify({
@@ -143,8 +156,11 @@ exports.uploadForTemplate = function (req, res) {
                 'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
               },
               function (err, resp) {
+                deleteFile(req.body.name)
                 if (err) {
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
+                } else if (resp.body.error) {
+                  sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
                 } else {
                   logger.serverLog(TAG,
                     `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
@@ -222,7 +238,6 @@ function downloadVideo (data) {
     let stream2
 
     video.on('info', (info) => {
-      // console.log('youtube video info', info)
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
       let serverPath = 'f' + uid + '' + today.getFullYear() + '' +
@@ -275,7 +290,6 @@ exports.deleteFile = function (req, res) {
     if (err) {
       sendErrorResponse(res, 500, `Failed to delete file ${err}`)
     } else {
-      console.log(`${file} was deleted`)
       sendSuccessResponse(res, 200, `${file} was succesfully deleted`)
     }
   })

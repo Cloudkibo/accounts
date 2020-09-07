@@ -74,7 +74,8 @@ exports.update = function (req, res) {
     includedKeywords: req.body.newPayload.includedKeywords,
     excludedKeywords: req.body.newPayload.excludedKeywords,
     secondReply: req.body.newPayload.secondReply,
-    reply: req.body.newPayload.reply
+    reply: req.body.newPayload.reply,
+    sendOnlyToNewSubscribers: req.body.newPayload.sendOnlyToNewSubscribers
   }
 
   dataLayer.genericUpdatePostObject(req.body.query, updatePayload, req.body.options)
@@ -133,9 +134,7 @@ exports.genericFetch = function (req, res) {
 }
 
 exports.aggregateFetch = function (req, res) {
-  logger.serverLog(TAG, `Hit the genericFetch controller index ${util.inspect(req.body)}`)
   var query = logicLayer.prepareMongoAggregateQuery(req.body)
-  logger.serverLog(TAG, `Fetch Query ${util.inspect(query)}`)
   dataLayer
     .findPostObjectUsingAggregate(query)
     .then(result => {
@@ -197,7 +196,7 @@ exports.scriptNormalizeAnalytics = function (req, res) {
             logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
             sendErrorResponse(res, 500, err)
           })
-      
+
       }
       if (i === posts.length -1) {
         sendSuccessResponse(res, 200, posts)

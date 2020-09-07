@@ -6,6 +6,7 @@ const CompanyUserDataLayer = require('./../companyuser/companyuser.datalayer')
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
 const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
 const UserDataLayer = require('./../user/user.datalayer')
+const SubscribersDataLayer = require('./../subscribers/subscribers.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
@@ -209,9 +210,9 @@ exports.invite = function (req, res) {
         : sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
 
       // Query Objects
-      let InvitationCountQuery = {email: req.body.email, companyId: companyUser.companyId._id}
-      let UserCountQuery = {email: req.body.email}
-      let UserDomainCount = {email: req.body.email, domain: req.user.domain}
+      let InvitationCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}, companyId: companyUser.companyId._id}
+      let UserCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}}
+      let UserDomainCount = {email: {$regex: `^${req.body.email}$`, $options: 'i'}, domain: req.user.domain}
       // Promise Objects
       let InvitationCountPromise = InvitationDataLayer
         .CountInvitationObjectUsingQuery(InvitationCountQuery)
@@ -230,12 +231,12 @@ exports.invite = function (req, res) {
           if (gotCount > 0) {
             logger.serverLog(TAG, `${req.body.name} is already invited.`)
             sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
-          } else if (gotCountAgentWithEmail > 0) {
-            logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
-            sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else if (gotCountAgent > 0) {
             logger.serverLog(TAG, `${req.body.name} is already a member.`)
             sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
+          } else if (gotCountAgentWithEmail > 0) {
+            logger.serverLog(TAG, `${req.body.name} is already on KiboPush.`)
+            sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
             let getTokenPayload = {
@@ -263,11 +264,9 @@ exports.invite = function (req, res) {
                 let emailParam = new sendgrid.Email(logicLayer.getEmailParameters(req.body.email))
                 emailParam = logicLayer.setEmailBody(emailParam, req.user, companyUser, uniqueTokenId, req.body.role)
                 sendgrid.send(emailParam, (err, json) => {
-                  console.log('error from sendgrid', err)
-                  console.log('response from sendgrid', json)
                   logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
-                    ? logger.serverLog(TAG, `error at sendgrid send ${JSON.stringify(err)}`)
+                    ? logger.serverLog(TAG, `error at sendgrid send ${(err)}`)
                     : logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
 
                   json
@@ -336,22 +335,21 @@ exports.updateRole = function (req, res) {
     })
 }
 
-exports.removeMember = function (req, res) {
-  logger.serverLog(TAG, 'Hit the removeMember controller index')
-  if (config.userRoles.indexOf(req.user.role) > 1) {
-    sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
+exports.disableMember = function (req, res) {
+  logger.serverLog(TAG, 'Hit the disableMember controller index')
+  
+  let queryRemovingAssignment = {
+    is_assigned: true,
+    'assigned_to.type': 'agent',
+    'assigned_to.id': req.body.memberId
   }
-  if (config.userRoles.indexOf(req.body.role) < 0) {
-    sendErrorResponse(res, 404, '', 'Invalid role')
-  }
+  
+  let userDisabled = UserDataLayer.updateOneUserObjectUsingQuery({_id:req.body.memberId}, {disableMember: true}, {upsert: true})
+  let removeAssignment = SubscribersDataLayer.genericUpdateSubscriberObject(queryRemovingAssignment, {is_assigned: false, assigned_to: null}, {multi: true})
 
-  let query = {domain_email: req.body.domain_email}
-  let companyUserRemove = CompanyUserDataLayer.removeOneCompanyUserObjectUsingQuery(query)
-  let userRemove = UserDataLayer.deleteUserObjectUsingQuery(query)
-
-  Promise.all([companyUserRemove, userRemove])
+  Promise.all([userDisabled, removeAssignment])
     .then(result => {
-      sendSuccessResponse(res, 200, '', 'Account removed')
+      sendSuccessResponse(res, 200, result, 'User has been disabled')
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in getting promise all remove member ${util.inspect(err)}`)

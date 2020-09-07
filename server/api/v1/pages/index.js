@@ -11,6 +11,10 @@ router.get('/:_id',
   auth.isAuthenticated(),
   controller.index)
 
+router.post('/refreshPages',
+  auth.isAuthenticated(),
+  controller.refreshPages)
+
 router.post('/',
   validate({body: validationSchema.pagePayload}),
   auth.isAuthenticated(),

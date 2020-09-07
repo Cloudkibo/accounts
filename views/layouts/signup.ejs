@@ -9,9 +9,9 @@
                 m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
 
 <% if (individual) { %>
-    <%- include('../pages/signupSingle', { data, Continue }); %>
+    <%- include('../pages/signupSingle', { data, Continue, googleCaptchaKey }); %>
 <% } else { %>
-    <%- include('../pages/signupTeam', { data, Continue }); %>
+    <%- include('../pages/signupTeam', { data, Continue, googleCaptchaKey }); %>
 <% } %>
 
 <% include ../partials/footer %>

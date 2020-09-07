@@ -8,8 +8,10 @@ exports.serverLog = function (label, data) {
     debug(data)
     // todo use log levels like info, warn, error and debug
     // logger.info(`${namespace} - ${data}`)
+  } else {
+    console.log(`${namespace} - ${data}`)
+    // logger.info(`${namespace} - ${data}`) 
   }
-  console.log(data)
 }
 
 exports.clientLog = function (label, data) {

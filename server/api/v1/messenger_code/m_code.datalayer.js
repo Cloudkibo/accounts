@@ -12,7 +12,7 @@ exports.findMessengerCode = (query) => {
 }
 
 exports.updateMessengerCode = (id, payload) => {
-  return MessengerCodeModel.updateOne({_id: id}, payload)
+  return MessengerCodeModel.updateOne({pageId: id}, payload)
     .exec()
 }
 

@@ -39,6 +39,12 @@ exports.validateAndConvert = (body) => {
         newBody[index].$match._id = mongoose.Types.ObjectId(newBody[index].$match._id)
       }
     }
+    if (obj.$match && obj.$match.pageId) {
+      if (obj.$match.pageId.$in) {
+        let pageIds = obj.$match.pageId.$in.map((p) => mongoose.Types.ObjectId(p))
+        newBody[index].$match.pageId.$in = pageIds
+      }
+    }
     if (obj.$match && obj.$match.companyId) {
       newBody[index].$match.companyId = mongoose.Types.ObjectId(newBody[index].$match.companyId)
     }
@@ -100,6 +106,12 @@ exports.validateAndConvert = (body) => {
         }
         if (object._id && object._id.$lt) {
           newBody[index].$match.$and[index1]._id.$lt = mongoose.Types.ObjectId(newBody[index].$match.$and[index1]._id.$lt)
+        }
+        if (object.datetime && object.datetime.$gte) {
+          newBody[index].$match.$and[index1].datetime.$gte = new Date(newBody[index].$match.$and[index1].datetime.$gte)
+        }
+        if (object.datetime && object.datetime.$lt) {
+          newBody[index].$match.$and[index1].datetime.$lt = new Date(newBody[index].$match.$and[index1].datetime.$lt)
         }
       })
     }

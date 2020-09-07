@@ -24,6 +24,7 @@ module.exports = function (app) {
   app.use('/api/v1/reset_password', require('./api/v1/passwordresettoken'))
   app.use('/api/v1/permissions', require('./api/v1/permissions'))
   app.use('/api/v1/companyprofile', require('./api/v1/companyprofile'))
+  app.use('/api/v1/companypreferences', require('./api/v1/companyPreferences'))
   app.use('/api/v1/companyUser', require('./api/v1/companyuser'))
   app.use('/api/v1/featureUsage', require('./api/v1/featureUsage'))
   app.use('/api/v1/invitations', require('./api/v1/invitations'))
@@ -50,6 +51,11 @@ module.exports = function (app) {
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
   app.use('/api/v1/addOns', require('./api/v1/addOns'))
+  app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
+  app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
+  app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
+  app.use('/api/v1/scripts', require('./api/scripts'))
+
   // auth middleware go here
   app.use('/auth', require('./auth'))
 
@@ -118,7 +124,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // signup page
@@ -131,7 +139,9 @@ module.exports = function (app) {
         {name: 'Ecommerce', value: 'ecommerce'},
         {name: 'All', value: 'all'}
       ],
-      Continue: req.query.continue})
+      Continue: req.query.continue,
+      googleCaptchaKey: process.env.googleCaptchaKey
+    })
   })
 
   // login page

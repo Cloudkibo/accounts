@@ -42,16 +42,16 @@ exports.updateRole = {
   ]
 }
 
-exports.removeMember = {
+exports.disableMember = {
   '$schema': 'http://json-schema.org/draft-04/schema#',
   'type': 'object',
   'properties': {
-    'domain_email': {
+    'memberId': {
       'type': 'string'
     }
   },
   'required': [
-    'domain_email'
+    'memberId'
   ]
 }
 

@@ -20,8 +20,8 @@ require('./local/passport').setup(Users, config)
 router.use('/local', require('./local'))
 
 router.get('/scripts/jsonp', (req, res) => {
-  logger.serverLog(TAG, req.query.callback)
-  logger.serverLog(TAG, req.cookies)
+  logger.serverLog(TAG, JSON.stringify(req.query.callback))
+  logger.serverLog(TAG, JSON.stringify(req.cookies))
 
   let token = req.cookies.token
   let callbackOfClient = req.query.callback
@@ -49,9 +49,9 @@ router.get('/logout', (req, res) => {
   //     description: 'Something went wrong, please try again.'
   //   })
   // }
-  logger.serverLog(TAG, req.cookies)
+  logger.serverLog(TAG, JSON.stringify(req.cookies))
   logger.serverLog(TAG, `Going to remove token cookie`)
-  logger.serverLog(TAG, req.query)
+  logger.serverLog(TAG, JSON.stringify(req.query))
   res.clearCookie('token')
   // We will change it to based on the request of project
   return res.redirect(req.query.continue)

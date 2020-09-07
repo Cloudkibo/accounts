@@ -14,12 +14,14 @@ let facebookPostSchema = new Schema({
   excludedKeywords: [String],
   post_id: String,
   count: {type: Number, default: 0},
+  deletedComments: {type: Number, default: 0},
   positiveMatchCount: {type: Number, default: 0},
   conversionCount: {type: Number, default: 0},
   title: String,
   existingPostUrl: String,
   secondReply: Schema.Types.Mixed,
-  waitingReply: {type: Number, default: 0}
+  waitingReply: {type: Number, default: 0},
+  sendOnlyToNewSubscribers: {type: Boolean, default: false}
 })
 
 facebookPostSchema.virtual('negativeMatchCount').get(function () {
