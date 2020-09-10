@@ -86,6 +86,7 @@ const subscriberSchema = new Schema({
   siteInfo: { type: Schema.Types.Mixed },
   shopifyCustomer: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
+  lastMessageSentByBot: { type: Schema.Types.Mixed },
   usingChatBot: {
     type: Boolean,
     default: false
