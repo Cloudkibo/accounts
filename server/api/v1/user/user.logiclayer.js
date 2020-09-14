@@ -38,6 +38,23 @@ const getResponse = (user, companyUser, permission) => {
   }
 }
 
+const getResponseForUserView = (loggedUser, actingCompanyUser, actingUserpermissions) => {
+  if (!loggedUser) {
+    return {status: 'failed', description: 'Logged In User not found'}
+  
+  } else if (!actingCompanyUser) {
+    return {
+      status: 'failed',
+      description: 'The acting as user account does not belong to any company. Please contact support'
+    }
+  } else if (!actingUserpermissions) {
+    return {
+      status: 'failed',
+      description: 'Permissions not set for acting as user. Please contact support'
+    }
+  }
+}
+
 const prepareUserPayload = (body, isTeam, domain) => {
   let random = getRandomString()
   let payload = {
@@ -360,6 +377,7 @@ exports.inHouseEmailHeader = inHouseEmailHeader
 exports.setEmailBody = setEmailBody
 exports.setInHouseEmailBody = setInHouseEmailBody
 exports.getResponse = getResponse
+exports.getResponseForUserView = getResponseForUserView
 exports.getEnableDeleteEmailText = getEnableDeleteEmailText
 exports.setEnableDeleteEmailBody = setEnableDeleteEmailBody
 exports.setInhouseEnableDeleteEmailBody = setInhouseEnableDeleteEmailBody
