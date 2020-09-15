@@ -35,6 +35,7 @@ router.put('/update',
 
 router.get('/updateData',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.updateData)
 
 router.post('/updatePicture',
