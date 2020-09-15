@@ -180,6 +180,22 @@ function attachUserToRequest (req, res, next, userId) {
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
+function isSuperUserActingAsCustomer(modeOfAction) {
+  return compose()
+    .use((req, res, next) => {
+      if (req.actingAsUser) {
+        if(modeOfAction === 'write') {
+          return res.status(403)
+          .json({status: 'failed', description: `You are not allowed to perform this action`})
+        } else {
+          req.user = req.actingAsUser
+          next()
+        }
+      } else {
+        next()
+      }
+    })
+}
 // eslint-disable-next-line no-unused-vars
 function isAuthorizedWebHookTrigger (req, res, next) {
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
@@ -354,3 +370,4 @@ exports.signToken = signToken
 exports.setTokenCookie = setTokenCookie
 exports.isAuthorizedSuperUser = isAuthorizedSuperUser
 exports.fetchPages = fetchPages
+exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer
