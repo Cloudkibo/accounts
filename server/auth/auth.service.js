@@ -44,8 +44,30 @@ function isAuthenticated () {
     .use((req, res, next) => {
       var userId
       if (req.user) {
-        userId = req.user
-        attachUserToRequest(req, res, next, userId)
+        userId = req.user._id
+        UserDataLayer.findOneUserObject({_id: userId})
+        .then(loggedInUser => {
+          if(loggedInUser.actingAsUser) {
+            if (loggedInUser.isSuperUser) {     
+              UserDataLayer.findOneUserObjectUsingQuery({domain_email: loggedInUser.actingAsUser.domain_email})
+              .then(actingAsUser => {
+                attachUserAndActingUserInfo(req, res, next, loggedInUser, actingAsUser)
+              })
+              .catch(err => {
+                logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+                return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+              })      
+            } else {
+              return res.status(403).json({status: 'failed', payload: 'You are not allowed to perform this action'})
+            }
+          } else {
+            attachUserToRequest(req, res, next, userId)
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
       } else if (req.headers.hasOwnProperty('consumer_id')) {
         userId = req.headers.consumer_id
         attachUserToRequest(req, res, next, userId)
@@ -53,6 +75,57 @@ function isAuthenticated () {
         logger.serverLog(TAG, `call from kibo product`)
         next()
       }
+    })
+}
+
+function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser) {
+  let actingAsCompanyUser = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: actingAsUser._id})
+  let actingAsUserPermissions = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: actingAsUser._id})
+
+  Promise.all([actingAsCompanyUser, actingAsUserPermissions])
+    .then(result => {
+      let actingCompanyUser = result[0]
+      let actingUserpermissions = result[1]
+      let companyActingUser
+
+      if (!loggedInUser  || !actingCompanyUser || !actingUserpermissions) {
+        let resp = UserLogicLayer.getResponseForUserView(loggedInUser, actingCompanyUser, actingUserpermissions)
+        return res.status(404).json(resp)
+      }
+
+      CompanyProfileDataLayer.findOneCPWithPlanPop({_id: actingCompanyUser.companyId})
+        .then(foundCompany => {
+          companyActingUser = foundCompany
+          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+        })
+        .then(plan => {
+          if (!plan) {
+            return res.status(404).json({
+              status: 'failed',
+              description: 'Fatal Error, plan not set for this user. Please contact support'
+            })
+          } else {
+            var actingUser = actingAsUser.toObject()
+            actingUser.companyId = actingCompanyUser.companyId
+            actingUser.permissions = actingUserpermissions
+            actingUser.currentPlan = companyActingUser.planId
+            actingUser.last4 = companyActingUser.stripe.last4
+            actingUser.plan = plan
+            actingUser.uiMode = config.uiModes[actingAsUser.uiMode]
+
+            req.user = loggedInUser
+            req.actingAsUser = actingUser
+            next()
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
 
@@ -105,6 +178,22 @@ function attachUserToRequest (req, res, next, userId) {
     .catch(err => {
       logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+    })
+}
+function isSuperUserActingAsCustomer(modeOfAction) {
+  return compose()
+    .use((req, res, next) => {
+      if (req.actingAsUser) {
+        if(modeOfAction === 'write') {
+          return res.status(403)
+          .json({status: 'failed', description: `You are not allowed to perform this action`})
+        } else {
+          req.user = req.actingAsUser
+          next()
+        }
+      } else {
+        next()
+      }
     })
 }
 // eslint-disable-next-line no-unused-vars
@@ -281,3 +370,4 @@ exports.signToken = signToken
 exports.setTokenCookie = setTokenCookie
 exports.isAuthorizedSuperUser = isAuthorizedSuperUser
 exports.fetchPages = fetchPages
+exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer

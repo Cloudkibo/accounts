@@ -10,18 +10,21 @@ const auth = require('../../../auth/auth.service')
 
 router.post('/query',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   // auth.doesPlanPermitsThisAction('api'),
   // auth.doesRolePermitsThisAction('apiPermission'),
   controller.query)
 
 router.post('/enable',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   // auth.doesPlanPermitsThisAction('api'),
   // auth.doesRolePermitsThisAction('apiPermission'),
   controller.enable)
 
 router.post('/save',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   // auth.doesPlanPermitsThisAction('api'),
   // auth.doesRolePermitsThisAction('apiPermission'),
   controller.save)
