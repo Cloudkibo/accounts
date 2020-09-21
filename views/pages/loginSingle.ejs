@@ -14,6 +14,10 @@
                                     <div class="form-group m-form__group">
                                         <input class="form-control m-input m-login__form-input--last" type="password" placeholder="Password" name="password" id="password">
                                     </div>
+                                    <div class="form-group m-form__group" id="otpPanel" style="display: none; visibility: hidden;">
+                                      <p> Enter the OTP from your Authenticator App such as Google Authenticator </p>
+                                        <input class="form-control m-input m-login__form-input--last" type="text" placeholder="Enter the OTP" name="otp" id="otp">
+                                    </div>
                                     <%- include('../partials/forgot-link', { Continue }); %>
                                     <div class="form-group m-form__group">
                                       <div id='alertMsg' style="color: red;"></div>
