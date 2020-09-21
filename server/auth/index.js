@@ -38,7 +38,7 @@ router.get('/verify',
   auth.isAuthenticated(),
   (req, res, next) => { logger.serverLog(TAG, `AFTER authenticated`); next() },
   (req, res) => {
-    res.status(200).json({status: 'success', description: 'Token verified', user: req.user})
+    res.status(200).json({status: 'success', description: 'Token verified', user: req.user, actingAsUser: req.actingAsUser})
   })
 
 // This function will be used for sign out

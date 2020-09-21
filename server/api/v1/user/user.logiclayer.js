@@ -13,11 +13,11 @@ let mongoose = require('mongoose')
 const TAG = '/api/v1/user/user.logiclayer.js'
 
 const prepareUpdateUserPayload = (name, email, uiMode) => {
-  let flag = true
-  let temp = {}
-  name ? temp.name = name : flag = false
-  email ? temp.email = email : flag = false
-  uiMode ? temp.uiMode = uiMode : flag = false
+  let temp = {
+    name,
+    email,
+    uiMode
+  }
 
   return temp
 }
@@ -34,6 +34,23 @@ const getResponse = (user, companyUser, permission) => {
     return {
       status: 'failed',
       description: 'Permissions not set for this user. Please contact support'
+    }
+  }
+}
+
+const getResponseForUserView = (loggedUser, actingCompanyUser, actingUserpermissions) => {
+  if (!loggedUser) {
+    return {status: 'failed', description: 'Logged In User not found'}
+  
+  } else if (!actingCompanyUser) {
+    return {
+      status: 'failed',
+      description: 'The acting as user account does not belong to any company. Please contact support'
+    }
+  } else if (!actingUserpermissions) {
+    return {
+      status: 'failed',
+      description: 'Permissions not set for acting as user. Please contact support'
     }
   }
 }
@@ -62,21 +79,20 @@ const isTeamAccount = (body) => {
   return flag
 }
 
-const defaultPlans = (plans) => {
-  let defaultPlanTeam, defaultPlanIndividual
-  plans.forEach(doc => {
-    if (doc.unique_ID === 'plan_D') defaultPlanTeam = doc
-    if (doc.unique_ID === 'plan_B') defaultPlanIndividual = doc
-  })
-  return { defaultPlanIndividual, defaultPlanTeam }
-}
-
 const prepareCompanyProfile = (body, userId, isTeam, domain, defaultPlan) => {
+  const currentDate = new Date()
+  let date = currentDate
+  date.setDate(date.getDate() + 30)
   return {
     companyName: isTeam ? body.company_name : 'Pending ' + domain,
     companyDetail: isTeam ? body.company_description : 'Pending ' + domain,
     ownerId: userId,
-    planId: defaultPlan._id
+    planId: defaultPlan._id,
+    trialPeriod: {
+      status: true,
+      startDate: currentDate,
+      endDate: date
+    }
   }
 }
 
@@ -101,7 +117,27 @@ const companyUsageData = (companyId) => {
     wordpress_autoposting: 0,
     broadcast_sequences: 0,
     messages_per_sequence: 0,
-    segmentation_lists: 0
+    segmentation_lists: 0,
+    custom_fields: 0,
+    tags: 0,
+    tags_per_subscriber: 0,
+    template_categories: 0,
+    rss_feeds: 0,
+    news_integration_feeds: 0,
+    broadcast_levels: 0,
+    comment_capture_rules: 0,
+    messenger_codes: 0,
+    landing_pages: 0,
+    json_ads: 0,
+    messenger_ref_urls: 0,
+    overlay_widgets: 0,
+    members: 0,
+    teams: 0,
+    external_integrations: 0,
+    intents_per_bot: 0,
+    sponsored_broadcasts: 0,
+    chatbot_automation: 0,
+    chatbot_automation_levels: 0
   }
 }
 
@@ -349,7 +385,6 @@ exports.isEmailAndDomainFound = isEmailAndDomainFound
 exports.isTeamAccount = isTeamAccount
 exports.prepareUserPayload = prepareUserPayload
 exports.prepareUpdateUserPayload = prepareUpdateUserPayload
-exports.defaultPlans = defaultPlans
 exports.prepareCompanyProfile = prepareCompanyProfile
 exports.companyUsageData = companyUsageData
 exports.createCustomerOnStripe = createCustomerOnStripe
@@ -360,6 +395,7 @@ exports.inHouseEmailHeader = inHouseEmailHeader
 exports.setEmailBody = setEmailBody
 exports.setInHouseEmailBody = setInHouseEmailBody
 exports.getResponse = getResponse
+exports.getResponseForUserView = getResponseForUserView
 exports.getEnableDeleteEmailText = getEnableDeleteEmailText
 exports.setEnableDeleteEmailBody = setEnableDeleteEmailBody
 exports.setInhouseEnableDeleteEmailBody = setInhouseEnableDeleteEmailBody
