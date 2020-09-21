@@ -57,6 +57,7 @@ module.exports = function (app) {
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
+  app.use('/auth/tfa', cors(corsOptions), require('./auth/tfa'))
 
   app.options('/updatePicture', cors(corsOptions))
   app.post('/updatePicture', cors(), multipartyMiddleware, userController.updatePicture)
