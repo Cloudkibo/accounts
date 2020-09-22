@@ -1,5 +1,4 @@
 'use strict'
-
 const config = require('../config/environment')
 const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
@@ -276,8 +275,28 @@ function fetchPages (url, user, req, token) {
   })
 }
 
+function saveLastLoginIpAddress (req) {
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+
+  logger.serverLog(TAG, `IP found: ${ip}`, 'debug')
+
+  if (ip.includes('ffff')) {
+    let temp = ip.split(':')
+    ip = temp[temp.length - 1]
+  }
+
+  UserDataLayer.updateOneUserObjectUsingQuery(
+    { _id: req.user._id },
+    { lastLoginIPAddress: ip },
+    { upsert: false }
+  )
+    .then(result => logger.serverLog(TAG, 'updated user ip address for last login', 'debug'))
+    .catch(err => logger.serverLog(TAG, `error in updating IP address of user for last login ${JSON.stringify(err)}`))
+}
+
 exports.isAuthenticated = isAuthenticated
 exports.signToken = signToken
 exports.setTokenCookie = setTokenCookie
 exports.isAuthorizedSuperUser = isAuthorizedSuperUser
 exports.fetchPages = fetchPages
+exports.saveLastLoginIpAddress = saveLastLoginIpAddress

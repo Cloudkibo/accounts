@@ -33,7 +33,10 @@ const UserSchema = new Schema({
   connectFacebook: {type: Boolean, default: false},
   deleteInformation: Schema.Types.Mixed, // GDPR INFO
   platform: {type: String},
-  disableMember: {type: Boolean, default: false}
+  disableMember: {type: Boolean, default: false},
+  lastLoginIPAddress: String,
+  tfa: Schema.Types.Mixed,
+  tfaEnabled: {type: Boolean, default: false}
 })
 
 /**
