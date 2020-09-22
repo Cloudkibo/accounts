@@ -49,7 +49,7 @@ function isAuthenticated () {
         .then(loggedInUser => {
           if(loggedInUser.actingAsUser) {
             if (loggedInUser.isSuperUser) {     
-              UserDataLayer.findOneUserObjectUsingQuery({domain_email: loggedInUser.actingAsUser.actingUser.domain_email})
+              UserDataLayer.findOneUserObjectUsingQuery({domain_email: loggedInUser.actingAsUser.domain_email})
               .then(actingAsUser => {
                 attachUserAndActingUserInfo(req, res, next, loggedInUser, actingAsUser)
               })

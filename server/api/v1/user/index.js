@@ -8,6 +8,7 @@ const auth = require('./../../../auth/auth.service')
 
 router.get('/', 
  auth.isAuthenticated(),
+ auth.isSuperUserActingAsCustomer(),
 controller.index)
 
 router.post('/updateChecks', 
