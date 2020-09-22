@@ -34,7 +34,10 @@ const UserSchema = new Schema({
   deleteInformation: Schema.Types.Mixed, // GDPR INFO
   platform: {type: String, default: 'messenger'},
   disableMember: {type: Boolean, default: false},
-  actingAsUser: Schema.Types.Mixed
+  actingAsUser: Schema.Types.Mixed,
+  lastLoginIPAddress: String,
+  tfa: Schema.Types.Mixed,
+  tfaEnabled: {type: Boolean, default: false}
 })
 
 /**
