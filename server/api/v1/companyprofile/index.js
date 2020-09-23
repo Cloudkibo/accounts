@@ -49,6 +49,7 @@ router.post('/updateAutomatedOptions',
 
 router.post('/setCard',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   validate({body: validationSchema.setCard}),
   controller.setCard)
 
