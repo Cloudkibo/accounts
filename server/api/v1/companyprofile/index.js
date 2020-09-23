@@ -22,38 +22,46 @@ router.get('/',
 router.post('/invite',
   validate({body: validationSchema.invitePayload}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.invite)
 
 router.post('/updateRole',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.updateRole)
 
 router.post('/disableMember',
-  validate({body: validationSchema.disableMember}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
+  validate({body: validationSchema.disableMember}),
   controller.disableMember)
 
 router.get('/members',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   controller.members)
 
 router.post('/updateAutomatedOptions',
-  validate({body: validationSchema.updateAutomatedOptions}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
+  validate({body: validationSchema.updateAutomatedOptions}),
   controller.updateAutomatedOptions)
 
 router.post('/setCard',
-  validate({body: validationSchema.setCard}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
+  validate({body: validationSchema.setCard}),
   controller.setCard)
 
 router.post('/updatePlan',
-  validate({body: validationSchema.updatePlan}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
+  validate({body: validationSchema.updatePlan}),
   controller.updatePlan)
 
 router.get('/getAutomatedOptions',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   controller.getAutomatedOptions)
 
 router.get('/getKeys',
@@ -62,16 +70,23 @@ router.get('/getKeys',
 
 // use this url to receive stripe webhook events
 router.post('/stripe/events',
-  stripeWebhook.middleware,
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
+  stripeWebhook.middleware,
   stripeEvents
 )
 
-router.post('/query', auth.isAuthenticated(), controller.genericFetch)
-router.post('/aggregate', auth.isAuthenticated(), controller.aggregateFetch)
-router.put('/update',
-  validate({body: validationSchema.genericUpdatePayload}),
+router.post('/query',
   auth.isAuthenticated(),
+  controller.genericFetch)
+
+router.post('/aggregate', 
+  auth.isAuthenticated(),
+  controller.aggregateFetch)
+
+router.put('/update',
+  auth.isAuthenticated(),
+  validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
 module.exports = router

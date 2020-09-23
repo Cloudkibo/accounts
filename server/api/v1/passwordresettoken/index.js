@@ -12,6 +12,7 @@ let router = express.Router()
 router.post('/change',
   validate({body: validationSchema.updatePasswordSchema}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.change)
 
 router.post('/forgot',
