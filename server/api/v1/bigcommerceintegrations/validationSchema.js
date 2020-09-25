@@ -14,9 +14,6 @@ exports.createPayload = {
     'companyId': {
       'type': 'string'
     },
-    'shopUrl': {
-      'type': 'string'
-    },
     'shopToken': {
       'type': 'string'
     }
@@ -24,7 +21,6 @@ exports.createPayload = {
   'required': [
     'userId',
     'companyId',
-    'shopUrl',
     'shopToken'
   ]
 }

@@ -3,7 +3,7 @@ const router = express.Router()
 const validate = require('express-jsonschema').validate
 
 const validationSchema = require('./validationSchema')
-const controller = require('./shopify.controller')
+const controller = require('./bigcommerce.controller')
 const auth = require('./../../../auth/auth.service')
 
 router.get('/',

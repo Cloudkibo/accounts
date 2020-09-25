@@ -8,7 +8,7 @@ let mongoose = require('mongoose')
 
 exports.validateCreatePayload = (body) => {
   let bool = true
-  let arrayOfRequiredFields = ['userId', 'companyId', 'shopUrl', 'shopToken']
+  let arrayOfRequiredFields = ['userId', 'companyId', 'payload', 'shopToken']
   let arrayOfKeys = Object.keys(body)
 
   arrayOfRequiredFields.forEach((field, index) => {
