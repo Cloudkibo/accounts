@@ -42,8 +42,8 @@ const subscriberSchema = new Schema({
   phoneNumber: {
     type: String
   },
-  unSubscribedBy: {type: String, default: 'subscriber'},
-  source: {type: String, default: 'direct_message'},
+  unSubscribedBy: { type: String, default: 'subscriber' },
+  source: { type: String, default: 'direct_message' },
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   isSubscribed: {
     type: Boolean,
@@ -78,13 +78,13 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: true
   },
-  unreadCount: {type: Number, default: 0},
-  messagesCount: {type: Number, default: 0},
-  awaitingCommentReply: {type: Schema.Types.Mixed},
-  waitingForUserInput: {type: Schema.Types.Mixed},
-  completeInfo: {type: Boolean, default: true},
+  unreadCount: { type: Number, default: 0 },
+  messagesCount: { type: Number, default: 0 },
+  awaitingCommentReply: { type: Schema.Types.Mixed },
+  waitingForUserInput: { type: Schema.Types.Mixed },
+  completeInfo: { type: Boolean, default: true },
   siteInfo: { type: Schema.Types.Mixed },
-  shopifyCustomer: { type: Schema.Types.Mixed },
+  commerceCustomer: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
   lastMessageSentByBot: { type: Schema.Types.Mixed },
   usingChatBot: {
