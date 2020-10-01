@@ -325,6 +325,7 @@ exports.joinCompany = function (req, res) {
         sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
         logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
+        console.log('foundUser.platform', foundUser.platform)
         let accountData = {
           name: req.body.name,
           email: req.body.email,
@@ -409,6 +410,7 @@ exports.joinCompany = function (req, res) {
     })
     .catch(err => {
       logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      console.log('error', util.inspect(err))
       sendErrorResponse(res, 500, err)
     })
 }
