@@ -13,6 +13,7 @@ let contacts = new Schema({
   isSubscribed: {type: Boolean, default: true},
   unreadCount: {type: Number, default: 0},
   messagesCount: {type: Number, default: 0},
+  chatbotContext: {type: String},
   pendingResponse: {
     type: Boolean,
     default: false
