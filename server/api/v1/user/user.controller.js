@@ -356,10 +356,11 @@ exports.joinCompany = function (req, res) {
     })
     .then(rolePermissions => {
       console.log('role Permission', rolePermissions)
-      delete rolePermissions._id
-      delete rolePermissions.__v
-      delete rolePermissions.role
-      let permissionsPayload = _.merge({ companyId: invitationToken.companyId, userId: user._id }, rolePermissions)
+      let roleBasedPermissions = Object.assign({}, rolePermissions)
+      delete roleBasedPermissions._id
+      delete roleBasedPermissions.__v
+      delete roleBasedPermissions.role
+      let permissionsPayload = _.merge({ companyId: invitationToken.companyId, userId: user._id }, roleBasedPermissions)
       console.log('After Permission', permissionsPayload)
       return PermissionDataLayer.createUserPermission(permissionsPayload)
     })
