@@ -22,8 +22,6 @@ const { sendSuccessResponse, sendErrorResponse } = require('../../global/respons
 const { updateCompanyUsage } = require('../../global/billingPricing')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller index')
-
   let userPromise = dataLayer.findOneUserObject(req.user._id)
   let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user._id})
   let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})

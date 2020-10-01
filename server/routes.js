@@ -54,6 +54,7 @@ module.exports = function (app) {
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
+  app.use('/api/v1/bigcommerce', require('./api/v1/bigcommerceintegrations'))
   app.use('/api/v1/scripts', require('./api/scripts'))
 
   // auth middleware go here
@@ -108,7 +109,7 @@ module.exports = function (app) {
 
   // login page
   app.get('/login', function (req, res) {
-    res.render('layouts/login', {Continue: req.query.continue ? req.query.continue : ''})
+    res.render('layouts/login', { Continue: req.query.continue ? req.query.continue : '' })
   })
 
   // login page
@@ -118,12 +119,13 @@ module.exports = function (app) {
 
   // signup page
   app.get('/signup/single', function (req, res) {
-    res.render('layouts/signup', {individual: true,
+    res.render('layouts/signup', {
+      individual: true,
       data: [
-        {name: 'Customer Engagement', value: 'engage'},
-        {name: 'Customer Chat', value: 'chat'},
-        {name: 'Ecommerce', value: 'ecommerce'},
-        {name: 'All', value: 'all'}
+        { name: 'Customer Engagement', value: 'engage' },
+        { name: 'Customer Chat', value: 'chat' },
+        { name: 'Ecommerce', value: 'ecommerce' },
+        { name: 'All', value: 'all' }
       ],
       Continue: req.query.continue,
       googleCaptchaKey: process.env.googleCaptchaKey
@@ -135,10 +137,10 @@ module.exports = function (app) {
   app.get('/signup', function (req, res) {
     res.render('layouts/signup', {individual: false,
       data: [
-        {name: 'Customer Engagement', value: 'engage'},
-        {name: 'Customer Chat', value: 'chat'},
-        {name: 'Ecommerce', value: 'ecommerce'},
-        {name: 'All', value: 'all'}
+        { name: 'Customer Engagement', value: 'engage' },
+        { name: 'Customer Chat', value: 'chat' },
+        { name: 'Ecommerce', value: 'ecommerce' },
+        { name: 'All', value: 'all' }
       ],
       Continue: req.query.continue,
       googleCaptchaKey: process.env.googleCaptchaKey
@@ -147,19 +149,19 @@ module.exports = function (app) {
 
   // login page
   app.get('/forgotPassword', function (req, res) {
-    res.render('layouts/forgotPassword', {Continue: req.query.Continue ? req.query.Continue : ''})
+    res.render('layouts/forgotPassword', { Continue: req.query.Continue ? req.query.Continue : '' })
   })
   app.get('/forgotWorkspaceName', function (req, res) {
-    res.render('layouts/forgotWorkspaceName', {Continue: req.query.Continue ? req.query.Continue : ''})
+    res.render('layouts/forgotWorkspaceName', { Continue: req.query.Continue ? req.query.Continue : '' })
   })
   app.get('/invitation', function (req, res) {
-    res.render('layouts/invitationExpire', {expireLink: true})
+    res.render('layouts/invitationExpire', { expireLink: true })
   })
 
   app.route('/:url(api|auth)/*').get((req, res) => {
-    res.status(404).send({url: `${req.originalUrl} not found`})
+    res.status(404).send({ url: `${req.originalUrl} not found` })
   }).post((req, res) => {
-    res.status(404).send({url: `${req.originalUrl} not found`})
+    res.status(404).send({ url: `${req.originalUrl} not found` })
   })
 
   if (config.env === 'production' || config.env === 'staging') {
@@ -170,7 +172,7 @@ module.exports = function (app) {
       logger.serverLog(TAG, err.message)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
-        return res.status(401).json({status: 'Unauthorized', payload: 'jwt expired'})
+        return res.status(401).json({ status: 'Unauthorized', payload: 'jwt expired' })
       }
       res.status(500).send('Something broke! Please go to home page')
       /**

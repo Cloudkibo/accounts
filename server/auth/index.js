@@ -25,8 +25,8 @@ router.get('/scripts/jsonp', (req, res) => {
 
   let token = req.cookies.token
   let callbackOfClient = req.query.callback
-  //res.setHeader("Access-Control-Allow-Origin", "*")
-  //res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  // res.setHeader("Access-Control-Allow-Origin", "*")
+  // res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
   res.type('.js')
   // res.setHeader("Content-Type", "application/javascript")
   res.send(`${callbackOfClient}("${token}");`)
@@ -34,9 +34,9 @@ router.get('/scripts/jsonp', (req, res) => {
 
 // route to verify the token
 router.get('/verify',
-  (req, res, next) => { logger.serverLog(TAG, `before authenticated`); next() },
+  (req, res, next) => { next() },
   auth.isAuthenticated(),
-  (req, res, next) => { logger.serverLog(TAG, `AFTER authenticated`); next() },
+  (req, res, next) => { next() },
   (req, res) => {
     res.status(200).json({status: 'success', description: 'Token verified', user: req.user, actingAsUser: req.actingAsUser})
   })
@@ -49,9 +49,6 @@ router.get('/logout', (req, res) => {
   //     description: 'Something went wrong, please try again.'
   //   })
   // }
-  logger.serverLog(TAG, JSON.stringify(req.cookies))
-  logger.serverLog(TAG, `Going to remove token cookie`)
-  logger.serverLog(TAG, JSON.stringify(req.query))
   res.clearCookie('token')
   // We will change it to based on the request of project
   return res.redirect(req.query.continue)

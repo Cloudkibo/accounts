@@ -5,12 +5,9 @@ const { sendSuccessResponse, sendErrorResponse } = require('../../global/respons
 const util = require('util')
 
 exports.genericFetch = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
-
   dataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate(req.body)
     .then(result => {
-      logger.serverLog(TAG, `query endpoint for c_user ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -20,12 +17,9 @@ exports.genericFetch = function (req, res) {
 }
 
 exports.genericFetchAll = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetchAll controller index')
-
   dataLayer
     .findAllCompanyUserObjectUsingQuery(req.body)
     .then(result => {
-      logger.serverLog(TAG, `query endpoint for c_user ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -35,8 +29,6 @@ exports.genericFetchAll = function (req, res) {
 }
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)

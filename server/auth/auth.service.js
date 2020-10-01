@@ -28,10 +28,8 @@ function isAuthenticated () {
   // Validate jwt or api keys
     .use((req, res, next) => {
       if (req.headers.hasOwnProperty('is_kibo_product') || req.headers.hasOwnProperty('consumer_id')) {
-        logger.serverLog(TAG, `going to validate ip`)
         isAuthorizedWebHookTrigger(req, res, next)
       } else {
-        logger.serverLog(TAG, `going to validate token`, req.headers.authorization)
         // allow access_token to be passed through query parameter as well
         if (req.query && req.query.hasOwnProperty('access_token')) {
           req.headers.authorization = `Bearer ${req.query.access_token}`
@@ -45,33 +43,32 @@ function isAuthenticated () {
       if (req.user) {
         userId = req.user._id
         UserDataLayer.findOneUserObject({_id: userId})
-        .then(loggedInUser => {
-          if(loggedInUser.actingAsUser) {
-            if (loggedInUser.isSuperUser) {     
-              UserDataLayer.findOneUserObjectUsingQuery({domain_email: loggedInUser.actingAsUser.domain_email})
-              .then(actingAsUser => {
-                attachUserAndActingUserInfo(req, res, next, loggedInUser, actingAsUser)
-              })
-              .catch(err => {
-                logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
-                return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
-              })      
+          .then(loggedInUser => {
+            if (loggedInUser.actingAsUser) {
+              if (loggedInUser.isSuperUser) {
+                UserDataLayer.findOneUserObjectUsingQuery({domain_email: loggedInUser.actingAsUser.domain_email})
+                  .then(actingAsUser => {
+                    attachUserAndActingUserInfo(req, res, next, loggedInUser, actingAsUser)
+                  })
+                  .catch(err => {
+                    logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+                    return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+                  })
+              } else {
+                return res.status(403).json({status: 'failed', payload: 'You are not allowed to perform this action'})
+              }
             } else {
-              return res.status(403).json({status: 'failed', payload: 'You are not allowed to perform this action'})
+              attachUserToRequest(req, res, next, userId)
             }
-          } else {
-            attachUserToRequest(req, res, next, userId)
-          }
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
-          return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
-        })
+          })
+          .catch(err => {
+            logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+            return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
+          })
       } else if (req.headers.hasOwnProperty('consumer_id')) {
         userId = req.headers.consumer_id
         attachUserToRequest(req, res, next, userId)
       } else {
-        logger.serverLog(TAG, `call from kibo product`)
         next()
       }
     })
@@ -87,7 +84,7 @@ function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser
       let actingUserpermissions = result[1]
       let companyActingUser
 
-      if (!loggedInUser  || !actingCompanyUser || !actingUserpermissions) {
+      if (!loggedInUser || !actingCompanyUser || !actingUserpermissions) {
         let resp = UserLogicLayer.getResponseForUserView(loggedInUser, actingCompanyUser, actingUserpermissions)
         return res.status(404).json(resp)
       }
@@ -179,13 +176,13 @@ function attachUserToRequest (req, res, next, userId) {
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
-function isSuperUserActingAsCustomer(modeOfAction) {
+function isSuperUserActingAsCustomer (modeOfAction) {
   return compose()
     .use((req, res, next) => {
       if (req.actingAsUser) {
-        if(modeOfAction === 'write') {
+        if (modeOfAction === 'write') {
           return res.status(403)
-          .json({status: 'failed', description: `You are not allowed to perform this action`})
+            .json({status: 'failed', description: `You are not allowed to perform this action`})
         } else {
           req.user = req.actingAsUser
           next()
@@ -199,10 +196,6 @@ function isSuperUserActingAsCustomer(modeOfAction) {
 function isAuthorizedWebHookTrigger (req, res, next) {
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress ||
     req.socket.remoteAddress || req.connection.socket.remoteAddress
-  logger.serverLog(TAG, req.ip)
-  logger.serverLog(TAG, ip)
-  logger.serverLog(TAG, 'This is middleware')
-  logger.serverLog(TAG, req.body)
   // We need to change it to based on the requestee app
   if (config.allowedIps.indexOf(ip) > -1) next()
   else res.send(403)
