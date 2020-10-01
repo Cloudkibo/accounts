@@ -284,6 +284,8 @@ exports.joinCompany = function (req, res) {
   let companyUserSaved
   let permissionSaved
   let tokenString
+  let company
+  let planUsage
 
   InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
     .then(token => {
@@ -293,27 +295,22 @@ exports.joinCompany = function (req, res) {
       }
       return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: invitationToken.companyId})
     })
-    .then(company => {
-      FeatureUsageDataLayer.findAllPlanUsageObjects({planId: company.planId})
-        .then(planUsage => {
-          planUsage = planUsage[0]
-          FeatureUsageDataLayer.findAllCompanyUsageObjects({companyId: company._id})
-            .then(companyUsage => {
-              companyUsage = companyUsage[0]
-              if (planUsage.members !== -1 && companyUsage.members >= planUsage.members) {
-                throw new Error('Members limit has been reached for this company. Please talk to company buyer/admin and ask them to upgrade their plan to let new members join.')
-              } else {
-                return CompanyUserDataLayer
-                  .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
-              }
-            })
-            .catch(error => {
-              sendErrorResponse(res, 500, `Failed to company usage ${JSON.stringify(error)}`)
-            })
-        })
-        .catch(error => {
-          sendErrorResponse(res, 500, `Failed to plan usage ${JSON.stringify(error)}`)
-        })
+    .then(companyFound => {
+      company = companyFound
+      return FeatureUsageDataLayer.findAllPlanUsageObjects({planId: company.planId})
+    })
+    .then(planUsageFound => {
+      planUsage = planUsageFound[0]
+      return FeatureUsageDataLayer.findAllCompanyUsageObjects({companyId: company._id})
+    })
+    .then(companyUsage => {
+      companyUsage = companyUsage[0]
+      if (planUsage.members !== -1 && companyUsage.members >= planUsage.members) {
+        throw new Error('Members limit has been reached for this company. Please talk to company buyer/admin and ask them to upgrade their plan to let new members join.')
+      } else {
+        return CompanyUserDataLayer
+          .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      }
     })
     .then(compUser => {
       logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
