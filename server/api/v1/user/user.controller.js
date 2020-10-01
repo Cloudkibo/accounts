@@ -355,6 +355,7 @@ exports.joinCompany = function (req, res) {
       return PermissionDataLayer.findOneRolePermissionObject(invitationToken.role)
     })
     .then(rolePermissions => {
+      console.log('role Permission', rolePermissions)
       delete rolePermissions._id
       delete rolePermissions.__v
       delete rolePermissions.role
@@ -362,6 +363,7 @@ exports.joinCompany = function (req, res) {
       return PermissionDataLayer.createUserPermission(permissionsPayload)
     })
     .then(createdPermissions => {
+      console.log('createdPermissions', createdPermissions)
       permissionSaved = createdPermissions
       logger.serverLog(TAG, `Created Permissions: ${util.inspect(permissionSaved)}`)
 
