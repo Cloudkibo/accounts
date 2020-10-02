@@ -315,7 +315,8 @@ exports.joinCompany = function (req, res) {
           domain_email: invitationToken.domain + '' + req.body.email,
           accountType: 'team',
           role: invitationToken.role,
-          uiMode: foundUser.uiMode
+          uiMode: foundUser.uiMode,
+          platform: foundUser.platform
         }
         return dataLayer.createUserObject(accountData)
       }
