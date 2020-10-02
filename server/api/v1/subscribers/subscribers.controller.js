@@ -9,8 +9,6 @@ const util = require('util')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find subscriber controller index')
-
   subscribersDataLayer.findOneSubscriberObject(req.params._id)
     .then(subscriberObject => {
       sendSuccessResponse(res, 200, subscriberObject)
@@ -21,7 +19,6 @@ exports.index = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, `Hit the create subscriber controller index ${JSON.stringify(req.body)}`, 'info', true)
   subscribersDataLayer.findSubscriberObjects({senderId: req.body.senderId, pageId: req.body.pageId, companyId: req.body.companyId})
     .then(subscribers => {
       if (subscribers.length === 0) {
@@ -42,8 +39,6 @@ exports.create = function (req, res) {
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update subscriber controller index')
-
   subscribersDataLayer.updateSubscriberObject(req.params._id, req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -55,8 +50,6 @@ exports.update = function (req, res) {
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete subscriber controller index')
-
   subscribersDataLayer.deleteSubscriberObject(req.params._id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -68,12 +61,10 @@ exports.delete = function (req, res) {
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for subscriber controller')
   // logicLayer.convertPageID(req.body)
   req.body = logicLayer.convertIdtoObjectId(req.body)
   subscribersDataLayer.findSubscriberObjects(req.body)
     .then(result => {
-      logger.serverLog(TAG, `query endpoint for subscriber found result ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -83,14 +74,11 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
   let query = logicLayer.validateAndConvert(req.body)
-  logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
   subscribersDataLayer.aggregateInfo(query)
     .then(result => {
-      logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -100,8 +88,6 @@ exports.aggregate = function (req, res) {
 }
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   subscribersDataLayer.genericUpdateSubscriberObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)

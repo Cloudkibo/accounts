@@ -11,8 +11,6 @@ const async = require('async')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find page controller index')
-
   dataLayer.findOnePageObject(req.params._id)
     .then(pageObject => {
       sendSuccessResponse(res, 200, pageObject)
@@ -23,40 +21,38 @@ exports.index = function (req, res) {
 }
 
 exports.refreshPages = function (req, res) {
-  logger.serverLog(TAG, 'Hit the refresh page controller index')
   if (req.user.role === 'buyer') {
     if (req.user.facebookInfo) {
-    fetchPages(`https://graph.facebook.com/v6.0/${
-      req.user.facebookInfo.fbId}/accounts?access_token=${
-      req.user.facebookInfo.fbToken}`, req.user, res)
+      fetchPages(`https://graph.facebook.com/v6.0/${
+        req.user.facebookInfo.fbId}/accounts?access_token=${
+        req.user.facebookInfo.fbToken}`, req.user, res)
     } else {
       logger.serverLog('User facebook Info not found')
     }
-  } else { 
+  } else {
     CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({companyId: req.user.companyId, role: 'buyer'})
       .then(companyUser => {
         UserDataLayer.findOneUserObject(companyUser.userId)
-        .then(owner => {
-          if (owner.facebookInfo) {
-          fetchPages(`https://graph.facebook.com/v6.0/${
-            owner.facebookInfo.fbId}/accounts?access_token=${
-            owner.facebookInfo.fbToken}`, owner, res)
-          } else {
-            logger.serverLog('Owner Facebook Info not found')
-          }
-        })
-        .catch(err => {
-          sendErrorResponse(res, 500, `Unable to fetch owner details of the company. ${err}`)
-        })
+          .then(owner => {
+            if (owner.facebookInfo) {
+              fetchPages(`https://graph.facebook.com/v6.0/${
+                owner.facebookInfo.fbId}/accounts?access_token=${
+                owner.facebookInfo.fbToken}`, owner, res)
+            } else {
+              logger.serverLog('Owner Facebook Info not found')
+            }
+          })
+          .catch(err => {
+            sendErrorResponse(res, 500, `Unable to fetch owner details of the company. ${err}`)
+          })
       })
       .catch(err => {
         sendErrorResponse(res, 500, `Unable to fetch company of the user. ${err}`)
       })
-  } 
+  }
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create page controller index')
   dataLayer.createPageObject(
     req.body.pageId, req.body.pageName, req.body.pageUserName, req.body.pagePic, req.body.likes, req.body.accessToken,
     req.body.connected, req.body.userId, req.body.companyId, req.body.greetingText, req.body.welcomeMessage, req.body.isWelcomeMessageEnabled,
@@ -70,10 +66,7 @@ exports.create = function (req, res) {
     })
 }
 
-
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update page controller index')
-
   dataLayer.updatePageObject(req.params._id, req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -85,8 +78,6 @@ exports.update = function (req, res) {
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete page controller index')
-
   dataLayer.deletePageObject(req.params._id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -98,7 +89,6 @@ exports.delete = function (req, res) {
 }
 
 exports.connect = function (req, res) {
-  logger.serverLog(TAG, 'Hit the connecting page controller index')
   dataLayer.findOnePageObject(req.params._id)
     .then(page => {
       // create default tags
@@ -148,8 +138,6 @@ exports.connect = function (req, res) {
 }
 
 exports.disconnect = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete page controller index')
-
   dataLayer.updatePageObject(req.params._id, {connected: false})
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -171,8 +159,6 @@ exports.getGreetingText = function (req, res) {
 }
 
 exports.setGreetingText = function (req, res) {
-  logger.serverLog(TAG, 'Hit the setGreetingText page controller index')
-
   CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       let query = {pageId: req.params._id, companyId: companyUser.companyId}
@@ -189,8 +175,6 @@ exports.setGreetingText = function (req, res) {
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for page controller')
-
   dataLayer.findPageObjects(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -202,7 +186,6 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the aggregate endpoint for page controller')
   let query = logicLayer.validateAndConvert(req.body)
 
   dataLayer.aggregateInfo(query)
@@ -216,8 +199,6 @@ exports.aggregate = function (req, res) {
 }
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   dataLayer.genericUpdatePageObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       return res.status(200).json({status: 'success', payload: result})
@@ -344,7 +325,6 @@ exports.deleteWhitelistDomain = function (req, res) {
 }
 
 exports.updatePageNames = function (req, res) {
-  logger.serverLog(TAG, 'Script to update null page names')
   dataLayer.findPageObjects({pageName: null})
     .then(userPages => {
       logger.serverLog(TAG,
@@ -464,7 +444,7 @@ function fetchPages (url, user, res) {
     const cursor = resp.body.paging
     if (data) {
       async.each(data, updatePages.bind(null, user), function (err) {
-        if (err) {          
+        if (err) {
           return res.status(500).json({status: 'failed', payload: err})
         } else
         if (!cursor.next) {
@@ -484,25 +464,25 @@ function fetchPages (url, user, res) {
 }
 function updatePages (user, item, callback) {
   logger.serverLog(TAG, `foreach ${JSON.stringify(item)}`)
-    const options2 = {
-      url: `https://graph.facebook.com/v6.0/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
-      qs: {access_token: item.access_token},
-      method: 'GET'
-    }
-    needle.get(options2.url, options2, (error, fanCount) => {
-      if (error !== null) {
-         logger.serverLog(TAG, `Error occurred ${error}`)
-         callback(error)
-      } else {
-        CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
-          .then(companyUser => {
-            if (!companyUser) {
-               logger.serverLog(TAG, {
-                status: 'failed',
-                description: 'The user account does not belong to any company. Please contact support'
-              })
-            } else {
-              dataLayer.findPageObjects({pageId: item.id, userId: user._id, companyId: companyUser.companyId})
+  const options2 = {
+    url: `https://graph.facebook.com/v6.0/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
+    qs: {access_token: item.access_token},
+    method: 'GET'
+  }
+  needle.get(options2.url, options2, (error, fanCount) => {
+    if (error !== null) {
+      logger.serverLog(TAG, `Error occurred ${error}`)
+      callback(error)
+    } else {
+      CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
+        .then(companyUser => {
+          if (!companyUser) {
+            logger.serverLog(TAG, {
+              status: 'failed',
+              description: 'The user account does not belong to any company. Please contact support'
+            })
+          } else {
+            dataLayer.findPageObjects({pageId: item.id, userId: user._id, companyId: companyUser.companyId})
               .then(pages => {
                 let page = pages[0]
                 if (!page) {
@@ -522,17 +502,17 @@ function updatePages (user, item, callback) {
                   }
                   dataLayer.savePageObject(payloadPage)
                     .then(page => {
-                    logger.serverLog(TAG,
-                      `Page ${item.name} created with id ${page.pageId}`)
+                      logger.serverLog(TAG,
+                        `Page ${item.name} created with id ${page.pageId}`)
                       callback()
-                  })
-                  .catch(err => {
-                    logger.serverLog(TAG, {
-                      status: 'failed',
-                      description: `Unable to create Page Object ${err}`
                     })
-                    callback(err)
-                  })
+                    .catch(err => {
+                      logger.serverLog(TAG, {
+                        status: 'failed',
+                        description: `Unable to create Page Object ${err}`
+                      })
+                      callback(err)
+                    })
                 } else {
                   let updatedPayload = {
                     likes: fanCount.body.fan_count,
@@ -556,21 +536,21 @@ function updatePages (user, item, callback) {
                 }
               })
               .catch(err => {
-                 logger.serverLog(TAG, {
+                logger.serverLog(TAG, {
                   status: 'failed',
                   description: `Error while fetching pages ${err}`
                 })
                 callback(err)
               })
-            }
+          }
+        })
+        .catch(err => {
+          logger.serverLog(TAG, {
+            status: 'failed',
+            description: `Error while fetching company user${err}`
           })
-          .catch(err => {
-              logger.serverLog(TAG, {
-              status: 'failed',
-              description: `Error while fetching company user${err}`
-            })
-            callback(err)
-          })
-        }
-      })
+          callback(err)
+        })
+    }
+  })
 }
