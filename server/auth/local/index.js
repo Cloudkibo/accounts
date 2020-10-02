@@ -87,7 +87,7 @@ router.post('/', function (req, res, next) {
         .json({status: 'failed', description: 'Internal Server Error'})
     }
     if (!user) {
-      return res.status(401).json({
+      return res.status(404).json({
         status: 'failed',
         description: 'No account found with this email address.'
       })
