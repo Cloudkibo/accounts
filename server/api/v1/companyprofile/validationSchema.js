@@ -171,3 +171,23 @@ exports.genericUpdatePayload = {
     'options'
   ]
 }
+
+exports.chargePayload = {
+  'type': 'object',
+  'properties': {
+    'amount': {
+      'type': 'string'
+    },
+    'currency': {
+      'type': 'string'
+    },
+    'description': {
+      'type': 'string'
+    }
+  },
+  'required': [
+    'amount',
+    'currency',
+    'description'
+  ]
+}
