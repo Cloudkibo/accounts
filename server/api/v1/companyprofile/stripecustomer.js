@@ -115,6 +115,30 @@ module.exports = exports = function stripeCustomer (schema, options) {
     })
   }
 
+  schema.methods.chargeCustomer = function (charge, cb) {
+    var company = this
+    if (
+      !company.stripe || (company.stripe && (!company.stripe.customerId || !company.stripe.subscriptionId))
+    ) {
+      cb(new Error('Fata Error! Billing is not set for this account. Please contact support.'))
+    } else if (!company.stripe.last4) {
+      cb(new Error('Payment method is not set for this account. Please set the payment method from settings'))
+    } else {
+      stripe.charges.create({
+        amount: charge.amount * 100,
+        currency: charge.currency,
+        customer: company.stripe.customerId,
+        description: charge.description
+      }, function (err, response) {
+        if (err) {
+          cb(err.message || err)
+        } else {
+          cb(null, response)
+        }
+      })
+    }
+  }
+
   schema.methods.cancelStripe = function (cb) {
     var company = this
 

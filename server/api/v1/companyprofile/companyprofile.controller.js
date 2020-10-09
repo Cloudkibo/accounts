@@ -468,3 +468,29 @@ exports.genericUpdate = function (req, res) {
 exports.getKeys = function (req, res) {
   sendSuccessResponse(res, 200, {captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
 }
+
+exports.charge = function (req, res) {
+  logger.serverLog(TAG, 'Hit the company profile controller charge')
+  dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
+    .then(profile => {
+      if (!profile) {
+        sendErrorResponse(res, 404, '', 'Company not found')
+      } else {
+        profile.chargeCustomer({
+          amount: parseInt(req.body.amount),
+          currency: req.body.currency,
+          description: req.body.description
+        }, function (err, response) {
+          if (err) {
+            sendErrorResponse(res, 500, null, err)
+          } else {
+            sendSuccessResponse(res, 200, 'Company has been charged successfully!')
+          }
+        })
+      }
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in charge company ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}

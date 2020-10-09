@@ -78,4 +78,9 @@ router.put('/update',
   auth.isAuthenticated(),
   controller.genericUpdate)
 
+router.post('/charge',
+  auth.isAuthenticated(),
+  validate({body: validationSchema.chargePayload}),
+  controller.charge)
+
 module.exports = router
