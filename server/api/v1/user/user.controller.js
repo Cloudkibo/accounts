@@ -21,8 +21,6 @@ const moment = require('moment')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller index')
-
   let userPromise = dataLayer.findOneUserObject(req.user._id)
   let companyUserPromise = CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({userId: req.user._id})
   let permissionsPromise = PermissionDataLayer.findOneUserPermissionsUsingQUery({userId: req.user._id})
@@ -56,7 +54,6 @@ exports.index = function (req, res) {
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
 
-          logger.serverLog(TAG, `find index controller user ${util.inspect(user)}`)
           sendSuccessResponse(res, 200, user)
         })
         .catch(err => {
