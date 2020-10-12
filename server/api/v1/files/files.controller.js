@@ -159,20 +159,22 @@ exports.uploadForTemplate = function (req, res) {
                 deleteFile(req.body.name)
                 if (err) {
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
-                } else if (resp.body.error) {
-                  sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
-                } else {
-                  logger.serverLog(TAG,
-                    `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
-                  let payload = {
-                    id: req.body.id,
-                    attachment_id: resp.body.attachment_id,
-                    name: req.body.name,
-                    url: req.body.url
-                  }
-                  sendSuccessResponse(res, 200, payload)
-                  if (req.body.deleteLater) {
-                    deleteFile(req.body.id)
+                } else if (resp.body) {
+                  if (resp.body.error) {
+                    sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
+                  } else {
+                    logger.serverLog(TAG,
+                      `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
+                    let payload = {
+                      id: req.body.id,
+                      attachment_id: resp.body.attachment_id,
+                      name: req.body.name,
+                      url: req.body.url
+                    }
+                    sendSuccessResponse(res, 200, payload)
+                    if (req.body.deleteLater) {
+                      deleteFile(req.body.id)
+                    }
                   }
                 }
               })
