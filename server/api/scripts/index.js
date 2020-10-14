@@ -28,5 +28,6 @@ router.get('/deleteWhatsappData', controller.deleteWhatsappData)
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
 router.use('/tags/normalize', require('./tags'))
+router.use('/subscriberScript', require('/subscribers'))
 
 module.exports = router
