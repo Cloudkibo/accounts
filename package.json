@@ -73,7 +73,7 @@
     "stripe": "^6.1.1",
     "stripe-webhook-middleware": "^0.2.0",
     "winston": "^2.3.1",
-    "winston-papertrail": "^1.0.5"
+    "winston-papertrail": "^1.0.5",
     "youtube-dl": "^3.0.2"
   },
   "devDependencies": {
