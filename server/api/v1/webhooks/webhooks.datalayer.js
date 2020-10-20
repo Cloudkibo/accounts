@@ -7,13 +7,13 @@ const WebhookModel = require('./Webhooks.model')
 
 exports.findOneWebhookObject = (webhookId) => {
   return WebhookModel.findOne({_id: webhookId})
-    .populate('userId')
+    .populate('userId pageId')
     .exec()
 }
 
 exports.findWebhookObjects = (query) => {
   return WebhookModel.find(query)
-    .populate('userId')
+    .populate('userId pageId')
     .exec()
 }
 
