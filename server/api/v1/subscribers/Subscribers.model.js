@@ -90,7 +90,8 @@ const subscriberSchema = new Schema({
   usingChatBot: {
     type: Boolean,
     default: false
-  }
+  },
+  agent_activity_time: { type: Date }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
