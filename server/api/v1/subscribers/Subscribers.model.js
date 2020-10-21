@@ -74,7 +74,7 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: false
   },
-  agent_activity_time: { type: Date }
+  agent_activity_time: { type: Date },
   usingChatBot: {type: Boolean, default: false},
   disabledByPlan: {type: Boolean, default: false}
 })
