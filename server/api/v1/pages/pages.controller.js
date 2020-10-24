@@ -241,6 +241,7 @@ exports.whitelistDomain = function (req, res) {
       let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
       needle.request('post', requesturl, {whitelisted_domains: req.body.whitelistDomains}, {json: true}, function (err, resp) {
         if (err) {
+          logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
         }
         if (resp.body.result === 'success') {
           sendSuccessResponse(res, 200, req.body)
