@@ -242,16 +242,30 @@ exports.whitelistDomain = function (req, res) {
     .then(page => {
       var accessToken = page.accessToken
       let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
-      needle.request('post', requesturl, {whitelisted_domains: req.body.whitelistDomains}, {json: true}, function (err, resp) {
-        if (err) {
-          logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
-        }
-        if (resp.body.result === 'success') {
-          sendSuccessResponse(res, 200, req.body)
-        } else {
-          sendErrorResponse(res, 500, resp.body)
-        }
-      })
+      if (req.body.whitelistDomains.length < 1) {
+        needle.request('delete', requesturl, {'fields': ['whitelisted_domains']}, {json: true}, function (err, resp) {
+          if (err) {
+            logger.serverLog(TAG, `Failed to delete whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
+          }
+          var response = JSON.parse(JSON.stringify(resp.body))
+          if (response.result === 'success') {
+            sendSuccessResponse(res, 200, req.body)
+          } else {
+            sendErrorResponse(res, 500, '', `Unable to delete whitelist domain ${response}`)
+          }
+        })
+      } else {
+        needle.request('post', requesturl, {whitelisted_domains: req.body.whitelistDomains && req.body.whitelistDomains.length > 0 ? req.body.whitelistDomains : []}, {json: true}, function (err, resp) {
+          if (err) {
+            logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
+          }
+          if (resp.body.result === 'success') {
+            sendSuccessResponse(res, 200, req.body)
+          } else {
+            sendErrorResponse(res, 500, resp.body)
+          }
+        })
+      }
     }).catch(err => {
       logger.serverLog(TAG, `Failed to fetch pages ${util.inspect(err)}`)
       return res.status(500).json({ status: 'failed', payload: err })
