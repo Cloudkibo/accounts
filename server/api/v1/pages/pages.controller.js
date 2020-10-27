@@ -248,7 +248,11 @@ exports.whitelistDomain = function (req, res) {
           if (response.result === 'success') {
             sendSuccessResponse(res, 200, req.body)
           } else {
-            sendErrorResponse(res, 500, '', `Unable to delete whitelist domain ${response}`)
+            if (response.error && response.error.message) {
+              sendErrorResponse(res, 500, response.error.message)
+            } else {
+              sendErrorResponse(res, 500, response)
+            }
           }
         })
       } else {
@@ -256,10 +260,15 @@ exports.whitelistDomain = function (req, res) {
           if (err) {
             logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
           }
-          if (resp.body.result === 'success') {
+          var response = JSON.parse(JSON.stringify(resp.body))
+          if (response.result === 'success') {
             sendSuccessResponse(res, 200, req.body)
           } else {
-            sendErrorResponse(res, 500, resp.body)
+            if (response.error && response.error.message) {
+              sendErrorResponse(res, 500, response.error.message)
+            } else {
+              sendErrorResponse(res, 500, response)
+            }
           }
         })
       }
