@@ -14,6 +14,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch teams'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -27,6 +29,8 @@ exports.findOne = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch team'
+      logger.serverLog(message, `${TAG}: exports.findOne`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -39,6 +43,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create team'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -53,11 +59,13 @@ exports.update = function (req, res) {
         sendSuccessResponse(res, 200, result)
       })
       .catch(err => {
-        logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
+        const message = err || 'Failed to update team'
+        logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
         sendErrorResponse(res, 500, err)
       })
   } else {
-    logger.serverLog(TAG, `No field provided to update`)
+    const message = 'No field provided to update'
+    logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
     sendErrorResponse(res, 400, 'Provide field to update')
   }
 }
@@ -70,7 +78,8 @@ exports.delete = function (req, res) {
       sendErrorResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
+      const message = err || 'Failed to delete team'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -83,7 +92,8 @@ exports.genericTeamFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch teams'
+      logger.serverLog(message, `${TAG}: exports.genericTeamFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -96,7 +106,8 @@ exports.aggregateTeamFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch aggregate teams'
+      logger.serverLog(message, `${TAG}: exports.aggregateTeamFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -109,7 +120,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to update teams'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

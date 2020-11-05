@@ -12,7 +12,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Index Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to Find All records of BigCommerce'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -25,7 +26,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, createdObject)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found create Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to Create records of BigCommerce'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -38,6 +40,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch record of BigCommerce'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -50,7 +54,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Update Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to Update record of BigCommerce'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -63,7 +68,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Delete Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to delete record of BigCommerce'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err.toString())
     })
 }

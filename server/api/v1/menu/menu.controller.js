@@ -13,6 +13,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, menuObject)
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch Menu'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -24,6 +26,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create Menu'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -36,7 +40,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update menu ${util.inspect(err)}`)
+      const message = err || 'Failed to Update Menu'
+      logger.serverLog(message, `${TAG}: exports.Update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -49,7 +54,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete menu ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Menu'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -62,7 +68,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at querying menu ${util.inspect(err)}`)
+      const message = err || 'Failed to find Menu'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -75,7 +82,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate menu ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate Menu'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -88,7 +96,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to Update Menu'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

@@ -1,6 +1,8 @@
 const dataLayer = require('./comments.datalayer')
 const LogicLayer = require('./comments.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const TAG = '/api/v1/comment_capture/comments.controller.js'
+const logger = require('../../../components/logger')
 
 exports.create = function (req, res) {
   dataLayer.createCommentObject(req.body)
@@ -8,6 +10,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create record of comments'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -18,6 +22,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, deleted)
     })
     .catch(err => {
+      const message = err || 'Failed to delete record of comments'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -29,6 +35,8 @@ exports.genericFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch comments'
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -40,6 +48,8 @@ exports.aggregateFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to aggregate fetch comments'
+      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -50,6 +60,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to Update comments'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

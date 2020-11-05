@@ -15,6 +15,8 @@ exports.index = function (req, res) {
         sendSuccessResponse(res, 200, companyPreference)
       })
       .catch(err => {
+        const message = err || 'Failed to fetch CompanyPreferences'
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
@@ -32,6 +34,8 @@ exports.create = function (req, res) {
         sendSuccessResponse(res, 200, companyPreference)
       })
       .catch(err => {
+        const message = err || 'Failed to create CompanyPreferences'
+        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
@@ -45,7 +49,8 @@ exports.genericFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to find All CompanyPreferences'
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -59,7 +64,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch CompanyPreferences'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -103,7 +109,8 @@ exports.populate = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `populate company preferences endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to find All Profile Objects'
+      logger.serverLog(message, `${TAG}: exports.populate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

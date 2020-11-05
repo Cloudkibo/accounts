@@ -33,13 +33,15 @@ exports.index = function (req, res) {
             }
           })
           .catch(err => {
-            logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
+            const message = err || 'Error in getting companies count'
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
             sendErrorResponse(res, 500, '', `Error in getting companies count ${JSON.stringify(err)}`)
           })
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in getting companies count ${util.inspect(err)}`)
+      const message = err || 'Failed to find All plan'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -59,7 +61,8 @@ exports.create = function (req, res) {
           let stripePayload = logicLayer.prepareStripePayload(req.body, uid, stripeOptions)
           stripe.plans.create(stripePayload, (err, plan) => {
             if (err) {
-              logger.serverLog(TAG, `Error creating plan on stripe ${util.inspect(err)}`)
+              const message = err || 'Error creating plan on stripe'
+              logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
               sendErrorResponse(res, 500, '', `Failed to create plan on stripe ${JSON.stringify(err)}`)
             }
             logger.serverLog(TAG, 'plan has been created on stripe as well.')
@@ -68,7 +71,8 @@ exports.create = function (req, res) {
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
+      const message = err || 'Error in finding Plans'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -89,8 +93,8 @@ exports.update = function (req, res) {
         trial_period_days: req.body.trial_period
       }, (err, plan) => {
         err
-          ? logger.serverLog(TAG, `Failed to update plan on stripe. ${util.inspect(err)}`)
-          : logger.serverLog(TAG, `updated plan on stripe. ${util.inspect(plan)}`)
+          ? logger.serverLog(err, `${TAG}: exports.update`, req.body, {}, 'error')
+          : logger.serverLog(`updated plan on stripe. ${util.inspect(plan)}`, TAG)
 
         plan
           ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
@@ -98,7 +102,8 @@ exports.update = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
+      const message = err || 'Error in finding Plans'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -111,8 +116,8 @@ exports.delete = function (req, res) {
       logger.serverLog(TAG, 'plan has been deleted on KiboPush. Going to delete plan on stripe.')
       stripe.plans.del(req.params.unique_id, (err, confirmation) => {
         err
-          ? logger.serverLog(TAG, `Failed to delete plan on stripe. ${util.inspect(err)}`)
-          : logger.serverLog(TAG, `delete plan on stripe. ${util.inspect(confirmation)}`)
+          ? logger.serverLog(err, `${TAG}: exports.delete`, req.body, {}, 'error')
+          : logger.serverLog(`delete plan on stripe. ${util.inspect(confirmation)}`, TAG)
 
         confirmation
           ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
@@ -120,7 +125,8 @@ exports.delete = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in finding Plans ${util.inspect(err)}`)
+      const message = err || 'Error in finding Plans'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -150,7 +156,8 @@ exports.changeDefaultPlan = function (req, res) {
       sendSuccessResponse(res, 200, '', 'Default plan changed successfully!')
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in changing default Plan ${util.inspect(err)}`)
+      const message = err || '`Error in changing default Plan'
+      logger.serverLog(message, `${TAG}: exports.changeDefaultPlan`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -183,6 +190,8 @@ exports.migrateCompanies = function (req, res) {
             },
             (err2, subscription) => {
               if (err2) {
+                const message = err || '`Error in Migration Companies'
+                logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {}, 'error')          
                 sendErrorResponse(res, 500, '', err2)
               }
               if (index === (subscriptions.data.length - 1)) {
@@ -193,7 +202,8 @@ exports.migrateCompanies = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in migrating Plans ${util.inspect(err)}`)
+      const message = err || '`Error in Update Companies'
+      logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {}, 'error')          
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -212,7 +222,8 @@ exports.populatePlan = function (req, res) {
       sendSuccessResponse(res, 200, '', 'Successfuly populated!')
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in populate Plan Promise All ${util.inspect(err)}`)
+      const message = err || '`Error in populate Plan '
+      logger.serverLog(message, `${TAG}: exports.populatePlan`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -225,7 +236,8 @@ exports.fetchAll = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || '`Error in find All plan '
+      logger.serverLog(message, `${TAG}: exports.fetchAll`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -239,7 +251,8 @@ exports.genericFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || '`Error in find All plan '
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

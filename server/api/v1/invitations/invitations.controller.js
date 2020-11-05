@@ -21,12 +21,14 @@ exports.index = function (req, res) {
           sendSuccessResponse(res, 200, invitations)
         })
         .catch(err => {
-          logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+          const message = err || 'Failed to  find All Invitations '
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
           sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      const message = err || 'Failed to  find CompanyUser'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }
@@ -53,12 +55,14 @@ exports.cancel = function (req, res) {
           sendSuccessResponse(res, 200, 'Invitation has been cancelled.')
         })
         .catch(err => {
-          logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+          const message = err || 'Failed to remove Invitation'
+          logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {}, 'error')
           sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      const message = err || 'Failed to Find CompanyUser'
+      logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }

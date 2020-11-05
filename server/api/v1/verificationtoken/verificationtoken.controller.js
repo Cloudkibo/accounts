@@ -74,10 +74,14 @@ exports.verify = function (req, res) {
           }
         })
         .catch(err => {
+          const message = err || 'Failed to fetch User'
+          logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
           sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
+      const message = err || 'Failed to fetch verification token'
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
@@ -97,7 +101,11 @@ exports.resend = function (req, res) {
           sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
         })
       })
-      .catch(err => { sendErrorResponse(res, 500, '', err) })
+      .catch(err => {
+        const message = err || 'Failed to create verification token'
+        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {}, 'error') 
+        sendErrorResponse(res, 500, '', err) 
+      })
   } else {
     sendSuccessResponse(res, 200, 'You have already verified your email address. Please refresh your page')
   }

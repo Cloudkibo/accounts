@@ -12,7 +12,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Index Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to findAll Custom Field Subscribers'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -25,7 +26,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, createdObject)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found create Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to create Custom Field Subscribers'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -37,7 +39,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Query Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch Custom Field Subscribers'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -50,7 +53,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Update Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to update Custom Field Subscribers'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -63,7 +67,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error found Delete Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Custom Field Subscribers'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }

@@ -4,6 +4,7 @@ const DataLayer = require('./custom_field.datalayer')
 const CUSTOMFIELD = '/api/v1/kiboengage/tags/custom_field.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
+const TAG = '/api/v1/kiboengage/custom_fields/custom_field.controller.js'
 
 exports.index = function (req, res) {
   logger.serverLog(CUSTOMFIELD, `Index endpoint is hit:`)
@@ -12,7 +13,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error found Index Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to findAll Custom Field'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')      
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -36,13 +38,15 @@ exports.create = function (req, res) {
             sendSuccessResponse(res, 200, createdObject)
           })
           .catch(err => {
-            logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
+            const message = err || 'Failed to create Custom Field'
+            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
             sendErrorResponse(res, 500, err.toString())
           })
       }
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error found create Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to find Custom Field'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -55,7 +59,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error found Query Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to find Custom Field'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')    
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -80,13 +85,15 @@ exports.update = function (req, res) {
             sendSuccessResponse(res, 200, foundObjects)
           })
           .catch(err => {
-            logger.serverLog(CUSTOMFIELD, `Error found Update Controller : ${util.inspect(err)}`)
+            const message = err || 'Failed to update Custom Field'
+            logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error') 
             sendErrorResponse(res, 500, err)
           })
       }
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error found update Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to find Custom Field'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error') 
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -98,7 +105,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error found Delete Controller : ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Custom Field'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error') 
       sendErrorResponse(res, 500, err.toString())
     })
 }
