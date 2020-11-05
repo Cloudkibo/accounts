@@ -48,29 +48,12 @@ const subscriberSchema = new Schema({
   unSubscribedBy: { type: String, default: 'subscriber' },
   source: { type: String, default: 'direct_message' },
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
-  isSubscribed: {
-    type: Boolean,
-    default: true
-  },
-  isEnabledByPage: {
-    type: Boolean,
-    default: true
-  },
-  status: {
-    type: String,
-    default: 'new'
-  },
-  last_activity_time: {
-    type: Date,
-    default: Date.now
-  },
-  lastMessagedAt: {
-    type: Date,
-    default: Date.now
-  },
-  userRefIdForCheckBox: {
-    type: String
-  },
+  isSubscribed: {type: Boolean, default: true},
+  isEnabledByPage: {type: Boolean, default: true},
+  status: {type: String, default: 'new'},
+  last_activity_time: {type: Date, default: Date.now},
+  lastMessagedAt: {type: Date, default: Date.now},
+  userRefIdForCheckBox: {type: String},
   datetime: { type: Date, default: Date.now },
   assigned_to: { type: Schema.Types.Mixed },
   is_assigned: {
@@ -94,7 +77,9 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: false
   },
-  agent_activity_time: { type: Date }
+  agent_activity_time: { type: Date },
+  usingChatBot: {type: Boolean, default: false},
+  disabledByPlan: {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
