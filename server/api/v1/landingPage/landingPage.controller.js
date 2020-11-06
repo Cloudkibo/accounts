@@ -12,6 +12,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create Landing Page'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -33,6 +35,8 @@ exports.query = function (req, res) {
       }
     })
     .catch(err => {
+      const message = err || 'Failed to Find Landing Page'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -44,6 +48,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to Update Landing Page'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -56,6 +62,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to delete Landing Page'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -67,6 +75,8 @@ exports.createLandingPageState = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create LandingPageState'
+      logger.serverLog(message, `${TAG}: exports.createLandingPageState`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -77,6 +87,8 @@ exports.updateLandingPageState = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to Update LandingPageState'
+      logger.serverLog(message, `${TAG}: exports.updateLandingPageState`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -89,6 +101,8 @@ exports.deleteLandingPageState = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to delete LandingPageState'
+      logger.serverLog(message, `${TAG}: exports.deleteLandingPageState`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

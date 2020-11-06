@@ -37,6 +37,8 @@ exports.forgot = function (req, res) {
               .getSendGridObject()
               .send(emailWithBody, function (err, json) {
                 if (err) {
+                  const message = err || 'Failed to send email '
+                  logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
                   sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
                 } else {
                   sendSuccessResponse(res, 200, '', 'Password Reset Link has been sent to your email address. Check your spam or junk folder if you have not received our email.')
@@ -44,11 +46,15 @@ exports.forgot = function (req, res) {
               })
           })
           .catch(err => {
+            const message = err || 'Failed to createResetTokenObject '
+            logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       }
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch User email '
+      logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }

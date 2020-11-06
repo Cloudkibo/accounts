@@ -12,6 +12,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, webhookObject)
     })
     .catch(err => {
+      const message = err || 'Failed to find webhook record'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -23,6 +25,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create webhook record'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -35,7 +39,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update webhook ${util.inspect(err)}`)
+      const message = err || 'Failed to update webhook record'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -48,7 +53,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete webhook ${util.inspect(err)}`)
+      const message = err || 'Failed to delete webhook record'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -61,7 +67,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at querying webhook ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch webhook records'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -74,7 +81,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate webhook ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate webhook records'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

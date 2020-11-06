@@ -1,5 +1,7 @@
 const dataLayer = require('./m_code.datalayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const logger = require('../../../components/logger')
+const TAG = '/api/v1/messenger_code/m_code.controller.js'
 
 exports.create = function (req, res) {
   dataLayer.createMessengerCode(req.body)
@@ -7,6 +9,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create MessengerCode '
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -17,6 +21,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch MessengerCode '
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -27,6 +33,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to update MessengerCode '
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -37,6 +45,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to delete MessengerCode '
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

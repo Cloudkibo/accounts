@@ -19,6 +19,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, post)
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -30,6 +32,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to Fetch record of Create'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -61,11 +65,13 @@ exports.update = function (req, res) {
           //sendSuccessResponse(res, 200, result)
         })
         .catch(err => {
-          logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+          const message = err || 'Failed to genric update record of comment capture'
+          logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')  
           sendErrorResponse(res, 500, err)
         })})
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch records of comment capture'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)})
   }
 
@@ -83,7 +89,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to update record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -99,7 +106,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
+      const message = err || 'Failed to delete record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -114,6 +122,8 @@ exports.deleteLocally = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to delete record locally of comment capture'
+      logger.serverLog(message, `${TAG}: exports.deleteLocally`, req.body, {}, 'error')  
       logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
       sendErrorResponse(res, 500, err)
     })
@@ -128,7 +138,8 @@ exports.genericFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to genericFetch record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -141,7 +152,8 @@ exports.aggregateFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregateFetch record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -154,7 +166,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to genericUpdate record of comment capture'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -193,7 +206,8 @@ exports.scriptNormalizeAnalytics = function (req, res) {
             logger.serverLog(TAG, `Result ${util.inspect(result)}`)
           })
           .catch(err => {
-            logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+            const message = err || 'Failed to genericUpdatePostObject record of comment capture'
+            logger.serverLog(message, `${TAG}: exports.scriptNormalizeAnalytics`, req.body, {}, 'error')
             sendErrorResponse(res, 500, err)
           })
 
@@ -204,7 +218,8 @@ exports.scriptNormalizeAnalytics = function (req, res) {
     }
   })
   .catch(err => {
-    logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+    const message = err || 'Failed to fetchAllPosts record of comment capture'
+    logger.serverLog(message, `${TAG}: exports.scriptNormalizeAnalytics`, req.body, {}, 'error')
     sendErrorResponse(res, 500, err)
   })
 }

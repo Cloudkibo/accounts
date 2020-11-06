@@ -59,12 +59,14 @@ exports.index = function (req, res) {
           sendSuccessResponse(res, 200, user)
         })
         .catch(err => {
-          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          const message = err || 'Failed to fetch CPWithPlanPop'
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      const message = err || 'Error at Promise All'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -114,7 +116,8 @@ exports.updateMode = function (req, res) {
       sendSuccessResponse(res, 200, user)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      const message = err || 'Error at Promise All'
+      logger.serverLog(message, `${TAG}: exports.updateMode`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -128,7 +131,8 @@ exports.updateSkipConnect = function (req, res) {
       sendSuccessResponse(res, 200, user)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update skip connect: ${util.inspect(err)}`)
+      const message = err || 'Failed to update skip connect'
+      logger.serverLog(message, `${TAG}: exports.updateSkipConnect`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -166,7 +170,8 @@ exports.updateChecks = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at User find: ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch user'
+      logger.serverLog(message, `${TAG}: exports.updateChecks`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -222,19 +227,24 @@ exports.create = function (req, res) {
                                 type: isTeam ? 'company' : 'individual'})
                           })
                           .catch(err => {
-                            logger.serverLog(TAG, `Error at: ${err}`)
+                            const message = err || 'Failed to save Permission'
+                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
                             sendErrorResponse(res, 500, err)
                           })
                       })
                       .catch(err => {
-                        logger.serverLog(TAG, `Error at: ${err}`)
+                        const message = err || 'Failed to create company User'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
                         sendErrorResponse(res, 500, err)
                       })
                     let tokenString = logicLayer.getRandomString()
                     VertificationTokenDataLayer
                       .createVerificationToken({userId: user._id, token: tokenString})
                       .then()
-                      .catch(err => logger.serverLog(TAG, `New Token save : ${JSON.stringify(err)}`))
+                      .catch(err => {
+                        const message = err || 'Failed to New Token save'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                      })
                     // Sending email using mailchimp if team account
                     if (isTeam) logicLayer.sendEmailUsingMailChimp(req.body)
                     // Sending email via sendgrid
@@ -243,7 +253,10 @@ exports.create = function (req, res) {
                     email = logicLayer.setEmailBody(email, tokenString, req.body)
                     logger.serverLog(TAG, util.inspect(email))
                     sendgrid.send(email, function (err, json) {
-                      if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
+                      if (err) { 
+                        const message = err || 'Failed to sending email'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                      }                    
                     })
                     // Sending email to sojharo and sir
                     let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -251,22 +264,28 @@ exports.create = function (req, res) {
 
                     if (config.env === 'production') {
                       sendgrid.send(inHouseEmail, function (err, json) {
-                        if (err) { logger.serverLog(TAG, `Internal Server Error on sending email : ${err}`) }
+                        if (err) { 
+                          const message = err || 'Failed to sending email'
+                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')      
+                        }
                       })
                     }
                   })
                   .catch(err => {
-                    logger.serverLog(TAG, `Error at: ${err}`)
+                    const message = err || 'Failed to create Profile'
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
                     sendErrorResponse(res, 500, err)
                   })
               })
               .catch(err => {
-                logger.serverLog(TAG, `Error at: ${err}`)
+                const message = err || 'Failed to fetch all plan'
+                logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
                 sendErrorResponse(res, 500, err)
               })
           })
           .catch(err => {
-            logger.serverLog(TAG, `Error at: ${err}`)
+            const message = err || 'Failed to create user'
+            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
             sendErrorResponse(res, 500, err)
           })
       }
@@ -403,13 +422,16 @@ exports.joinCompany = function (req, res) {
 
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {
-          if (err) { logger.serverLog(TAG, `Internal Server Error on sending email : ${err}`) }
+          if (err) { 
+            const message = ` Error on sending email`
+            logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {}, 'error')
+          }
         })
       }
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
-      console.log('error', util.inspect(err))
+      const message = `Error at Promise Chaining ${util.inspect(err)}`
+      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -433,7 +455,8 @@ exports.update = function (req, res) {
         sendSuccessResponse(res, 200, result)
       })
       .catch(err => {
-        logger.serverLog(TAG, `Error at update user ${util.inspect(err)}`)
+        const message = err || 'Failed to update user'
+        logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
         sendErrorResponse(res, 500, err)
       })
   } else {
@@ -455,7 +478,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
+      const message = err || 'Failed to delete user'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -473,7 +497,8 @@ exports.authenticatePassword = function (req, res) {
       }
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at authenticatePassword user ${util.inspect(err)}`)
+      const message = `Error at authenticatePassword user ${util.inspect(err)}`
+      logger.serverLog(message, `${TAG}: exports.authenticatePassword`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -502,7 +527,8 @@ exports.addAccountType = function (req, res) {
             logger.serverLog(TAG, `saved User: ${savedUser}`)
           })
           .catch(err => {
-            logger.serverLog(TAG, `Error at company addAccountType: ${util.inspect(err)}`)
+            const message = err || 'Error at company addAccountType'
+            logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {}, 'error')
             sendErrorResponse(res, 500, err)
           })
         if (index === (users.length - 1)) {
@@ -511,7 +537,8 @@ exports.addAccountType = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at addAccountType: ${util.inspect(err)}`)
+      const message = err || 'Error at addAccountType'
+      logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -557,7 +584,8 @@ exports.enableDelete = function (req, res) {
       sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
+      const message = err || 'Error at update user'
+      logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -603,7 +631,8 @@ exports.cancelDeletion = function (req, res) {
       sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at enabling GDPR delete ${util.inspect(err)}`)
+      const message = err || 'Error at update user'
+      logger.serverLog(message, `${TAG}: exports.cancelDeletion`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -616,7 +645,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to update user'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -629,7 +659,8 @@ exports.fetchGeneral = function (req, res) {
       sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
-      logger.serverLog(TAG, `fetch general endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch All  user'
+      logger.serverLog(message, `${TAG}: exports.fetchGeneral`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -642,7 +673,8 @@ exports.updatePicture = function (req, res) {
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
     (err, resp) => {
       if (err) {
-        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture ${JSON.stringify(err)}`)
+        const message = `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture ${JSON.stringify(err)}`
+        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
         dataLayer.genericUpdateUserObject({_id: req.body.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
@@ -651,10 +683,13 @@ exports.updatePicture = function (req, res) {
             sendSuccessResponse(res, 200, resp.body.picture.data.url)
           })
           .catch(err => {
-            logger.serverLog(TAG, `Failed to update user ${JSON.stringify(err)}`)
+            const message = err || 'Failed to update user'
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
             sendErrorResponse(res, 500, err)
           })
       } else {
+        const message = `profile picture not found for user with _id ${req.body.user._id}`
+        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
         sendErrorResponse(res, 500, `profile picture not found for user with _id ${req.body.user._id}`)
       }
     })
@@ -671,7 +706,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate subscriber ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch aggregateInfo'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -681,6 +717,8 @@ exports.distinct = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch'
+      logger.serverLog(message, `${TAG}: exports.distinct`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -695,6 +733,8 @@ exports.markAccountAsDisabled = (req, res) => {
       sendSuccessResponse(res, 200, req.body)
     })
     .catch(err => {
+      const message = err || 'Failed to update user'
+      logger.serverLog(message, `${TAG}: exports.markAccountAsDisabled`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

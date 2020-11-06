@@ -13,6 +13,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, listObject)
     })
     .catch(err => {
+      const message = err || 'Failed to Find List'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -32,6 +34,8 @@ exports.create = function (req, res) {
             sendSuccessResponse(res, 200, result)
           })
           .catch(err => {
+            const message = err || 'Failed to create List'
+            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
             sendErrorResponse(res, 500, err)
           })
       } else {
@@ -39,6 +43,8 @@ exports.create = function (req, res) {
       }
     })
     .catch(err => {
+      const message = err || 'Failed to Find List'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -50,7 +56,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update list ${util.inspect(err)}`)
+      const message = err || 'Failed to update List'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -63,7 +70,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete list ${util.inspect(err)}`)
+      const message = err || 'Failed to delete List'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -76,7 +84,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at querying list ${util.inspect(err)}`)
+      const message = err || 'Failed to Fetch List'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -90,7 +99,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate list ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate List'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -103,7 +113,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to Update List'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

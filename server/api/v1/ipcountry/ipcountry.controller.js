@@ -1,5 +1,7 @@
 const IpCountryDataLayer = require('./ipcountry.datalayer')
 const { sendErrorResponse, sendSuccessResponse } = require('../../global/response')
+const TAG = 'api/v1/ipcountry/ipcountry.controller.js'
+const logger = require('./../../../components/logger')
 
 exports.findIp = function (req, res) {
   let ip = req.body.ip
@@ -19,6 +21,8 @@ exports.findIp = function (req, res) {
       sendSuccessResponse(res, 200, response)
     })
     .catch(err => {
+      const message = err || 'Failed to find IP Address'
+      logger.serverLog(message, `${TAG}: exports.findIp`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error ' + JSON.stringify(err))
     })
 }

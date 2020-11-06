@@ -1,6 +1,8 @@
 const dataLayer = require('./whatsAppContacts.datalayer')
 const logicLayer = require('./whatsAppContacts.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const TAG = '/api/v1/whatsAppContacts/whatsAppContacts.controller.js'
+const logger = require('../../../components/logger')
 
 exports.create = function (req, res) {
   dataLayer.createContactObject(req.body)
@@ -8,6 +10,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create Whatsapp Contact'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -18,6 +22,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch Whatsapp Contacts'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -29,6 +35,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to aggregate Whatsapp Contacts'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -39,6 +47,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to update Whatsapp Contacts'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -49,6 +59,8 @@ exports.deleteMany = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to delete Whatsapp Contacts'
+      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
