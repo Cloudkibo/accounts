@@ -13,6 +13,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to fetch team'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -29,6 +31,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create team Page'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -44,7 +48,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete user ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Page Team '
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -58,7 +63,8 @@ exports.genericPagesFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch All Team pages'
+      logger.serverLog(message, `${TAG}: exports.genericPagesFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -72,7 +78,8 @@ exports.distinctPagesFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch distinct Team pages'
+      logger.serverLog(message, `${TAG}: exports.distinctPagesFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -85,7 +92,8 @@ exports.aggregatePagesFetch = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to fetch aggregate Team pages'
+      logger.serverLog(message, `${TAG}: exports.aggregatePagesFetch`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -98,7 +106,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to update Team pages'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

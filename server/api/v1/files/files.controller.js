@@ -85,6 +85,8 @@ exports.index = function (req, res) {
                   function (err, resp) {
                     deleteFile(req.files.file.name)
                     if (err) {
+                      const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(err)
+                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')                 
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
                       logger.serverLog(TAG,
@@ -101,6 +103,8 @@ exports.index = function (req, res) {
               })
           })
           .catch(error => {
+            const message = err || 'Failed to fetch page'
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')       
             sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
           })
       } else {
@@ -129,6 +133,8 @@ exports.uploadForTemplate = function (req, res) {
           `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp2) => {
             if (err) {
+              const message = 'unable to get page access_token: ' + JSON.stringify(err)
+              logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')        
               sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
             }
             logger.serverLog(TAG,

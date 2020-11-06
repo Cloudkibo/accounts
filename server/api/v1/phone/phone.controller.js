@@ -13,6 +13,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, phoneObject)
     })
     .catch(err => {
+      const message = err || 'Failed to find Phone Number'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -24,7 +26,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      sendErrorResponse(res, 500, err)
+      const message = err || 'Failed to create Phone Number'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
     })
 }
 
@@ -36,7 +39,8 @@ exports.update = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update phone ${util.inspect(err)}`)
+      const message = err || 'Failed to update Phone Number'
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -49,7 +53,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete phone ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Phone Number'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -62,7 +67,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at querying phone ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Phone Number'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -75,7 +81,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate phone ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate Phone Number'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -88,7 +95,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to Update Phone Number'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

@@ -38,13 +38,15 @@ exports.verify = function (req, res) {
             return res.render('layouts/invitationExpire', {expireLink: false})
           })
           .catch(err => {
-            logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+            const message = err || 'Failed to find CompanyUser'
+            logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
             sendErrorResponse(res, 500, '', 'Internal Server Error')
           })
       }
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at: ${util.inspect(err)}`)
+      const message = err || 'Failed to find verificationToken'
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }

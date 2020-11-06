@@ -14,7 +14,8 @@ exports.index = function (req, res) {
       sendSuccessResponse(res, 200, tagsubs)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at index endpoint: ${util.inspect(err)}`)
+      const message = err || 'Failed to find AllTagSubObject'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -29,7 +30,8 @@ exports.findOne = function (req, res) {
       sendSuccessResponse(res, 200, tagsub)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at findOne endpoint: ${util.inspect(err)}`)
+      const message = err || 'Failed to find Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.findOne`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -43,7 +45,8 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, tagsub)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at create endpoint: ${util.inspect(err)}`)
+      const message = err || 'Failed to create Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -57,7 +60,8 @@ exports.delete = function (req, res) {
       sendSuccessResponse(res, 200, tagsub)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete endpoint: ${util.inspect(err)}`)
+      const message = err || 'Failed to delete Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -71,7 +75,8 @@ exports.deleteMany = function (req, res) {
       sendSuccessResponse(res, 200, tagsub)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete many endpoint: ${util.inspect(err)}`)
+      const message = err || 'Failed to deleteMany Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -85,7 +90,8 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to find Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -101,7 +107,8 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at generic fetch ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -115,7 +122,8 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `generic update endpoint ${util.inspect(err)}`)
+      const message = err || 'Failed to update Tag Subcriber'
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
