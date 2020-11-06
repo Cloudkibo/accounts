@@ -240,33 +240,41 @@ exports.fetchWhitelistedDomains = function (req, res) {
 exports.whitelistDomain = function (req, res) {
   dataLayer.findOnePageObjectUsingQuery({ pageId: req.body.page_id, companyId: req.user.companyId })
     .then(page => {
-      logger.serverLog(TAG, `page in whitelistDomain ${page}`)
       var accessToken = page.accessToken
-      needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
-        if (err) {
-        }
-        var body = JSON.parse(JSON.stringify(resp.body))
-        let temp = []
-        if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
-          temp = body.data[0].whitelisted_domains
-        }
-        for (var i = 0; i < req.body.whitelistDomains.length; i++) {
-          temp.push(req.body.whitelistDomains[i])
-        }
-        let whitelistedDomains = {
-          whitelisted_domains: temp
-        }
-        let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
-        needle.request('post', requesturl, whitelistedDomains, { json: true }, function (err, resp) {
+      let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
+      if (req.body.whitelistDomains.length < 1) {
+        needle.request('delete', requesturl, {'fields': ['whitelisted_domains']}, {json: true}, function (err, resp) {
           if (err) {
+            logger.serverLog(TAG, `Failed to delete whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
           }
-          if (resp.body.result === 'success') {
-            sendSuccessResponse(res, 200, temp)
+          var response = JSON.parse(JSON.stringify(resp.body))
+          if (response.result === 'success') {
+            sendSuccessResponse(res, 200, req.body)
           } else {
-            sendErrorResponse(res, 500, resp.body)
+            if (response.error && response.error.message) {
+              sendErrorResponse(res, 500, response.error.message)
+            } else {
+              sendErrorResponse(res, 500, response)
+            }
           }
         })
-      })
+      } else {
+        needle.request('post', requesturl, {whitelisted_domains: req.body.whitelistDomains && req.body.whitelistDomains.length > 0 ? req.body.whitelistDomains : []}, {json: true}, function (err, resp) {
+          if (err) {
+            logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
+          }
+          var response = JSON.parse(JSON.stringify(resp.body))
+          if (response.result === 'success') {
+            sendSuccessResponse(res, 200, req.body)
+          } else {
+            if (response.error && response.error.message) {
+              sendErrorResponse(res, 500, response.error.message)
+            } else {
+              sendErrorResponse(res, 500, response)
+            }
+          }
+        })
+      }
     }).catch(err => {
       logger.serverLog(TAG, `Failed to fetch pages ${util.inspect(err)}`)
       return res.status(500).json({ status: 'failed', payload: err })

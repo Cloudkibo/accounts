@@ -29,6 +29,9 @@ const subscriberSchema = new Schema({
   senderId: {
     type: String
   },
+  user_ref: {
+    type: String
+  },
   profilePic: {
     type: String
   },
@@ -90,7 +93,8 @@ const subscriberSchema = new Schema({
   usingChatBot: {
     type: Boolean,
     default: false
-  }
+  },
+  agent_activity_time: { type: Date }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)

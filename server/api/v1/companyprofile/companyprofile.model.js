@@ -18,7 +18,8 @@ var CompanyprofileSchema = new Schema({
   twilio: Schema.Types.Mixed,
   whatsApp: Schema.Types.Mixed,
   saveAutomationMessages: { type: Boolean, default: false },
-  showAgentName: { type: Boolean, default: false }
+  showAgentName: { type: Boolean, default: false },
+  hideChatSessions: { type: Boolean, default: false }
 })
 
 var stripeOptions = config.stripeOptions
