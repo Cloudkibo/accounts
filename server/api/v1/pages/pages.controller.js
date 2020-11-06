@@ -8,6 +8,7 @@ const needle = require('needle')
 const { callApi } = require('../../scripts/apiCaller')
 const util = require('util')
 const async = require('async')
+const _ = require('lodash')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
@@ -102,7 +103,7 @@ exports.connect = function (req, res) {
   dataLayer.findOnePageObject(req.params._id)
     .then(page => {
       // create default tags
-      callApi('tags/query', 'post', {purpose: 'findAll', match: {defaultTag: true, pageId: req.params._id, companyId: req.user.companyId}}, '', 'kiboengage')
+      callApi('tags/query', 'post', { purpose: 'findAll', match: { defaultTag: true, pageId: req.params._id, companyId: req.user.companyId } }, '', 'kiboengage')
         .then(defaultTags => {
           defaultTags = defaultTags.map((t) => t.tag)
           if (!defaultTags.includes(`_${page.pageId}_1`)) {
@@ -125,7 +126,7 @@ exports.connect = function (req, res) {
       needle('post', `https://graph.facebook.com/v6.0/me/broadcast_reach_estimations?access_token=${page.pageAccessToken}`)
         .then(reachEstimation => {
           if (reachEstimation.reach_estimation_id) {
-            dataLayer.updatePageObject(req.params._id, {connected: true, reachEstimationId: reachEstimation.reach_estimation_id})
+            dataLayer.updatePageObject(req.params._id, { connected: true, reachEstimationId: reachEstimation.reach_estimation_id })
               .then(result => {
                 sendSuccessResponse(res, 200, result)
               })
@@ -177,9 +178,9 @@ exports.getGreetingText = function (req, res) {
 exports.setGreetingText = function (req, res) {
   CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
-      let query = {pageId: req.params._id, companyId: companyUser.companyId}
+      let query = { pageId: req.params._id, companyId: companyUser.companyId }
       let updated = req.body
-      return dataLayer.updatePageObjectUsingQuery(query, updated, {multi: true})
+      return dataLayer.updatePageObjectUsingQuery(query, updated, { multi: true })
     })
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -220,7 +221,7 @@ exports.aggregate = function (req, res) {
 exports.genericUpdate = function (req, res) {
   dataLayer.genericUpdatePageObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      return res.status(200).json({status: 'success', payload: result})
+      return res.status(200).json({ status: 'success', payload: result })
     })
     .catch(err => {
       const message = err || 'Failed to Update page '
@@ -253,13 +254,13 @@ exports.fetchWhitelistedDomains = function (req, res) {
         if (body.data && body.data.length > 0 && body.data[0].whitelisted_domains) {
           whitelistDomains = body.data[0].whitelisted_domains
         }
-        sendSuccessResponse(res, 200, whitelistDomains)
+        return sendSuccessResponse(res, 200, whitelistDomains)
       })
     })
 }
 
 exports.whitelistDomain = function (req, res) {
-  dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
+  dataLayer.findOnePageObjectUsingQuery({ pageId: req.body.page_id, companyId: req.user.companyId })
     .then(page => {
       var accessToken = page.accessToken
       let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
@@ -305,7 +306,7 @@ exports.whitelistDomain = function (req, res) {
 }
 
 exports.deleteWhitelistDomain = function (req, res) {
-  dataLayer.findOnePageObjectUsingQuery({pageId: req.body.page_id, companyId: req.user.companyId})
+  dataLayer.findOnePageObjectUsingQuery({ pageId: req.body.page_id, companyId: req.user.companyId })
     .then(page => {
       var accessToken = page.accessToken
       needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
@@ -321,14 +322,14 @@ exports.deleteWhitelistDomain = function (req, res) {
             }
           }
           if (temp.length > 0 && temp.length === whitelistDomains.length) {
-            return res.status(500).json({status: 'failed', description: 'Domain not found'})
+            return res.status(500).json({ status: 'failed', description: 'Domain not found' })
           }
           let whitelistedDomains = {
             whitelisted_domains: temp
           }
           if (temp.length < 1) {
             let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
-            needle.request('delete', requesturl, {'fields': ['whitelisted_domains']}, {json: true}, function (err, resp) {
+            needle.request('delete', requesturl, { 'fields': ['whitelisted_domains'] }, { json: true }, function (err, resp) {
               if (err) {
                 const message = `Error in delete whitelisted_domains ${JSON.stringify(err)}`
                 logger.serverLog(message, `${TAG}: exports.deleteWhitelistDomain`, req.body, {}, 'error')
@@ -342,7 +343,7 @@ exports.deleteWhitelistDomain = function (req, res) {
             })
           } else {
             let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
-            needle.request('post', requesturl, whitelistedDomains, {json: true}, function (err, resp) {
+            needle.request('post', requesturl, whitelistedDomains, { json: true }, function (err, resp) {
               if (err) {
               }
               if (resp.body.result === 'success') {
@@ -406,7 +407,7 @@ exports.updatePageNames = function (req, res) {
                   if (pageResponse && pageResponse.body && pageResponse.body.name) {
                     logger.serverLog(TAG,
                       `Page#${index} page name from Graph API - ${pageResponse.body.name}`, 'info')
-                    dataLayer.updatePageObject(page._id, {pageName: pageResponse.body.name})
+                    dataLayer.updatePageObject(page._id, { pageName: pageResponse.body.name })
                       .then(result => {
                         console.log('Page updated in database', page._id)
                         logger.serverLog(TAG,
@@ -485,15 +486,15 @@ function fetchPages (url, user, res) {
     if (data) {
       async.each(data, updatePages.bind(null, user), function (err) {
         if (err) {
-          return res.status(500).json({status: 'failed', payload: err})
+          return res.status(500).json({ status: 'failed', payload: err })
         } else
         if (!cursor.next) {
-          return res.status(200).json({status: 'success', payload: 'success'})
+          return res.status(200).json({ status: 'success', payload: 'success' })
         }
       })
     } else {
       logger.serverLog(TAG, 'Empty response from graph API to get pages list data')
-      return res.status(200).json({status: 'success', payload: []})
+      return res.status(200).json({ status: 'success', payload: [] })
     }
     if (cursor && cursor.next) {
       fetchPages(cursor.next, user, res)
@@ -538,7 +539,7 @@ function updatePages (user, item, callback) {
                   }
                   if (fanCount.body.username) {
                     payloadPage = _.merge(payloadPage,
-                      {pageUserName: fanCount.body.username})
+                      { pageUserName: fanCount.body.username })
                   }
                   dataLayer.savePageObject(payloadPage)
                     .then(page => {
@@ -562,7 +563,7 @@ function updatePages (user, item, callback) {
                   if (fanCount.body.username) {
                     updatedPayload['pageUserName'] = fanCount.body.username
                   }
-                  dataLayer.updatePageObjectUsingQuery({_id: page._id}, updatedPayload, {})
+                  dataLayer.updatePageObjectUsingQuery({ _id: page._id }, updatedPayload, {})
                     .then(updated => {
                       logger.serverLog(TAG,
                         `page updated successfuly ${JSON.stringify(updated)}`)
