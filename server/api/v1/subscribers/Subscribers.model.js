@@ -29,9 +29,6 @@ const subscriberSchema = new Schema({
   senderId: {
     type: String
   },
-  user_ref: {
-    type: String
-  },
   profilePic: {
     type: String
   },
