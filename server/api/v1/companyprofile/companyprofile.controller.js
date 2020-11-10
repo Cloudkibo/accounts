@@ -10,10 +10,14 @@ const SubscribersDataLayer = require('./../subscribers/subscribers.datalayer')
 const PermissionDataLayer = require('./../permissions/permissions.datalayer')
 const PlanDataLayer = require('./../plans/plans.datalayer')
 const UserLogicLayer = require('./../user/user.logiclayer')
+const CompanyUsageModel = require('./../featureUsage/companyUsage.model')
+const PlanUsageModel = require('./../featureUsage/planUsage.model')
+const PagesModel = require('./../pages/Pages.model')
 const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
+const async = require('async')
 
 /*
 ......Review Comments.....
@@ -54,10 +58,12 @@ exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
       if (!profile) { sendErrorResponse(res, 404, '', 'Company not found') }
-      // Instance Level Method. No Idea if it supports promise. so keeping original callback
-      let result = logicLayer.setCard(profile, req.body.stripeToken)
-      if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
-      else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
+      logicLayer.setCard(profile, req.body.stripeToken)
+        .then(result => {
+          console.log(result)
+          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
+          else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
+        })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in set Card ${util.inspect(err)}`)
@@ -65,34 +71,126 @@ exports.setCard = function (req, res) {
     })
 }
 
+exports.switchToBasicPlan = function (req, res) {
+  PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: 'plan_A'})
+    .then(plan => {
+      async.parallelLimit([
+        function (cb) {
+          dataLayer.findOneProfileAndUpdate({_id: req.user.companyId}, {planId: plan._id, 'trialPeriod.status': false}, {})
+            .then(updatedProfile => cb(null, updatedProfile))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          PlanUsageModel.findOne({planId: plan._id}).exec()
+            .then(planUsage => cb(null, planUsage))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          CompanyUsageModel.findOne({companyId: req.user.companyId}).exec()
+            .then(companyUsage => cb(null, companyUsage))
+            .catch(err => cb(err))
+        }
+      ], 10, function (err, result) {
+        if (err) {
+          sendErrorResponse(res, 500, err)
+        } else {
+          const updatedProfile = result[0]
+          const planUsage = result[1]
+          const companyUsage = result[2]
+          if (companyUsage['facebook_pages'] > planUsage['facebook_pages']) {
+            PagesModel.update({companyId: req.user.companyId}, {connected: false}, {multi: true}).exec()
+              .then(updated => {
+                return CompanyUsageModel.update({companyId: req.user.companyId}, {facebook_pages: 0}).exec()
+              })
+              .then(updated => {
+                sendSuccessResponse(res, 200, updatedProfile)
+              })
+              .catch(err => {
+                sendErrorResponse(res, 500, err)
+              })
+          } else {
+            sendSuccessResponse(res, 200, updatedProfile)
+          }
+        }
+      })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in fetch plan ${util.inspect(err)}`)
+      sendErrorResponse(res, 500, err)
+    })
+}
+
+const _updateCompanyPlan = (data, callback) => {
+  const query = {_id: data.companyId}
+  const update = {planId: data.planObject._id, 'stripe.plan': data.plan}
+  dataLayer.genericUpdatePostObject(query, update, {})
+    .then(result => callback())
+    .catch(err => callback(err))
+}
+
+const _updateStripePlan = (data, callback) => {
+  dataLayer.findOneCPWithPlanPop({_id: data.companyId})
+    .then(company => {
+      if (!company) callback(new Error('Company not found'))
+      logicLayer.setPlan(company, data.stripeToken, data.plan)
+        .then(result => {
+          console.log(result)
+          if (result.status === 'failed') callback(result)
+          else if (result.status === 'success') callback()
+        })
+    })
+    .catch(err => {
+      logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
+      callback(err)
+    })
+}
+
 exports.updatePlan = function (req, res) {
   logger.serverLog(TAG, 'Hit the updatePlan controller index')
   if (req.user.plan.unique_ID === req.body.plan) {
-    sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
+    sendErrorResponse(res, 500, `The selected plan is the same as the current plan.`)
   }
-  if (!req.user.last4 && !req.body.stripeToken) {
-    sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
+  if (req.body.plan !== 'plan_A' && !req.user.last4) {
+    sendErrorResponse(res, 500, `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
-    .then(plan => {
-      let query = {_id: req.body.companyId}
-      let update = {planId: plan._id, 'stripe.plan': req.body.plan}
-      dataLayer.genericUpdatePostObject(query, update, {})
-        .then(result => { logger.serverLog(TAG, `update: ${result}`) })
-        .catch(err => { logger.serverLog(TAG, err) })
-
-      dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
-        .then(company => {
-          if (!company) sendErrorResponse(res, 500, '', 'Company not found')
-
-          let result = logicLayer.setPlan(company, req.body.stripeToken, plan)
-          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
-          else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
-        })
-        .catch(err => {
-          logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
-          sendErrorResponse(res, 500, err)
-        })
+    .then(planObject => {
+      const data = {...req.body, planObject}
+      async.parallelLimit([
+        function (cb) {
+          PlanUsageModel.findOne({planId: planObject._id}).exec()
+            .then(planUsage => cb(null, planUsage))
+            .catch(err => cb(err))
+        },
+        function (cb) {
+          CompanyUsageModel.findOne({companyId: req.user.companyId}).exec()
+            .then(companyUsage => cb(null, companyUsage))
+            .catch(err => cb(err))
+        },
+        _updateCompanyPlan.bind(null, data),
+        _updateStripePlan.bind(null, data)
+      ], 10, function (err, result) {
+        if (err) {
+          sendErrorResponse(res, 500, err.description)
+        } else {
+          const planUsage = result[0]
+          const companyUsage = result[1]
+          if (companyUsage['facebook_pages'] > planUsage['facebook_pages']) {
+            PagesModel.update({companyId: req.user.companyId}, {connected: false}, {multi: true}).exec()
+              .then(updated => {
+                return CompanyUsageModel.update({companyId: req.user.companyId}, {facebook_pages: 0}).exec()
+              })
+              .then(updated => {
+                sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+              })
+              .catch(err => {
+                sendErrorResponse(res, 500, err)
+              })
+          } else {
+            sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
+          }
+        }
+      })
     })
     .catch(err => {
       logger.serverLog(TAG, `Error in update plan ${util.inspect(err)}`)
@@ -366,5 +464,5 @@ exports.genericUpdate = function (req, res) {
 }
 
 exports.getKeys = function (req, res) {
-  res.status(200).json({status: 'success', captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
+  sendSuccessResponse(res, 200, {captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
 }

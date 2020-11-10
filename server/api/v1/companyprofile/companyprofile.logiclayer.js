@@ -28,44 +28,48 @@ exports.getEmailParameters = (email) => {
 }
 
 exports.setCard = (profile, stripeToken) => {
-  profile.setCard(stripeToken, function (err) {
-    if (err) {
-      if (err.code && err.code === 'card_declined') {
-        return {
-          status: 'failed',
-          description: 'Your card was declined. Please provide a valid card.'
+  return new Promise((resolve, reject) => {
+    profile.setCard(stripeToken, function (err) {
+      if (err) {
+        if (err.code && err.code === 'card_declined') {
+          resolve({
+            status: 'failed',
+            description: 'Your card was declined. Please provide a valid card.'
+          })
         }
+        resolve({
+          status: 'failed',
+          description: 'internal server error' + JSON.stringify(err)
+        })
       }
-      return {
-        status: 'failed',
-        description: 'internal server error' + JSON.stringify(err)
-      }
-    }
-    return {
-      status: 'success',
-      description: 'Card has been attached successfuly!'
-    }
+      resolve({
+        status: 'success',
+        description: 'Card has been attached successfuly!'
+      })
+    })
   })
 }
 
 exports.setPlan = (company, stripeToken, plan) => {
-  company.setPlan(plan, stripeToken, function (err) {
-    if (err) {
-      if (err.code && err.code === 'card_declined') {
-        return {
-          status: 'failed',
-          description: 'Your card was declined. Please provide a valid card.'
+  return new Promise((resolve, reject) => {
+    company.setPlan(plan, stripeToken, function (err) {
+      if (err) {
+        if (err.code && err.code === 'card_declined') {
+          resolve({
+            status: 'failed',
+            description: 'Your card was declined. Please provide a valid card.'
+          })
         }
+        resolve({
+          status: 'failed',
+          description: 'internal server error' + JSON.stringify(err)
+        })
       }
-      return {
-        status: 'failed',
-        description: 'internal server error' + JSON.stringify(err)
-      }
-    }
-    return {
-      status: 'success',
-      description: 'Plan has been updated successfuly!'
-    }
+      resolve({
+        status: 'success',
+        description: 'Plan has been updated successfuly!'
+      })
+    })
   })
 }
 
