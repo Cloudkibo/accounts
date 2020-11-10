@@ -1,13 +1,13 @@
 const config = require('./config/environment/index')
 const logger = require('./../server/components/logger')
 const TAG = '/server/routes.js'
-const Raven = require('raven')
 const cors = require('cors')
 const controller = require('./api/v1/files/files.controller')
 const userController = require('./api/v1/user/user.controller')
 const corsOptions = require('./api/v1/files/utility')
 const multiparty = require('connect-multiparty')
 const multipartyMiddleware = multiparty()
+const Sentry = require('@sentry/node')
 
 module.exports = function (app) {
   // API middlewares go here
@@ -163,7 +163,10 @@ module.exports = function (app) {
   })
 
   if (config.env === 'production' || config.env === 'staging') {
-    app.use(Raven.errorHandler())
+    // app.use(Raven.errorHandler())
+    app.use(Sentry.Handlers.errorHandler())
+    app.use(Sentry.Handlers.requestHandler())
+    
     app.use(function (err, req, res, next) {
       console.error(err.stack)
       logger.serverLog(TAG, err.stack)

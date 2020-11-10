@@ -154,6 +154,7 @@ exports.connect = function (req, res) {
 exports.disconnect = function (req, res) {
   dataLayer.updatePageObject(req.params._id, {connected: false})
     .then(result => {
+      let text = req.boy.test.pkr
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
