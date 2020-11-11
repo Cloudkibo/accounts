@@ -486,7 +486,7 @@ function fetchPages (url, user, res) {
     if (data) {
       async.each(data, updatePages.bind(null, user), function (err) {
         if (err) {
-          return res.status(500).json({status: 'failed', payload: err})
+          return res.status(500).json({ status: 'failed', payload: err })
         } else
         if (!cursor.next) {
           return res.status(200).json({ status: 'success', payload: 'success' })
