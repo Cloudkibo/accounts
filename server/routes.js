@@ -166,8 +166,8 @@ module.exports = function (app) {
     app.use(Raven.errorHandler())
     app.use(function (err, req, res, next) {
       console.error(err.stack)
-      logger.serverLog(TAG, err.stack)
-      logger.serverLog(TAG, err.message)
+      logger.serverLog(err.stack, TAG )
+      logger.serverLog(err.message, TAG)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
         return res.status(401).json({ status: 'Unauthorized', payload: 'jwt expired' })

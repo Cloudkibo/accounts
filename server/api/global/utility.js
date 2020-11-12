@@ -1,6 +1,8 @@
 const compose = require('composable-middleware')
 const CompanyUserDataLayer = require('./../v1/companyuser/companyuser.datalayer')
 const UserDataLayer = require('./../v1/user/user.datalayer')
+const logger = require('../../components/logger')
+const TAG = '/api/global/utility.js'
 
 const attachBuyerInfo = function () {
   return compose().use((req, res, next) => {
@@ -25,6 +27,8 @@ const attachBuyerInfo = function () {
         next()
       })
       .catch(error => {
+        const message = error || 'Failed to fetch buyer account'
+        logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, {}, {}, 'error')
         return res.status(500).json({
           status: 'failed',
           payload: `Failed to fetch buyer account ${JSON.stringify(error)}`

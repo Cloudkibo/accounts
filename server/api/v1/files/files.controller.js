@@ -25,14 +25,6 @@ exports.index = function (req, res) {
   if (req.files.file.size === 0) {
     sendErrorResponse(res, 400, '', 'No file submitted')
   }
-  logger.serverLog(TAG,
-    `req.files.file ${JSON.stringify(req.files.file.path)}`)
-  logger.serverLog(TAG,
-    `req.files.file ${JSON.stringify(req.files.file.name)}`)
-  logger.serverLog(TAG,
-    `dir ${JSON.stringify(dir)}`)
-  logger.serverLog(TAG,
-    `serverPath ${JSON.stringify(serverPath)}`)
   fs.rename(
     req.files.file.path,
     dir + '/userfiles/' + serverPath,
@@ -40,12 +32,6 @@ exports.index = function (req, res) {
       if (err) {
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
-
-      logger.serverLog(TAG,
-        `file uploaded on KiboPush, uploading it on Facebook: ${JSON.stringify({
-          id: serverPath,
-          url: `${config.domain}/api/v1/files/download/${serverPath}`
-        })}`)
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
         // saving this file to send files with its original name
         // it will be deleted once it is successfully uploaded to facebook
@@ -53,7 +39,6 @@ exports.index = function (req, res) {
         let writeData = fs.createWriteStream(dir + '/userfiles/' + req.files.file.name)
         readData.pipe(writeData)
         let pages = JSON.parse(req.body.pages)
-        logger.serverLog(TAG, `Pages in upload file ${pages}`)
         pageDataLayer.findOnePageObject(pages[0])
           .then(page => {
             needle.get(
@@ -86,11 +71,11 @@ exports.index = function (req, res) {
                     deleteFile(req.files.file.name)
                     if (err) {
                       const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(err)
-                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')                 
+                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')                 
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
-                      logger.serverLog(TAG,
-                        `file uploaded on Facebook index ${JSON.stringify(resp.body)}`)
+                      logger.serverLog(
+                        `file uploaded on Facebook index ${JSON.stringify(resp.body)}`, `${TAG}: exports.index`)
                       let payload = {
                         id: serverPath,
                         attachment_id: resp.body.attachment_id,
@@ -104,7 +89,7 @@ exports.index = function (req, res) {
           })
           .catch(error => {
             const message = err || 'Failed to fetch page'
-            logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')       
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
             sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
           })
       } else {
@@ -134,15 +119,12 @@ exports.uploadForTemplate = function (req, res) {
           (err, resp2) => {
             if (err) {
               const message = 'unable to get page access_token: ' + JSON.stringify(err)
-              logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')        
+              logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')        
               sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
             }
-            logger.serverLog(TAG,
-              `retrieved page access_token ${JSON.stringify(resp2.body)}`)
             let pageAccessToken = resp2.body.access_token
 
             let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
-            logger.serverLog(TAG, dir + '/userfiles/' + req.body.name)
             const messageData = {
               'message': JSON.stringify({
                 'attachment': {
@@ -169,8 +151,8 @@ exports.uploadForTemplate = function (req, res) {
                   if (resp.body.error) {
                     sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
                   } else {
-                    logger.serverLog(TAG,
-                      `file uploaded on Facebook template ${JSON.stringify(resp.body)}`)
+                    logger.serverLog(
+                      `file uploaded on Facebook template ${JSON.stringify(resp.body)}`, TAG)
                     let payload = {
                       id: req.body.id,
                       attachment_id: resp.body.attachment_id,
@@ -187,6 +169,8 @@ exports.uploadForTemplate = function (req, res) {
           })
       })
       .catch(error => {
+        const message = error || '`Failed to fetch page'
+        logger.serverLog(message, `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
         sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
       })
   } else {
@@ -232,8 +216,8 @@ exports.downloadYouTubeVideo = function (req, res) {
       sendSuccessResponse(res, 200, video)
     })
     .catch(err => {
-      logger.serverLog(TAG,
-        `Inside Download file, err = ${JSON.stringify(err)}`)
+      const message = err || 'Failed to downloadYouTubeVideo'
+      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
     })
 }
@@ -254,9 +238,6 @@ function downloadVideo (data) {
         today.getSeconds()
       let fext = info._filename.split('.')
       serverPath += '.' + fext[fext.length - 1].toLowerCase()
-      logger.serverLog(TAG, 'Download started')
-      logger.serverLog(TAG, 'filename: ' + info._filename)
-      logger.serverLog(TAG, 'size: ' + info.size)
       let size = info.size
       if (size < 25000000) {
         stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))

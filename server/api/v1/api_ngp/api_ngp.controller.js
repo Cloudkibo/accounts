@@ -15,7 +15,6 @@ exports.query = function (req, res) {
   dataLayer.findOneApiObject({company_id: req.body.company_id})
     .then(settings => {
       if (!settings) {
-        logger.serverLog(TAG, `Did not found api settings: ${settings}`)
        // sendErrorResponse(res, 500, '', 'API settings not initialized or invalid user. Call enable API to initialize them.')
         dataLayer.save_ngp({company_id: req.body.company_id, enabled: true, app_id: 'My NGP App Id', app_secret: 'My NGP Secret Key'})
           .then(savedSettings => {
@@ -23,7 +22,7 @@ exports.query = function (req, res) {
           })
           .catch(error => {
             const message = error || 'Failed to Save NGP'
-            logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')      
+            logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
             sendErrorResponse(res, 500, '', `Unable to save${error}`)
           })
       }
@@ -31,7 +30,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch setting'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
       sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
@@ -44,7 +43,7 @@ exports.enable = function (req, res) {
       })
       .catch(error => {
         const message = error || 'Failed to Enable NGP'
-        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
         sendErrorResponse(res, 500, '', `Unable to save${error}`)
       })
   }
@@ -55,21 +54,20 @@ exports.enable = function (req, res) {
       })
       .catch(error => {
         const message = error || 'Failed to Update NGP'
-        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
         sendErrorResponse(res, 500, '', `Unable to save${error}`)
       })
   }
 }
 
 exports.save = function (req, res) {
-  logger.serverLog(TAG, `incoming body ${JSON.stringify(req.body)}`)
   dataLayer.update_ngp({_id: req.body.settings._id}, {app_id: req.body.settings.app_id, app_secret: req.body.settings.app_secret})
     .then(savedSettings => {
       sendSuccessResponse(res, 200, req.body.settings)
     })
     .catch(error => {
       const message = error || 'Failed to save NGP'
-      logger.serverLog(message, `${TAG}: exports.save`, req.body, {}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.save`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
       sendErrorResponse(res, 500, '', `Unable to save${error}`)
     })
 }

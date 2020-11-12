@@ -11,7 +11,6 @@ const { sendSuccessResponse, sendErrorResponse } = require('../../global/respons
 const util = require('util')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find controller index')
   dataLayer
     .findAllPlanObjectsUsingQuery({})
     .then(plans => {
@@ -28,27 +27,24 @@ exports.index = function (req, res) {
             plan.companyCount = count.length > 0 ? count[0].count : 0
             respPayload.push(plan)
             if (respPayload.length === plans.length) {
-              logger.serverLog(TAG, `Sending Payload ${util.inspect(respPayload)}`)
               sendSuccessResponse(res, 200, respPayload)
             }
           })
           .catch(err => {
             const message = err || 'Error in getting companies count'
-            logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 500, '', `Error in getting companies count ${JSON.stringify(err)}`)
           })
       })
     })
     .catch(err => {
       const message = err || 'Failed to find All plan'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create controller index')
-
   dataLayer
     .findAllPlanObjectsUsingQuery({})
     .then(plans => {
@@ -57,28 +53,25 @@ exports.create = function (req, res) {
       dataLayer
         .createPlanObject(preparePlanDataPayload)
         .then(plan => {
-          logger.serverLog(TAG, 'plan has been created on KiboPush. Going to create plan on stripe.')
           let stripePayload = logicLayer.prepareStripePayload(req.body, uid, stripeOptions)
           stripe.plans.create(stripePayload, (err, plan) => {
             if (err) {
               const message = err || 'Error creating plan on stripe'
-              logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+              logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
               sendErrorResponse(res, 500, '', `Failed to create plan on stripe ${JSON.stringify(err)}`)
             }
-            logger.serverLog(TAG, 'plan has been created on stripe as well.')
             sendSuccessResponse(res, 200, '', 'Plan has been created successfully!')
           })
         })
     })
     .catch(err => {
       const message = err || 'Error in finding Plans'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update controller index')
   let query = {unique_ID: req.body.unique_id}
   let updated = {$set: {name: req.body.name,
     interval: req.body.interval,
@@ -87,14 +80,13 @@ exports.update = function (req, res) {
   dataLayer
     .genericUpdatePlanObject(query, updated, {})
     .then(result => {
-      logger.serverLog(TAG, 'plan has been updated on KiboPush. Going to update plan on stripe.')
       stripe.plans.update(req.body.unique_id, {
         nickname: req.body.name,
         trial_period_days: req.body.trial_period
       }, (err, plan) => {
         err
-          ? logger.serverLog(err, `${TAG}: exports.update`, req.body, {}, 'error')
-          : logger.serverLog(`updated plan on stripe. ${util.inspect(plan)}`, TAG)
+          ? logger.serverLog(err, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          : logger.serverLog(`updated plan on stripe. ${util.inspect(plan)}`, `${TAG}: exports.update`)
 
         plan
           ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
@@ -103,21 +95,19 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in finding Plans'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete controller index')
   dataLayer
     .deletePlanObjectUsingQuery({unique_ID: req.params.id})
     .then(result => {
-      logger.serverLog(TAG, 'plan has been deleted on KiboPush. Going to delete plan on stripe.')
       stripe.plans.del(req.params.unique_id, (err, confirmation) => {
         err
-          ? logger.serverLog(err, `${TAG}: exports.delete`, req.body, {}, 'error')
-          : logger.serverLog(`delete plan on stripe. ${util.inspect(confirmation)}`, TAG)
+          ? logger.serverLog(err, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          : logger.serverLog(`delete plan on stripe. ${util.inspect(confirmation)}`, `${TAG}: exports.delete`)
 
         confirmation
           ? sendSuccessResponse(res, 200, '', 'Plan has been updated successfully!')
@@ -126,14 +116,12 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in finding Plans'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.changeDefaultPlan = function (req, res) {
-  logger.serverLog(TAG, 'Hit the Change Default Plan controller index')
-
   let criteria1 = {}
   let criteria2 = {}
   if (req.body.account_type === 'individual') {
@@ -157,14 +145,12 @@ exports.changeDefaultPlan = function (req, res) {
     })
     .catch(err => {
       const message = err || '`Error in changing default Plan'
-      logger.serverLog(message, `${TAG}: exports.changeDefaultPlan`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.changeDefaultPlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.migrateCompanies = function (req, res) {
-  logger.serverLog(TAG, 'Hit the migrateCompanies controller index')
-
   let query = {planId: req.body.from.id}
   let updated = {planId: req.body.to.id}
   let options = {multi: true}
@@ -172,12 +158,11 @@ exports.migrateCompanies = function (req, res) {
   CompanyDataLayer
     .genericUpdatePostObject(query, updated, options)
     .then(result => {
-      logger.serverLog(TAG, 'Companies migrated on KiboPush. Going to migrate them from stripe.')
       // migrate subscriptions from stripe
       stripe.subscriptions.list({ plan: req.body.from.unique_id }, (err, subscriptions) => {
         err
-          ? logger.serverLog(TAG, `Failed to delete plan on stripe. ${util.inspect(err)}`)
-          : logger.serverLog(TAG, `Subscriptions found ${util.inspect(subscriptions)}`)
+          ? logger.serverLog(`Failed to delete plan on stripe. ${util.inspect(err)}`, `${TAG}: exports.migrateCompanies`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          : logger.serverLog(`Subscriptions found ${util.inspect(subscriptions)}`, `${TAG}: exports.migrateCompanies`)
 
         subscriptions.data.forEach((customer, index) => {
           stripe.subscriptions.update(customer.id,
@@ -191,7 +176,7 @@ exports.migrateCompanies = function (req, res) {
             (err2, subscription) => {
               if (err2) {
                 const message = err || '`Error in Migration Companies'
-                logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {}, 'error')          
+                logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
                 sendErrorResponse(res, 500, '', err2)
               }
               if (index === (subscriptions.data.length - 1)) {
@@ -203,14 +188,12 @@ exports.migrateCompanies = function (req, res) {
     })
     .catch(err => {
       const message = err || '`Error in Update Companies'
-      logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {}, 'error')          
+      logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.populatePlan = function (req, res) {
-  logger.serverLog(TAG, 'Hit the populatePlan controller index')
-
   let promisePlanA = dataLayer.createPlanObject(logicLayer.planAPayload())
   let promisePlanB = dataLayer.createPlanObject(logicLayer.planBPayload())
   let promisePlanC = dataLayer.createPlanObject(logicLayer.planCPayload())
@@ -218,18 +201,16 @@ exports.populatePlan = function (req, res) {
 
   Promise.all([promisePlanA, promisePlanB, promisePlanC, promisePlanD])
     .then(result => {
-      logger.serverLog(TAG, `Error in changing default Plan ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, '', 'Successfuly populated!')
     })
     .catch(err => {
       const message = err || '`Error in populate Plan '
-      logger.serverLog(message, `${TAG}: exports.populatePlan`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.populatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
 
 exports.fetchAll = function (req, res) {
-  logger.serverLog(TAG, 'fetch All Update endpoint')
 
   dataLayer.findAllPlanObject()
     .then(result => {
@@ -237,14 +218,12 @@ exports.fetchAll = function (req, res) {
     })
     .catch(err => {
       const message = err || '`Error in find All plan '
-      logger.serverLog(message, `${TAG}: exports.fetchAll`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.fetchAll`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.genericFetch = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
-
   dataLayer
     .findAllPlanObjectsUsingQuery(req.body)
     .then(result => {
@@ -252,7 +231,7 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || '`Error in find All plan '
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

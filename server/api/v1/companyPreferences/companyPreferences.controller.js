@@ -8,7 +8,6 @@ const async = require('async')
 
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find controller index')
     dataLayer
       .findOneCompanyPreferencesUsingQuery({companyId: req.user.companyId})
       .then(companyPreference => {
@@ -16,13 +15,12 @@ exports.index = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to fetch CompanyPreferences'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create controller')
   var payload = {
     companyId: req.body.companyId, 
     unresolveSessionAlert: req.body.unresolveSessionAlert, 
@@ -35,13 +33,12 @@ exports.create = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to create CompanyPreferences'
-        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
 
 exports.genericFetch = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
 
   dataLayer
     .findAllCompanyPreferencesUsingQuery(req.body)
@@ -50,14 +47,13 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find All CompanyPreferences'
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
 
   dataLayer.genericUpdateCompanyPreferencesObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
@@ -65,7 +61,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch CompanyPreferences'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -96,8 +92,6 @@ function updateCompanyPreferences (company, callback) {
 }
 
 exports.populate = function (req, res) {
-  logger.serverLog(TAG, 'populate endpoint')
-
   CompanyProfileDataLayer.findAllProfileObjectsUsingQuery({})
     .then(companies => {
       async.each(companies, updateCompanyPreferences, function (err) {
@@ -110,7 +104,7 @@ exports.populate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find All Profile Objects'
-      logger.serverLog(message, `${TAG}: exports.populate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.populate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

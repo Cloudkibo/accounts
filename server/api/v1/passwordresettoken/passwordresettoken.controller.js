@@ -38,7 +38,7 @@ exports.forgot = function (req, res) {
               .send(emailWithBody, function (err, json) {
                 if (err) {
                   const message = err || 'Failed to send email '
-                  logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
+                  logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
                   sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
                 } else {
                   sendSuccessResponse(res, 200, '', 'Password Reset Link has been sent to your email address. Check your spam or junk folder if you have not received our email.')
@@ -47,14 +47,14 @@ exports.forgot = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to createResetTokenObject '
-            logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       }
     })
     .catch(err => {
       const message = err || 'Failed to Fetch User email '
-      logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -75,20 +75,16 @@ exports.reset = function (req, res) {
     })
     .then(foundUser => {
       if (foundUser.authenticate(req.body.new_password)) {
-        logger.serverLog(TAG, `existing password : ${String(req.body.new_password)}`)
         sendErrorResponse(res, 400, '', 'New password cannot be same as old password')
       } else {
-        logger.serverLog(TAG, `found user : ${String(foundUser)}`)
         foundUser.password = String(req.body.new_password)
         return userDataLayer.saveUserObject(foundUser)
       }
     })
     .then(result => {
-      logger.serverLog(TAG, `updated user : ${String(result)}`)
       return resetTokenDataLayer.removeTokenObjectUsingToken(token)
     })
     .then(result => {
-      logger.serverLog(TAG, `delete token object ${result}`)
       sendSuccessResponse(res, 200, '', 'Password successfully changed. Please login with your new password.')
     })
     .catch(err => {
@@ -101,7 +97,6 @@ exports.verify = function (req, res) {
     .findResetTokenObjectUsingToken(req.params.id)
     .then(result => {
       // Following will be updated with change password views
-      logger.serverLog(TAG, ``)
       result
         ? res.sendFile(
           path.join(config.root, 'views/pages/change_password.html'))

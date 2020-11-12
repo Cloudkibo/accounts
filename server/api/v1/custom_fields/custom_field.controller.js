@@ -7,20 +7,18 @@ const util = require('util')
 const TAG = '/api/v1/kiboengage/custom_fields/custom_field.controller.js'
 
 exports.index = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Index endpoint is hit:`)
   DataLayer.findAllCustomFieldObjects()
     .then(foundObjects => {
       sendSuccessResponse(res, 200, foundObjects)
     })
     .catch(err => {
       const message = err || 'Failed to findAll Custom Field'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')      
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
       sendErrorResponse(res, 500, err.toString())
     })
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Create endpoint is hit:`)
   let query = {
     purpose: 'findOne',
     match: {
@@ -39,20 +37,19 @@ exports.create = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to create Custom Field'
-            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
+            logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
             sendErrorResponse(res, 500, err.toString())
           })
       }
     })
     .catch(err => {
       const message = err || 'Failed to find Custom Field'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
       sendErrorResponse(res, 500, err.toString())
     })
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Query endpoint is hit:`)
 
   DataLayer.findCustomFieldsUsingQuery(req.body)
     .then(foundObjects => {
@@ -60,13 +57,12 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find Custom Field'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')    
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
       sendErrorResponse(res, 500, err.toString())
     })
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Update endpoint is hit:`)
   let query = {
     purpose: 'findOne',
     match: {
@@ -86,27 +82,26 @@ exports.update = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to update Custom Field'
-            logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error') 
+            logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
             sendErrorResponse(res, 500, err)
           })
       }
     })
     .catch(err => {
       const message = err || 'Failed to find Custom Field'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
       sendErrorResponse(res, 500, err.toString())
     })
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Delete endpoint is hit:`)
   DataLayer.deleteCustomField(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to delete Custom Field'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
       sendErrorResponse(res, 500, err.toString())
     })
 }

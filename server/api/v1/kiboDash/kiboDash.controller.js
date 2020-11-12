@@ -15,7 +15,6 @@ const mongoose = require('mongoose')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.platformWiseData = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   let startDate = ''
   let dateFilterAggregates = {$match: {}}
   if (req.body.startDate && req.body.startDate !== '') {
@@ -47,12 +46,11 @@ exports.platformWiseData = function (req, res) {
     sendSuccessResponse(res, 200, data)
   }).catch((err) => {
     const message = err || 'Failed to Find  platformWiseData'
-    logger.serverLog(message, `${TAG}: exports.platformWiseData`, req.body, {}, 'error')
+    logger.serverLog(message, `${TAG}: exports.platformWiseData`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.pageWiseData = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   let startDate = req.body.startDate
   let dateFilterSubscribers = filterPageSubscribers
   // add the date filter(as from reqeust) in the aggregate pipeline query for subscribers page wise
@@ -79,12 +77,11 @@ exports.pageWiseData = function (req, res) {
     sendSuccessResponse(res, 200, data)
   }).catch((err) => {
     const message = err || 'Failed to Find  pageWiseData'
-    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {}, 'error')
+    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.companyWiseData = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   let startDate = req.body.startDate
   let dateFilterSubscribers = filterCompanySubscribers
   dateFilterSubscribers['$project']['companysubscribers']['$filter']['cond'] = {$gte: ['$$companysubscriber.datetime', new Date(startDate)]}
@@ -124,18 +121,17 @@ exports.companyWiseData = function (req, res) {
         })
         .catch((err) => {
           const message = err || 'Failed to Find User'
-          logger.serverLog(message, `${TAG}: exports.companyWiseData`, req.body, {}, 'error')
+          logger.serverLog(message, `${TAG}: exports.companyWiseData`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
           sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
         })
     }
   }).catch((err) => {
     const message = err || 'Failed to Find companyWiseData'
-    logger.serverLog(message, `${TAG}: exports.companyWiseData`, req.body, {}, 'error')
+    logger.serverLog(message, `${TAG}: exports.companyWiseData`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }
 exports.getFacebookAutoposting = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash Facebook Autoposting ${JSON.stringify(req.body)}`)
   // let queries = logicLayer.getQuery(req.body)
   if (req.body.startDate && req.body.startDate !== '') {
     dataLayer.aggregateForAutoposting(
@@ -148,7 +144,7 @@ exports.getFacebookAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getFacebookAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getFacebookAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   } else {
@@ -162,13 +158,12 @@ exports.getFacebookAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getFacebookAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getFacebookAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   }
 }
 exports.getTwitterAutoposting = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash Twitter ${JSON.stringify(req.body)}`)
   if (req.body.startDate && req.body.startDate !== '') {
     dataLayer.aggregateForAutoposting(
       joinAutpostingMessages,
@@ -180,7 +175,7 @@ exports.getTwitterAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getTwitterAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getTwitterAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   } else {
@@ -194,13 +189,12 @@ exports.getTwitterAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getTwitterAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getTwitterAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   }
 }
 exports.getWordpressAutoposting = function (req, res) {
-  logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   if (req.body.startDate && req.body.startDate !== '') {
     dataLayer.aggregateForAutoposting(
       joinAutpostingMessages,
@@ -212,7 +206,7 @@ exports.getWordpressAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getWordpressAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getWordpressAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   } else {
@@ -226,7 +220,7 @@ exports.getWordpressAutoposting = function (req, res) {
       })
       .catch((err) => {
         const message = err || 'Failed to Find aggregate Autoposting Data'
-        logger.serverLog(message, `${TAG}: exports.getWordpressAutoposting`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.getWordpressAutoposting`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
   }

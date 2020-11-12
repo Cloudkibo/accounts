@@ -11,7 +11,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create contact List'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -23,7 +23,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch contact List'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -35,7 +35,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update contact List'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -47,7 +47,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete contact List'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

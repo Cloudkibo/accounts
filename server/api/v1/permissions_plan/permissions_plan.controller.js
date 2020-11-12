@@ -8,76 +8,78 @@ const util = require('util')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find permissionPlan controller index')
 
   dataLayer.findOnePermissionsPlanObject(req.params._id)
     .then(permissionPlanObject => {
       sendSuccessResponse(res, 200, permissionPlanObject)
     })
     .catch(err => {
+      const message = err || 'Failed to Find permission Plan'
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create permissionPlan controller index')
   dataLayer.createPermissionsPlanObject(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
+      const message = err || 'Failed to create permission Plan'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update permissionPlan controller index')
 
   dataLayer.updatePermissionsPlanObject(req.params._id, req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at update permissionPlan ${util.inspect(err)}`)
+      const message = err || 'Failed to update permission Plan'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete permissionPlan controller index')
 
   dataLayer.deletePermissionsPlanObject(req.params._id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at delete permissionPlan ${util.inspect(err)}`)
+      const message = err || 'Failed to delete permission Plan'
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for permissionPlan controller')
 
   dataLayer.findallPermissionsPlanObjects(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at querying permissionPlan ${util.inspect(err)}`)
+      const message = err || 'Failed to querying permission Plan'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the aggregate endpoint for permissionPlan controller')
 
   dataLayer.aggregateInfo(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at aggregate permissionPlan ${util.inspect(err)}`)
+      const message = err || 'Failed to aggregate permission Plan'
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

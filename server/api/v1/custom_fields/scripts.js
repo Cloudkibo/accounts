@@ -7,7 +7,6 @@ const { sendSuccessResponse, sendErrorResponse } = require('../../global/respons
 const util = require('util')
 
 exports.populateDefaultFields = function (req, res) {
-  logger.serverLog(CUSTOMFIELD, `Populate endpoint is hit:`)
   let defaultFields = [
     { default: true, description: 'Name of the city of the subscriber', type: 'text', name: 'City' },
     { default: true, description: 'Street Address of the subscriber', type: 'text', name: 'Street Address' },
@@ -41,14 +40,13 @@ function _populateDefaultField (defaultField) {
         // default custom field not found, going to create new
         DataLayer.createOneCustomFieldObject(defaultField)
           .then(createdObject => {
-            logger.serverLog(CUSTOMFIELD, `created the default custom field for ${createdObject.name}`)
           })
           .catch(err => {
-            logger.serverLog(CUSTOMFIELD, `Error create default custom field : ${util.inspect(err)}`)
+            logger.serverLog(`Error create default custom field : ${util.inspect(err)}`, `${CUSTOMFIELD}: exports._populateDefaultField`, defaultField, {}, 'error')
           })
       }
     })
     .catch(err => {
-      logger.serverLog(CUSTOMFIELD, `Error find default custom field : ${util.inspect(err)}`)
+      logger.serverLog(`Error create default custom field : ${util.inspect(err)}`, `${CUSTOMFIELD}: exports._populateDefaultField`, defaultField, {}, 'error')
     })
 }
