@@ -104,6 +104,8 @@ exports.switchToBasicPlan = function (req, res) {
         }
       ], 10, function (err, result) {
         if (err) {
+          const message = err || 'Error in Parallel Limit'
+          logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')    
           sendErrorResponse(res, 500, err)
         } else {
           const updatedProfile = result[0]
@@ -118,6 +120,8 @@ exports.switchToBasicPlan = function (req, res) {
                 sendSuccessResponse(res, 200, updatedProfile)
               })
               .catch(err => {
+                const message = err || 'Error in page Update'
+                logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')          
                 sendErrorResponse(res, 500, err)
               })
           } else {
@@ -127,7 +131,8 @@ exports.switchToBasicPlan = function (req, res) {
       })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error in fetch plan ${util.inspect(err)}`)
+      const message = err || 'Error in find plan'
+      logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')          
       sendErrorResponse(res, 500, err)
     })
 }
@@ -172,8 +177,6 @@ exports.updatePlan = function (req, res) {
           PlanUsageModel.findOne({planId: planObject._id}).exec()
             .then(planUsage => cb(null, planUsage))
             .catch(err => {
-              const message = err || 'Error in find planUsage'
-              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')            
               cb(err)
             })
         },
@@ -181,8 +184,6 @@ exports.updatePlan = function (req, res) {
           CompanyUsageModel.findOne({companyId: req.user.companyId}).exec()
             .then(companyUsage => cb(null, companyUsage))
             .catch(err => {
-              const message = err || 'Error in find company usage model'
-              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')            
               cb(err)
             }) 
         },
@@ -190,7 +191,7 @@ exports.updatePlan = function (req, res) {
         _updateStripePlan.bind(null, data)
       ], 10, function (err, result) {
         if (err) {
-          logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
+          logger.serverLog(err.description, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err.description)
         } else {
           const planUsage = result[0]
