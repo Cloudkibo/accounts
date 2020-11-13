@@ -23,6 +23,7 @@ exports.index = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
 
   if (req.files.file.size === 0) {
+    logger.serverLog('No file submitted', `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
     sendErrorResponse(res, 400, '', 'No file submitted')
   }
   fs.rename(
@@ -30,6 +31,7 @@ exports.index = function (req, res) {
     dir + '/userfiles/' + serverPath,
     err => {
       if (err) {
+        logger.serverLog('internal server error', `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
@@ -146,9 +148,11 @@ exports.uploadForTemplate = function (req, res) {
               function (err, resp) {
                 deleteFile(req.body.name)
                 if (err) {
+                  logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                 } else if (resp.body) {
                   if (resp.body.error) {
+                    logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
                     sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
                   } else {
                     logger.serverLog(
@@ -183,9 +187,9 @@ function deleteFile (id) {
   // unlink file
   fs.unlink(dir + '/userfiles/' + id, function (err) {
     if (err) {
-      logger.serverLog(TAG, err, 'error')
+      logger.serverLog(err, `${TAG}: exports.uploadForTemplate`, id, {}, 'error')  
     } else {
-      logger.serverLog(TAG, 'file deleted successfully', 'debug')
+      logger.serverLog('file deleted successfully', TAG)
     }
   })
 }
@@ -201,12 +205,11 @@ exports.download = function (req, res) {
   // }
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
-      logger.serverLog(TAG,
-        `Inside Download file, err = ${JSON.stringify(err)}`)
+      logger.serverLog(err, `${TAG}: exports.download`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       res.status(err.status).end()
     } else {
-      logger.serverLog(TAG,
-        `Inside Download file, req.params.id: = ${req.params.id}`)
+      logger.serverLog(
+        `Inside Download file, req.params.id: = ${req.params.id}`, TAG)
     }
   })
 }
@@ -277,6 +280,8 @@ exports.deleteFile = function (req, res) {
   let file = path.resolve(__dirname, `../../../../broadcastFiles/userfiles/${req.params.id}`)
   fs.unlink(file, (err) => {
     if (err) {
+      const message = err || 'Failed to deleteFile'
+      logger.serverLog(message, `${TAG}: exports.deleteFile`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, `Failed to delete file ${err}`)
     } else {
       sendSuccessResponse(res, 200, `${file} was succesfully deleted`)

@@ -34,6 +34,8 @@ exports.index = function (req, res) {
 
       if (!user || !companyUser || !permissions) {
         let resp = logicLayer.getResponse(user, companyUser, permissions)
+        const message = resp || 'Error in Promise All'
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 404, resp)
       }
 
@@ -44,6 +46,8 @@ exports.index = function (req, res) {
         })
         .then(plan => {
           if (!plan) {
+            const message = 'Error in plan not set for this user'
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
           }
           user = user.toObject()
@@ -100,6 +104,8 @@ exports.updateMode = function (req, res) {
     })
     .then(plan => {
       if (!plan) {
+        const message = 'Error in plan not set for this user'
+        logger.serverLog(message, `${TAG}: exports.updateMode`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
       }
       user = user.toObject()
@@ -305,6 +311,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
+        logger.serverLog('user or company user not found', `${TAG}: exports.joinCompany`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
         let accountData = {
@@ -390,9 +397,12 @@ exports.joinCompany = function (req, res) {
 
 exports.update = function (req, res) {
   let id
-  req.params._id
-    ? id = req.params._id
-    : sendErrorResponse(res, 400, 'ID is not provided')
+  if (req.params._id) id = req.params._id
+  else {
+    const message = 'ID is not provided'
+    logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+    sendErrorResponse(res, 400, 'ID is not provided')
+  }
 
   let name = req.body.name ? req.body.name : false
   let email = req.body.email ? req.body.email : false
@@ -417,10 +427,12 @@ exports.update = function (req, res) {
 
 exports.delete = function (req, res) {
   let id
-  req.params._id
-    ? id = req.params._id
-    : sendErrorResponse(res, 500, '', 'ID is not provided')
-
+  if (req.params._id) id = req.params._id
+  else {
+    const message = 'ID is not provided'
+    logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+    sendErrorResponse(res, 400, 'ID is not provided')
+  }
   dataLayer.deleteUserObject(id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
@@ -503,6 +515,8 @@ exports.enableDelete = function (req, res) {
       email = logicLayer.setEnableDeleteEmailBody(email, emailText)
       sendgrid.send(email, function (err, json) {
         if (err) {
+          const message = err || 'Error at send email'
+          logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
           return logger.serverLog(TAG,
             `Internal Server Error on sending email : ${JSON.stringify(
               err)}`)

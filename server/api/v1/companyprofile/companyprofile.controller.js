@@ -31,6 +31,8 @@ exports.index = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
+        const message = 'The user account does not belong to any company'
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       dataLayer
@@ -54,7 +56,11 @@ exports.index = function (req, res) {
 exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
-      if (!profile) { sendErrorResponse(res, 404, '', 'Company not found') }
+      if (!profile) { 
+        const message = 'Company not found'
+        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+        sendErrorResponse(res, 404, '', 'Company not found') 
+      }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
       let result = logicLayer.setCard(profile, req.body.stripeToken)
       if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
@@ -69,9 +75,14 @@ exports.setCard = function (req, res) {
 
 exports.updatePlan = function (req, res) {
   if (req.user.plan.unique_ID === req.body.plan) {
+    const message = `The selected plan is the same as the current plan.`
+    logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
     sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
   }
   if (!req.user.last4 && !req.body.stripeToken) {
+    const message = `Please add a card to your account before choosing a plan.`
+    logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+
     sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
@@ -84,10 +95,15 @@ exports.updatePlan = function (req, res) {
 
       dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
         .then(company => {
-          if (!company) sendErrorResponse(res, 500, '', 'Company not found')
-
+          if (!company) {
+            logger.serverLog('Company not found', `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')            
+            sendErrorResponse(res, 500, '', 'Company not found')
+          }
           let result = logicLayer.setPlan(company, req.body.stripeToken, plan)
-          if (result.status === 'failed') sendErrorResponse(res, 500, '', result.description)
+          if (result.status === 'failed') { 
+            logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')            
+            sendErrorResponse(res, 500, '', result.description)
+          }
           else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
         })
         .catch(err => {
@@ -110,10 +126,11 @@ exports.invite = function (req, res) {
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery)
     .then(companyUser => {
-      companyUser
-        ? logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
-        : sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
-
+      if (companyUser) logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
+      else {
+        logger.serverLog('The user account logged in does not belong to any company. Please contact support', `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')              
+        sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
+      }
       // Query Objects
       let InvitationCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}, companyId: companyUser.companyId._id}
       let UserCountQuery = {email: {$regex: `^${req.body.email}$`, $options: 'i'}}
@@ -133,10 +150,13 @@ exports.invite = function (req, res) {
           let gotCountAgentWithEmail = results[1] ? results[1] : null
           let gotCountAgent = results[2] ? results[2] : null
           if (gotCount > 0) {
+            logger.serverLog(`${req.body.name} is already invited.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
           } else if (gotCountAgent > 0) {
+            logger.serverLog(`${req.body.name} is already a memeber.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
           } else if (gotCountAgentWithEmail > 0) {
+            logger.serverLog(`${req.body.name} is already on KiboPush.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
@@ -170,9 +190,11 @@ exports.invite = function (req, res) {
                     ? logger.serverLog(`error at sendgrid send ${(err)}`, `${TAG}: exports.invite`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
                     : logger.serverLog(`response from sendgrid send: ${JSON.stringify(json)}`, TAG)
 
-                  json
-                    ? sendSuccessResponse(res, 200, 'Email has been sent')
-                    : sendErrorResponse(res, 500, err)
+                  if (json) sendSuccessResponse(res, 200, 'Email has been sent')
+                  else {
+                    logger.serverLog(res, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                    sendErrorResponse(res, 500, err)
+                  }
                 })
               })
               .catch(err => {
@@ -196,10 +218,12 @@ exports.invite = function (req, res) {
 
 exports.updateRole = function (req, res) {
   if (config.userRoles.indexOf(req.user.role) > 1) {
+    logger.serverLog('Unauthorised to perform this action.', `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
     sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
 
   if (config.userRoles.indexOf(req.body.role) < 0) {
+    logger.serverLog('Invalid role', `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
     sendErrorResponse(res, 404, '', 'Invalid role')
   }
 
@@ -283,6 +307,7 @@ exports.updateAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
+        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updateAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       let query = {_id: companyUser.companyId}
@@ -306,6 +331,7 @@ exports.getAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
+        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.getAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 

@@ -18,6 +18,8 @@ exports.forgot = function (req, res) {
     .findOneUserByEmail(req.body)
     .then(fetchedUser => {
       if (!fetchedUser) {
+        const message = 'Sorry! No such account or company exists'
+        logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
       } else {
         let token = resetTokenLogicLayer.getRandomString()
@@ -69,7 +71,7 @@ exports.reset = function (req, res) {
         res.sendFile(
           path.join(config.root, 'views/pages/change_password_failed.html'))
       } else {
-        logger.serverLog(TAG, `password with string : ${String(req.body.new_password)}`)
+        logger.serverLog(`password with string : ${String(req.body.new_password)}`, TAG)
         return userDataLayer.findOneUserObject({_id: foundObject.userId})
       }
     })
@@ -88,6 +90,7 @@ exports.reset = function (req, res) {
       sendSuccessResponse(res, 200, '', 'Password successfully changed. Please login with your new password.')
     })
     .catch(err => {
+      logger.serverLog(err, `${TAG}: exports.reset`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -104,6 +107,8 @@ exports.verify = function (req, res) {
           path.join(config.root, 'views/pages/change_password_failed.html'))
     })
     .catch(err => {
+      const message = err 
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -122,13 +127,18 @@ exports.change = function (req, res) {
           sendSuccessResponse(res, 200, '', 'Password changed successfully.')
         })
           .catch((err) => {
+            const message = err 
+            logger.serverLog(message, `${TAG}: exports.change`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       } else {
+        
         sendErrorResponse(res, 404, '', 'Wrong current password.')
       }
     })
     .catch(err => {
+      const message = err 
+      logger.serverLog(message, `${TAG}: exports.change`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -166,6 +176,8 @@ exports.forgotWorkspaceName = function (req, res) {
 
       sendgrid.send(email, function (err, json) {
         if (err) {
+          const message = err || 'Fail to send email'
+          logger.serverLog(message, `${TAG}: exports.forgotWorkspaceName`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
           sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
         }
 
@@ -173,6 +185,8 @@ exports.forgotWorkspaceName = function (req, res) {
       })
     })
     .catch(err => {
+      const message = err || 'Fail to find user'
+      logger.serverLog(message, `${TAG}: exports.forgotWorkspaceName`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }

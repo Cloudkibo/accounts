@@ -175,7 +175,7 @@ exports.migrateCompanies = function (req, res) {
             },
             (err2, subscription) => {
               if (err2) {
-                const message = err || '`Error in Migration Companies'
+                const message = err2 || '`Error in Migration Companies'
                 logger.serverLog(message, `${TAG}: exports.migrateCompanies`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
                 sendErrorResponse(res, 500, '', err2)
               }

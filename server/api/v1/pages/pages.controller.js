@@ -275,8 +275,10 @@ exports.whitelistDomain = function (req, res) {
             sendSuccessResponse(res, 200, req.body)
           } else {
             if (response.error && response.error.message) {
+              logger.serverLog(response.error.message, `${TAG}: exports.whitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
               sendErrorResponse(res, 500, response.error.message)
             } else {
+              logger.serverLog(res, `${TAG}: exports.whitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
               sendErrorResponse(res, 500, response)
             }
           }
@@ -291,8 +293,10 @@ exports.whitelistDomain = function (req, res) {
             sendSuccessResponse(res, 200, req.body)
           } else {
             if (response.error && response.error.message) {
+              logger.serverLog(response.error.message, `${TAG}: exports.whitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
               sendErrorResponse(res, 500, response.error.message)
             } else {
+              logger.serverLog(res, `${TAG}: exports.whitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
               sendErrorResponse(res, 500, response)
             }
           }
@@ -311,6 +315,7 @@ exports.deleteWhitelistDomain = function (req, res) {
       var accessToken = page.accessToken
       needle.get(`https://graph.facebook.com/v6.0/me/messenger_profile?fields=whitelisted_domains&access_token=${accessToken}`, function (err, resp) {
         if (err) {
+          logger.serverLog(err, `${TAG}: exports.deleteWhitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
         }
         var body = JSON.parse(JSON.stringify(resp.body))
         let temp = []
@@ -322,6 +327,7 @@ exports.deleteWhitelistDomain = function (req, res) {
             }
           }
           if (temp.length > 0 && temp.length === whitelistDomains.length) {
+            logger.serverLog('Domain not found', `${TAG}: exports.deleteWhitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
             return res.status(500).json({ status: 'failed', description: 'Domain not found' })
           }
           let whitelistedDomains = {
@@ -338,6 +344,7 @@ exports.deleteWhitelistDomain = function (req, res) {
               if (response.result === 'success') {
                 sendSuccessResponse(res, 200, temp)
               } else {
+                logger.serverLog(`Unable to delete whitelist domain ${response}`, `${TAG}: exports.deleteWhitelistDomain`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
                 sendErrorResponse(res, 500, '', `Unable to delete whitelist domain ${response}`)
               }
             })
@@ -401,13 +408,12 @@ exports.updatePageNames = function (req, res) {
                     logger.serverLog(message, `${TAG}: exports.updatePageNames`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
                   }
                   if (pageResponse && pageResponse.body && pageResponse.body.name) {
-                    logger.serverLog(TAG,
-                      `Page#${index} page name from Graph API - ${pageResponse.body.name}`, 'info')
+                    logger.serverLog(
+                      `Page#${index} page name from Graph API - ${pageResponse.body.name}`, TAG)
                     dataLayer.updatePageObject(page._id, { pageName: pageResponse.body.name })
                       .then(result => {
-                        console.log('Page updated in database', page._id)
-                        logger.serverLog(TAG,
-                          `Page#${index} - Page Name:${pageResponse.body.name} saved in Database`, 'info')
+                        logger.serverLog(
+                          `Page#${index} - Page Name:${pageResponse.body.name} saved in Database`, TAG)
                       })
                       .catch(err => {
                         const message = err || `Failed to Save page`
@@ -498,16 +504,13 @@ function updatePages (user, item, callback) {
   }
   needle.get(options2.url, options2, (error, fanCount) => {
     if (error !== null) {
-      logger.serverLog(`Error occurred ${error}`, TAG)
+      logger.serverLog(error, `${TAG}: exports.updatePages`, item, {user: user}, 'error')
       callback(error)
     } else {
       CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
         .then(companyUser => {
           if (!companyUser) {
-            logger.serverLog({
-              status: 'failed',
-              description: 'The user account does not belong to any company. Please contact support'
-            }, TAG)
+            logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updatePages`, item, {user: user}, 'error')
           } else {
             dataLayer.findPageObjects({pageId: item.id, userId: user._id, companyId: companyUser.companyId})
               .then(pages => {
@@ -534,10 +537,7 @@ function updatePages (user, item, callback) {
                       callback()
                     })
                     .catch(err => {
-                      logger.serverLog(TAG, {
-                        status: 'failed',
-                        description: `Unable to create Page Object ${err}`
-                      })
+                      logger.serverLog('Unable to create Page', `${TAG}: exports.updatePages`, item, {user: user}, 'error')
                       callback(err)
                     })
                 } else {

@@ -154,7 +154,8 @@ exports.updateData = function (req, res) {
                     `https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken}`,
                     (err, resp) => {
                       if (err) {
-                        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+                        const message = err || `error in retrieving https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`
+                        logger.serverLog(message, `${TAG}: exports.updateData`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
                       }
                       subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {companyId: req.user.companyId, user: req.user})
                         .then(updated => {

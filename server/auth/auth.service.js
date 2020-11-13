@@ -56,6 +56,8 @@ function isAuthenticated () {
                     return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
                   })
               } else {
+                const message = 'You are not allowed to perform this action'
+                logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
                 return res.status(403).json({status: 'failed', payload: 'You are not allowed to perform this action'})
               }
             } else {

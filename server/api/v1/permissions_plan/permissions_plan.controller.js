@@ -263,6 +263,8 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
+            const message = err || 'Failed to insert record4'
+            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
             sendErrorResponse(res, 500, 'Failed to insert record4')
           }
         })

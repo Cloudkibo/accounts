@@ -9,6 +9,8 @@ const attachBuyerInfo = function () {
     CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({ companyId: req.user.companyId, role: 'buyer' })
       .then(buyerInfo => {
         if (!buyerInfo) {
+          const message = 'Failed to fetch buyerInfo'
+          logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
           return res.status(404).json({
             status: 'failed',
             description: 'The buyer account has some technical problems. Please contact support'
@@ -28,7 +30,7 @@ const attachBuyerInfo = function () {
       })
       .catch(error => {
         const message = error || 'Failed to fetch buyer account'
-        logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, {}, {}, 'error')
+        logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
         return res.status(500).json({
           status: 'failed',
           payload: `Failed to fetch buyer account ${JSON.stringify(error)}`
