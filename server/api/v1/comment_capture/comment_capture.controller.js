@@ -192,7 +192,7 @@ exports.scriptNormalizeAnalytics = function (req, res) {
     for(let i=0; i<posts.length; i++){
       if (posts[i].includedKeywords.length < 1 && posts[i].excludedKeywords.length < 1 ) {
         console.log(JSON.stringify(posts[i]))
-        dataLayer.genericUpdatePostObject({_id: posts[i]._id}, {positiveMatchCount: posts[i].count}, {companyId: req.user.companyId, user: req.user})
+        dataLayer.genericUpdatePostObject({_id: posts[i]._id}, {positiveMatchCount: posts[i].count}, {})
           .then(result => {
           })
           .catch(err => {
