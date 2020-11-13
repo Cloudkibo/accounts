@@ -127,12 +127,12 @@ exports.updatePicture = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to update subscriber record'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')      
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')     
             sendErrorResponse(res, 500, err)
           })
       } else {
         const message = `profile picture not found for subscriber with senderId ${subscriber.senderId}`
-        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {resp: JSON.stringify(resp.body)}, 'error')
         sendErrorResponse(res, 404, `profile picture not found for subscriber with senderId ${subscriber.senderId}`)
       }
     })
