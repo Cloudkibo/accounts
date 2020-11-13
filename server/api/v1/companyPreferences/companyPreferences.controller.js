@@ -96,6 +96,8 @@ exports.populate = function (req, res) {
     .then(companies => {
       async.each(companies, updateCompanyPreferences, function (err) {
         if (err) {
+          const message = err || 'Failed to Update company Preference'
+          logger.serverLog(message, `${TAG}: exports.populate`, req.body, {user: req.user}, 'error')    
           res.status(500).json({status: 'failed', payload: err})
         } else {
           res.status(200).json({status: 'success', payload: 'updated successfully'})
