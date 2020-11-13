@@ -19,6 +19,7 @@ const util = require('util')
 const _ = require('lodash')
 const moment = require('moment')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const { updateCompanyUsage } = require('../../global/billingPricing')
 
 exports.index = function (req, res) {
   let userPromise = dataLayer.findOneUserObject(req.user._id)
@@ -54,6 +55,7 @@ exports.index = function (req, res) {
           user.companyId = companyUser.companyId
           user.permissions = permissions
           user.currentPlan = company.planId
+          user.trialPeriod = company.trialPeriod
           user.last4 = company.stripe.last4
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
@@ -186,14 +188,12 @@ exports.create = function (req, res) {
         let payload = logicLayer.prepareUserPayload(req.body, isTeam, domain)
         dataLayer.createUserObject(payload)
           .then(user => {
-            PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
-              .then(result => {
-                // Separate default plans
-                let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
-                let companyprofileData = logicLayer
-                  .prepareCompanyProfile(
-                    req.body, user._id, isTeam, domain,
-                    isTeam ? defaultPlanTeam : defaultPlanIndividual)
+            logger.serverLog(TAG, `User Found: ${user}`)
+            PlanDataLayer.findAllPlanObjectsUsingQuery({default: true})
+              .then(plans => {
+                const defaultPlan = plans[0]
+                logger.serverLog(TAG, `Default plan Found: ${util.inspect(defaultPlan)}`)
+                let companyprofileData = logicLayer.prepareCompanyProfile(req.body, user._id, isTeam, domain, defaultPlan)
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
@@ -295,6 +295,8 @@ exports.joinCompany = function (req, res) {
   let companyUserSaved
   let permissionSaved
   let tokenString
+  let company
+  let planUsage
 
   InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
     .then(token => {
@@ -302,8 +304,24 @@ exports.joinCompany = function (req, res) {
       if (!invitationToken) {
         sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
       }
-      return CompanyUserDataLayer
-        .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: invitationToken.companyId})
+    })
+    .then(companyFound => {
+      company = companyFound
+      return FeatureUsageDataLayer.findAllPlanUsageObjects({planId: company.planId})
+    })
+    .then(planUsageFound => {
+      planUsage = planUsageFound[0]
+      return FeatureUsageDataLayer.findAllCompanyUsageObjects({companyId: company._id})
+    })
+    .then(companyUsage => {
+      companyUsage = companyUsage[0]
+      if (planUsage.members !== -1 && companyUsage.members >= planUsage.members) {
+        throw new Error('Members limit has been reached for this company. Please talk to company buyer/admin and ask them to upgrade their plan to let new members join.')
+      } else {
+        return CompanyUserDataLayer
+          .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      }
     })
     .then(compUser => {
       companyUser = compUser
@@ -330,6 +348,8 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdUser => {
       user = createdUser
+      updateCompanyUsage(invitationToken.companyId, 'members', 1)
+      logger.serverLog(TAG, `Created User : ${util.inspect(createdUser)}`)
       let companyUserData = {
         companyId: invitationToken.companyId,
         userId: createdUser._id,
@@ -340,12 +360,18 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdCompanyUser => {
       companyUserSaved = createdCompanyUser
-      let permissionsPayload = { companyId: invitationToken.companyId, userId: user._id }
+      return PermissionDataLayer.findOneRolePermissionObject(invitationToken.role)
+    })
+    .then(rolePermissions => {
+      let roleBasedPermissions = Object.assign({}, rolePermissions)
+      delete roleBasedPermissions._id
+      delete roleBasedPermissions.__v
+      delete roleBasedPermissions.role
+      let permissionsPayload = _.merge({ companyId: invitationToken.companyId, userId: user._id }, roleBasedPermissions)
 
-      permissionsPayload = _.merge(permissionsPayload, config.permissions[invitationToken.role] || {})
-      return PermissionDataLayer.createUserPermission(permissionsPayload)
     })
     .then(createdPermissions => {
+      console.log('createdPermissions', createdPermissions)
       permissionSaved = createdPermissions
       let token = auth.signToken(user._id)
       res.clearCookie('email')

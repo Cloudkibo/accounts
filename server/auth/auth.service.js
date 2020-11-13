@@ -385,5 +385,6 @@ exports.signToken = signToken
 exports.setTokenCookie = setTokenCookie
 exports.isAuthorizedSuperUser = isAuthorizedSuperUser
 exports.fetchPages = fetchPages
+exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer
 exports.saveLastLoginIpAddress = saveLastLoginIpAddress
 exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer
