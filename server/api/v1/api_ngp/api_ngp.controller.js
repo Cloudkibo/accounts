@@ -22,7 +22,7 @@ exports.query = function (req, res) {
           })
           .catch(error => {
             const message = error || 'Failed to Save NGP'
-            logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
+            logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, '', `Unable to save${error}`)
           })
       }
@@ -30,7 +30,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch setting'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, '', 'API query failed')
     })
 }
@@ -43,7 +43,7 @@ exports.enable = function (req, res) {
       })
       .catch(error => {
         const message = error || 'Failed to Enable NGP'
-        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 500, '', `Unable to save${error}`)
       })
   }
@@ -54,7 +54,7 @@ exports.enable = function (req, res) {
       })
       .catch(error => {
         const message = error || 'Failed to Update NGP'
-        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.enable`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 500, '', `Unable to save${error}`)
       })
   }
@@ -67,7 +67,7 @@ exports.save = function (req, res) {
     })
     .catch(error => {
       const message = error || 'Failed to save NGP'
-      logger.serverLog(message, `${TAG}: exports.save`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.save`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, '', `Unable to save${error}`)
     })
 }

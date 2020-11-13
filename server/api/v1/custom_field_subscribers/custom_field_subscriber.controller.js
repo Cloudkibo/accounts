@@ -12,7 +12,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to findAll Custom Field Subscribers'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -25,7 +25,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create Custom Field Subscribers'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -37,7 +37,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch Custom Field Subscribers'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -50,7 +50,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update Custom Field Subscribers'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -62,7 +62,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete Custom Field Subscribers'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }

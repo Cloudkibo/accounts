@@ -24,6 +24,8 @@ var knownEvents = {
   'charge.succeeded': function (req, res, next) {
     Companyprofile.findOne({'stripe.customerId': req.body.data.object.customer}).populate('ownerId').exec((err, company) => {
       if (err) {
+        const message = err || 'Error in find company Profile'
+        logger.serverLog(message, `${TAG}: charge.succeeded`, req.body, {user: req.user}, 'error')  
         return res.status(500).json({
           status: 'failed',
           description: `Internal Server Error ${JSON.stringify(err)}`
@@ -44,9 +46,8 @@ var knownEvents = {
 
         sendgrid.send(email, function (err, json) {
           if (err) {
-            logger.serverLog(
-              `Internal Server Error on sending email : ${JSON.stringify(
-                err)}`, TAG)
+            const message = err || 'Error in find company Profile'
+            logger.serverLog(message, `${TAG}: charge.succeeded`, req.body, {user: req.user}, 'error')  
           }
         })
       }
@@ -76,9 +77,8 @@ var knownEvents = {
 
         sendgrid.send(email, function (err, json) {
           if (err) {
-            logger.serverLog(TAG,
-              `Internal Server Error on sending email : ${JSON.stringify(
-                err)}`)
+            const message = err || 'Error in send email'
+            logger.serverLog(message, `${TAG}: charge.failed`, req.body, {user: req.user}, 'error')
           }
         })
       }

@@ -11,7 +11,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create Whatsapp Contact'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -23,7 +23,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch Whatsapp Contacts'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -36,7 +36,7 @@ exports.aggregate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate Whatsapp Contacts'
-      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -48,7 +48,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update Whatsapp Contacts'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -60,7 +60,7 @@ exports.deleteMany = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete Whatsapp Contacts'
-      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

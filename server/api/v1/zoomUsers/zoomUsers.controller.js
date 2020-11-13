@@ -12,7 +12,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find All zoom Users records'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -24,7 +24,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create zoom User records'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -36,7 +36,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find zoom User record'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -48,7 +48,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update zoom User records'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -60,7 +60,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete zoom User records'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }

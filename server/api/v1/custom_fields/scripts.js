@@ -5,6 +5,7 @@ const DataLayer = require('./custom_field.datalayer')
 const CUSTOMFIELD = '/api/v1/kiboengage/tags/scripts.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
+const TAG = '/api/v1/kiboengage/custom_fields/script.js'
 
 exports.populateDefaultFields = function (req, res) {
   let defaultFields = [
@@ -42,11 +43,13 @@ function _populateDefaultField (defaultField) {
           .then(createdObject => {
           })
           .catch(err => {
-            logger.serverLog(`Error create default custom field : ${util.inspect(err)}`, `${CUSTOMFIELD}: exports._populateDefaultField`, defaultField, {}, 'error')
+            const message = err || 'Failed to create Custom Field'
+            logger.serverLog(message, `${TAG}: exports._populateDefaultField`, req.body, {user: req.user}, 'error')         
           })
       }
     })
     .catch(err => {
-      logger.serverLog(`Error create default custom field : ${util.inspect(err)}`, `${CUSTOMFIELD}: exports._populateDefaultField`, defaultField, {}, 'error')
+      const message = err || 'Failed to findAll Custom Field'
+      logger.serverLog(message, `${TAG}: exports._populateDefaultField`, req.body, {user: req.user}, 'error')         
     })
 }

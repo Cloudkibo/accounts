@@ -15,7 +15,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch tags'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -31,7 +31,7 @@ exports.findOne = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch tag'
-      logger.serverLog(message, `${TAG}: exports.findOne`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.findOne`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -45,7 +45,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create tag'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -60,7 +60,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete tag'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -75,7 +75,7 @@ exports.deleteMany = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete tags'
-      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -90,7 +90,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch tags'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -106,7 +106,7 @@ exports.aggregate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate tags'
-      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }
@@ -121,7 +121,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate tags'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, 'Internal Server Error')
     })
 }

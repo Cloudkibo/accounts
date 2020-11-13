@@ -15,7 +15,7 @@ exports.index = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to fetch CompanyPreferences'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
@@ -33,7 +33,7 @@ exports.create = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to create CompanyPreferences'
-        logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, err)
       })
 }
@@ -47,7 +47,7 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find All CompanyPreferences'
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -61,7 +61,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch CompanyPreferences'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -96,6 +96,8 @@ exports.populate = function (req, res) {
     .then(companies => {
       async.each(companies, updateCompanyPreferences, function (err) {
         if (err) {
+          const message = err || 'Failed to Update company Preference'
+          logger.serverLog(message, `${TAG}: exports.populate`, req.body, {user: req.user}, 'error') 
           res.status(500).json({status: 'failed', payload: err})
         } else {
           res.status(200).json({status: 'success', payload: 'updated successfully'})
@@ -104,7 +106,7 @@ exports.populate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find All Profile Objects'
-      logger.serverLog(message, `${TAG}: exports.populate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.populate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
