@@ -120,7 +120,6 @@ exports.deleteLocally = function (req, res) {
     .catch(err => {
       const message = err || 'Failed to delete record locally of comment capture'
       logger.serverLog(message, `${TAG}: exports.deleteLocally`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
-      logger.serverLog(TAG, `Error at delete subscriber ${util.inspect(err)}`)
       sendErrorResponse(res, 500, err)
     })
 }
