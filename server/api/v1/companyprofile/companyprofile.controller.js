@@ -204,7 +204,7 @@ exports.updatePlan = function (req, res) {
                 sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
               })
               .catch(err => {
-                logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
+                logger.serverLog(err, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, err)
               })
           } else {
@@ -226,7 +226,7 @@ exports.invite = function (req, res) {
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate(companyUserQuery)
     .then(companyUser => {
-      if (companyUser) logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
+      if (companyUser) logger.serverLog(`Company User found: ${util.inspect(companyUser)}`, TAG)
       else {
         logger.serverLog('The user account logged in does not belong to any company. Please contact support', `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')              
         sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
@@ -250,13 +250,10 @@ exports.invite = function (req, res) {
           let gotCountAgentWithEmail = results[1] ? results[1] : null
           let gotCountAgent = results[2] ? results[2] : null
           if (gotCount > 0) {
-            logger.serverLog(`${req.body.name} is already invited.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
           } else if (gotCountAgent > 0) {
-            logger.serverLog(`${req.body.name} is already a memeber.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
           } else if (gotCountAgentWithEmail > 0) {
-            logger.serverLog(`${req.body.name} is already on KiboPush.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
@@ -292,7 +289,7 @@ exports.invite = function (req, res) {
 
                   if (json) sendSuccessResponse(res, 200, 'Email has been sent')
                   else {
-                    logger.serverLog(res, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
+                    logger.serverLog(err, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
                     sendErrorResponse(res, 500, err)
                   }
                 })
@@ -318,12 +315,12 @@ exports.invite = function (req, res) {
 
 exports.updateRole = function (req, res) {
   if (config.userRoles.indexOf(req.user.role) > 1) {
-    logger.serverLog('Unauthorised to perform this action.', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
+    logger.serverLog('Unauthorised to perform this action.', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'info')
     sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
 
   if (config.userRoles.indexOf(req.body.role) < 0) {
-    logger.serverLog('Invalid role', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
+    logger.serverLog('Invalid role', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'info')
     sendErrorResponse(res, 404, '', 'Invalid role')
   }
 
@@ -342,7 +339,7 @@ exports.updateRole = function (req, res) {
       companyUser.role = req.body.role
 
       promiseUser = UserDataLayer.saveUserObject(user)
-      promiseCompanyUser = CompanyUserDataLayer.updateOneCompanyUserObjectUsingQuery({_id: companyUser._id}, {role: req.body.role}, {user: req.user})
+      promiseCompanyUser = CompanyUserDataLayer.updateOneCompanyUserObjectUsingQuery({_id: companyUser._id}, {role: req.body.role}, {})
       let permissionPromise = PermissionDataLayer
         .updatUserPermissionsObjectUsingQuery({userId: user._id}, config.permissions[req.body.role], {multi: true})
 
