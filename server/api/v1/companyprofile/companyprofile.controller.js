@@ -30,7 +30,6 @@ const async = require('async')
 */
 
 exports.index = function (req, res) {
-
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
@@ -74,7 +73,7 @@ exports.setCard = function (req, res) {
             sendErrorResponse(res, 500, '', result.description)
           }
           else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
-      })
+        })
     })
     .catch(err => {
       const message = err || 'Error in set Card'
