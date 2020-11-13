@@ -36,7 +36,7 @@ exports.index = function (req, res) {
     .then(companyUser => {
       if (!companyUser) {
         const message = 'The user account does not belong to any company'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')    
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       dataLayer
@@ -46,13 +46,13 @@ exports.index = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to find CPWithPlanPop'
-          logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')    
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to find company user'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -62,7 +62,7 @@ exports.setCard = function (req, res) {
     .then(profile => {
       if (!profile) { 
         const message = 'Company not found'
-        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')    
         sendErrorResponse(res, 404, '', 'Company not found') 
       }
       logicLayer.setCard(profile, req.body.stripeToken)
@@ -70,7 +70,7 @@ exports.setCard = function (req, res) {
           console.log(result)
           if (result.status === 'failed') {
             const message = 'Error in set Card'
-            logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+            logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, '', result.description)
           }
           else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
@@ -78,7 +78,7 @@ exports.setCard = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in set Card'
-      logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -173,7 +173,7 @@ exports.updatePlan = function (req, res) {
             .then(planUsage => cb(null, planUsage))
             .catch(err => {
               const message = err || 'Error in find planUsage'
-              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')            
+              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')            
               cb(err)
             })
         },
@@ -182,7 +182,7 @@ exports.updatePlan = function (req, res) {
             .then(companyUsage => cb(null, companyUsage))
             .catch(err => {
               const message = err || 'Error in find company usage model'
-              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')            
+              logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')            
               cb(err)
             }) 
         },
@@ -190,7 +190,7 @@ exports.updatePlan = function (req, res) {
         _updateStripePlan.bind(null, data)
       ], 10, function (err, result) {
         if (err) {
-          logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err.description)
         } else {
           const planUsage = result[0]
@@ -204,7 +204,7 @@ exports.updatePlan = function (req, res) {
                 sendSuccessResponse(res, 200, '', 'Plan updated successfully!')
               })
               .catch(err => {
-                logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                logger.serverLog(result.description, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, err)
               })
           } else {
@@ -215,7 +215,7 @@ exports.updatePlan = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in update plan'
-      logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')    
+      logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')    
       sendErrorResponse(res, 500, err)
     })
 }
@@ -228,7 +228,7 @@ exports.invite = function (req, res) {
     .then(companyUser => {
       if (companyUser) logger.serverLog(TAG, `Company User found: ${util.inspect(companyUser)}`)
       else {
-        logger.serverLog('The user account logged in does not belong to any company. Please contact support', `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')              
+        logger.serverLog('The user account logged in does not belong to any company. Please contact support', `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')              
         sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
       }
       // Query Objects
@@ -250,13 +250,13 @@ exports.invite = function (req, res) {
           let gotCountAgentWithEmail = results[1] ? results[1] : null
           let gotCountAgent = results[2] ? results[2] : null
           if (gotCount > 0) {
-            logger.serverLog(`${req.body.name} is already invited.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+            logger.serverLog(`${req.body.name} is already invited.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already invited.`)
           } else if (gotCountAgent > 0) {
-            logger.serverLog(`${req.body.name} is already a memeber.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+            logger.serverLog(`${req.body.name} is already a memeber.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already a member.`)
           } else if (gotCountAgentWithEmail > 0) {
-            logger.serverLog(`${req.body.name} is already on KiboPush.`, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+            logger.serverLog(`${req.body.name} is already on KiboPush.`, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 400, `${req.body.name} is already on KiboPush.`)
           } else {
             let uniqueTokenId = UserLogicLayer.getRandomString()
@@ -287,43 +287,43 @@ exports.invite = function (req, res) {
                 sendgrid.send(emailParam, (err, json) => {
                   logger.serverLog(TAG, `response from sendgrid send: ${JSON.stringify(json)}`)
                   err
-                    ? logger.serverLog(`error at sendgrid send ${(err)}`, `${TAG}: exports.invite`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                    ? logger.serverLog(`error at sendgrid send ${(err)}`, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')
                     : logger.serverLog(`response from sendgrid send: ${JSON.stringify(json)}`, TAG)
 
                   if (json) sendSuccessResponse(res, 200, 'Email has been sent')
                   else {
-                    logger.serverLog(res, `${TAG}: exports.updatePlan`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                    logger.serverLog(res, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
                     sendErrorResponse(res, 500, err)
                   }
                 })
               })
               .catch(err => {
                 const message = err || 'Failed to invite token save'
-                logger.serverLog(message, `${TAG}: exports.invite`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
+                logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')          
               })
           }
         })
         .catch(err => {
           const message = err || 'Error in getting companies count'
-          logger.serverLog(message, `${TAG}: exports.invite`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')          
+          logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')          
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Error in getting companies count'
-      logger.serverLog(message, `${TAG}: exports.invite`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updateRole = function (req, res) {
   if (config.userRoles.indexOf(req.user.role) > 1) {
-    logger.serverLog('Unauthorised to perform this action.', `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+    logger.serverLog('Unauthorised to perform this action.', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
     sendErrorResponse(res, 401, '', 'Unauthorised to perform this action.')
   }
 
   if (config.userRoles.indexOf(req.body.role) < 0) {
-    logger.serverLog('Invalid role', `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+    logger.serverLog('Invalid role', `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
     sendErrorResponse(res, 404, '', 'Invalid role')
   }
 
@@ -342,7 +342,7 @@ exports.updateRole = function (req, res) {
       companyUser.role = req.body.role
 
       promiseUser = UserDataLayer.saveUserObject(user)
-      promiseCompanyUser = CompanyUserDataLayer.updateOneCompanyUserObjectUsingQuery({_id: companyUser._id}, {role: req.body.role}, {companyId: req.user.companyId, user: req.user})
+      promiseCompanyUser = CompanyUserDataLayer.updateOneCompanyUserObjectUsingQuery({_id: companyUser._id}, {role: req.body.role}, {user: req.user})
       let permissionPromise = PermissionDataLayer
         .updatUserPermissionsObjectUsingQuery({userId: user._id}, config.permissions[req.body.role], {multi: true})
 
@@ -352,13 +352,13 @@ exports.updateRole = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Error in getting promise all update role'
-          logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+          logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')  
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Error in getting promise all update role'
-      logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -379,7 +379,7 @@ exports.disableMember = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in getting promise all remove member'
-      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -397,7 +397,7 @@ exports.members = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in getting company User members'
-      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -407,7 +407,7 @@ exports.updateAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updateAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updateAutomatedOptions`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       let query = {_id: companyUser.companyId}
@@ -421,7 +421,7 @@ exports.updateAutomatedOptions = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find company user'
-      logger.serverLog(message, `${TAG}: exports.updateAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.updateAutomatedOptions`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -431,7 +431,7 @@ exports.getAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.getAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.getAutomatedOptions`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 
@@ -443,7 +443,7 @@ exports.getAutomatedOptions = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find company user'
-      logger.serverLog(message, `${TAG}: exports.getAutomatedOptions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.getAutomatedOptions`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -456,7 +456,7 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find Plan'
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -469,7 +469,7 @@ exports.aggregateFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find Plan'
-      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -482,7 +482,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in update'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }

@@ -15,7 +15,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find permission Plan'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -27,7 +27,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create permission Plan'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -40,7 +40,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update permission Plan'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -53,7 +53,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete permission Plan'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -66,7 +66,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to querying permission Plan'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')  
       sendErrorResponse(res, 500, err)
     })
 }
@@ -79,7 +79,7 @@ exports.aggregate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate permission Plan'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -264,7 +264,7 @@ exports.populatePlanPermissions = function (req, res) {
         feature.save((err) => {
           if (err) {
             const message = err || 'Failed to insert record4'
-            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')      
+            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, 'Failed to insert record4')
           }
         })

@@ -23,7 +23,7 @@ exports.index = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
 
   if (req.files.file.size === 0) {
-    logger.serverLog('No file submitted', `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
+    logger.serverLog('No file submitted', `${TAG}: exports.index`, req.body, {user: req.user}, 'error')       
     sendErrorResponse(res, 400, '', 'No file submitted')
   }
   fs.rename(
@@ -31,7 +31,7 @@ exports.index = function (req, res) {
     dir + '/userfiles/' + serverPath,
     err => {
       if (err) {
-        logger.serverLog('internal server error', `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
+        logger.serverLog('internal server error', `${TAG}: exports.index`, req.body, {user: req.user}, 'error')       
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
@@ -73,7 +73,7 @@ exports.index = function (req, res) {
                     deleteFile(req.files.file.name)
                     if (err) {
                       const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(err)
-                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')                 
+                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')                 
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
                       logger.serverLog(
@@ -91,7 +91,7 @@ exports.index = function (req, res) {
           })
           .catch(error => {
             const message = err || 'Failed to fetch page'
-            logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')       
+            logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')       
             sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
           })
       } else {
@@ -121,7 +121,7 @@ exports.uploadForTemplate = function (req, res) {
           (err, resp2) => {
             if (err) {
               const message = 'unable to get page access_token: ' + JSON.stringify(err)
-              logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')        
+              logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')        
               sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
             }
             let pageAccessToken = resp2.body.access_token
@@ -148,11 +148,11 @@ exports.uploadForTemplate = function (req, res) {
               function (err, resp) {
                 deleteFile(req.body.name)
                 if (err) {
-                  logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+                  logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')  
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                 } else if (resp.body) {
                   if (resp.body.error) {
-                    logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+                    logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error') 
                     sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
                   } else {
                     logger.serverLog(
@@ -174,7 +174,7 @@ exports.uploadForTemplate = function (req, res) {
       })
       .catch(error => {
         const message = error || '`Failed to fetch page'
-        logger.serverLog(message, `${TAG}: exports.uploadForTemplate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
       })
   } else {
@@ -205,7 +205,7 @@ exports.download = function (req, res) {
   // }
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
-      logger.serverLog(err, `${TAG}: exports.download`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(err, `${TAG}: exports.download`, req.body, {user: req.user}, 'error')
       res.status(err.status).end()
     } else {
       logger.serverLog(
@@ -220,7 +220,7 @@ exports.downloadYouTubeVideo = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to downloadYouTubeVideo'
-      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
       sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
     })
 }
@@ -281,7 +281,7 @@ exports.deleteFile = function (req, res) {
   fs.unlink(file, (err) => {
     if (err) {
       const message = err || 'Failed to deleteFile'
-      logger.serverLog(message, `${TAG}: exports.deleteFile`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteFile`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, `Failed to delete file ${err}`)
     } else {
       sendSuccessResponse(res, 200, `${file} was succesfully deleted`)

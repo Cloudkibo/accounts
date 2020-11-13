@@ -45,7 +45,7 @@ exports.createSetup = function (req, res) {
       sendSuccessResponse(res, 200, finalPayload)
     } catch (err) {
       const message = err || 'Error in generating QR code for 2FA'
-      logger.serverLog(message, `${TAG}: exports.createSetup`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.createSetup`, req.body, {user: req.user}, 'error') 
       return sendErrorResponse(res, 500, err)
     }
   })
@@ -59,7 +59,7 @@ exports.deleteSetup = async function (req, res) {
     sendSuccessResponse(res, 200, {}, 'Successfully deleted 2FA for the user')
   } catch (err) {
     const message = err || 'Error in deleting the 2FA for the user'
-    logger.serverLog(message, `${TAG}: exports.deleteSetup`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+    logger.serverLog(message, `${TAG}: exports.deleteSetup`, req.body, {user: req.user}, 'error')
     return sendErrorResponse(res, 500, err)
   }
 }

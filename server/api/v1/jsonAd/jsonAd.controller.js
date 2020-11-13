@@ -46,13 +46,13 @@ exports.create = function (req, res) {
         })
         .catch((err) => {
           const message = err || 'Failed to Create JsonAdd messages'
-          logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to Create Json Add'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
     })
 }
 exports.edit = function (req, res) {
@@ -105,30 +105,30 @@ exports.edit = function (req, res) {
                   })
                   .catch((err) => {
                     const message = err || 'Failed to create Json Add Messages'
-                    logger.serverLog(message, `${TAG}: exports.edit`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                    logger.serverLog(message, `${TAG}: exports.edit`, req.body, {user: req.user}, 'error')
                     sendErrorResponse(res, 500, '', err)
                   })
               })
               .catch(err => {
                 const message = err || 'Failed to Create Json Add'
-                logger.serverLog(message, `${TAG}: exports.edit`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                logger.serverLog(message, `${TAG}: exports.edit`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, '', err)
               })
           })
           .catch(err => {
             const message = err || 'Failed to delete Json Add'
-            logger.serverLog(message, `${TAG}: exports.edit`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+            logger.serverLog(message, `${TAG}: exports.edit`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, '', err)
           })
       }).catch(err => {
         const message = err || 'Failed to delete Json Add Messages'
-        logger.serverLog(message, `${TAG}: exports.edit`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+        logger.serverLog(message, `${TAG}: exports.edit`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, '', err)
       })
     })
     .catch(err => {
       const message = err || 'Failed to Find Json Add'
-      logger.serverLog(message, `${TAG}: exports.edit`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.edit`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
@@ -139,7 +139,7 @@ exports.getAll = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch get All Json Add '
-      logger.serverLog(message, `${TAG}: exports.getAll`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.getAll`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
@@ -156,13 +156,13 @@ exports.getJsonAdResponse = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to Find Json Add Message'
-          logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to Find Json Add'
-      logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
@@ -179,13 +179,13 @@ exports.getOne = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to Find Json Add All Messages'
-          logger.serverLog(message, `${TAG}: exports.getOne`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.getOne`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to Find Json Add'
-      logger.serverLog(message, `${TAG}: exports.getOne`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.getOne`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -197,7 +197,7 @@ exports.getJsonAdResponse = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find Json Add All Messages'
-      logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.getJsonAdResponse`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -211,13 +211,13 @@ exports.deleteOne = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to deleteOne Json Add All Messages'
-          logger.serverLog(message, `${TAG}: exports.deleteOne`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.deleteOne`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to deleteOne Json Add'
-      logger.serverLog(message, `${TAG}: exports.deleteOne`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteOne`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -228,7 +228,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Fetch All Json Add'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

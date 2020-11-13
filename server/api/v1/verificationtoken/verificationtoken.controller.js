@@ -52,7 +52,7 @@ exports.verify = function (req, res) {
                   }
 
                   sendgrid.send(email, function (err, json) {
-                    if (err) logger.serverLog('Unable to send email', `${TAG}: exports.verify`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+                    if (err) logger.serverLog('Unable to send email', `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
                   })
                   UserDataLayer.saveUserObject(user)
                     .then(updatedUser => {
@@ -68,13 +68,13 @@ exports.verify = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to fetch User'
-          logger.serverLog(message, `${TAG}: exports.verify`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to fetch verification token'
-      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
@@ -94,7 +94,7 @@ exports.resend = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to create verification token'
-        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error') 
         sendErrorResponse(res, 500, '', err) 
       })
   } else {

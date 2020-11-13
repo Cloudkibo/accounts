@@ -12,7 +12,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create Landing Page'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -34,7 +34,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find Landing Page'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -46,7 +46,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Update Landing Page'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -59,7 +59,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete Landing Page'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -71,7 +71,7 @@ exports.createLandingPageState = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.createLandingPageState`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.createLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -83,7 +83,7 @@ exports.updateLandingPageState = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Update LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.updateLandingPageState`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updateLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -95,7 +95,7 @@ exports.deleteLandingPageState = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.deleteLandingPageState`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

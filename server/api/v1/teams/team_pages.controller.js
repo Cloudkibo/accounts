@@ -13,7 +13,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch team'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -29,7 +29,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create team Page'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -44,7 +44,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete Page Team '
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -57,7 +57,7 @@ exports.genericPagesFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch All Team pages'
-      logger.serverLog(message, `${TAG}: exports.genericPagesFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericPagesFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -70,7 +70,7 @@ exports.distinctPagesFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch distinct Team pages'
-      logger.serverLog(message, `${TAG}: exports.distinctPagesFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.distinctPagesFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -83,7 +83,7 @@ exports.aggregatePagesFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch aggregate Team pages'
-      logger.serverLog(message, `${TAG}: exports.aggregatePagesFetch`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregatePagesFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -95,7 +95,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update Team pages'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

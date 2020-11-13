@@ -12,7 +12,7 @@ exports.index = function (req, res) {
     .then(companyUser => {
       if (!companyUser) {
         const message = 'The user account does not belong to any company. Please contact support'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 
@@ -40,7 +40,7 @@ exports.cancel = function (req, res) {
     .then(companyUser => {
       if (!companyUser) {
         const message = 'The user account does not belong to any company. Please contact support'
-        logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 

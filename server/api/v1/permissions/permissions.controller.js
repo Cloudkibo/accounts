@@ -13,7 +13,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch Role Permission '
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -28,13 +28,13 @@ exports.update = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to update Permission '
-          logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to fetch Role Permission '
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -46,7 +46,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update Role Permission '
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -61,13 +61,13 @@ exports.create = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to Add Permission '
-          logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to Add Role Permission '
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -86,19 +86,19 @@ exports.populateRolePermissions = function (req, res) {
             })
             .catch(err => {
               const message = err || 'Failed to Save agent Role Permission '
-              logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+              logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {user: req.user}, 'error')
               sendErrorResponse(res, 500, err)
             })
         })
         .catch(err => {
           const message = err || 'Failed to Save admin Role Permission '
-          logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+          logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to Save Buyer Role Permission '
-      logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.populateRolePermissions`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -110,7 +110,7 @@ exports.genericFind = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find UserPermissions '
-      logger.serverLog(message, `${TAG}: exports.genericFind`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericFind`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -122,7 +122,7 @@ exports.updatePermissions = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update  User Permissions '
-      logger.serverLog(message, `${TAG}: exports.updatePermissions`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updatePermissions`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

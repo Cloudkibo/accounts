@@ -13,7 +13,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find PlanUsage'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -24,7 +24,7 @@ exports.createPlanUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create PlanUsage'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -35,7 +35,7 @@ exports.createCompanyUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create companyUsage'
-      logger.serverLog(message, `${TAG}: exports.createCompanyUsage`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.createCompanyUsage`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -47,7 +47,7 @@ exports.update = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update PlanUsage'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -58,7 +58,7 @@ exports.populatePlanUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to populate PlanUsage'
-      logger.serverLog(message, `${TAG}: exports.populatePlanUsage`, req.body, {companyId: req.user.companyId, user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.populatePlanUsage`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -71,7 +71,7 @@ exports.fetchGeneralPlanUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch All plan Usage'
-      logger.serverLog(message, `${TAG}: exports.fetchGeneralPlanUsage`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.fetchGeneralPlanUsage`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -83,7 +83,7 @@ exports.fetchGeneralCompanyUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch All company Usage'
-      logger.serverLog(message, `${TAG}: exports.fetchGeneralCompanyUsage`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.fetchGeneralCompanyUsage`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -97,7 +97,7 @@ exports.genericUpdateCompany = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to update company Usage'
-      logger.serverLog(message, `${TAG}: exports.genericUpdateCompany`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.genericUpdateCompany`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
@@ -109,7 +109,7 @@ exports.populateCompanyUsage = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to populate company Usage'
-      logger.serverLog(message, `${TAG}: exports.populateCompanyUsage`, req.body, {companyId: req.user.companyId, user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.populateCompanyUsage`, req.body, {user: req.user}, 'error') 
       sendErrorResponse(res, 500, err)
     })
 }
