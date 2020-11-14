@@ -114,25 +114,28 @@ exports.updatePicture = function (req, res) {
   let accessToken = subscriber.pageId.accessToken
   logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`)
   needle.get(
-    `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`,
+    `https://graph.facebook.com/v6.0/${subscriber.senderId}/picture?access_token=${accessToken}`,
     (err, resp) => {
+      console.log('Response', JSON.parse(JSON.stringify(resp.body)))
       if (err) {
-        logger.serverLog(TAG, `error in retrieving https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, 'error')
+        logger.serverLog(`error in retrieving https://graph.facebook.com/v6.0/${subscriber.senderId}/picture`, TAG, req.body, {subscriber, error: err}, 'error')
+        sendErrorResponse(res, 500, err)
       }
-      if (resp.body.profile_pic) {
-        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
+      var responseBody = JSON.parse(JSON.stringify(resp.body))
+      if (responseBody.data && responseBody.data.url) {
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: responseBody.data.url}, {})
           .then(updated => {
             logger.serverLog(TAG, `Succesfully updated subscriber with senderId ${subscriber.senderId}`)
-            sendSuccessResponse(res, 200, resp.body.profile_pic)
+            sendSuccessResponse(res, 200, responseBody.data.url)
           })
           .catch(err => {
             const message = err || 'Failed to update subscriber record'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')     
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {resp: JSON.stringify(responseBody)}, 'error')   
             sendErrorResponse(res, 500, err)
           })
       } else {
         const message = `profile picture not found for subscriber with senderId ${subscriber.senderId}`
-        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {resp: JSON.stringify(resp.body)}, 'error')
+        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {resp: JSON.stringify(responseBody)}, 'error')
         sendErrorResponse(res, 404, `profile picture not found for subscriber with senderId ${subscriber.senderId}`)
       }
     })
