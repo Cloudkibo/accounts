@@ -228,7 +228,7 @@ exports.create = function (req, res) {
                           })
                           .catch(err => {
                             const message = err || 'Failed to save Permission'
-                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
+                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
                             sendErrorResponse(res, 500, err)
                           })
                       })
@@ -253,10 +253,10 @@ exports.create = function (req, res) {
                     email = logicLayer.setEmailBody(email, tokenString, req.body)
                     logger.serverLog(TAG, util.inspect(email))
                     sendgrid.send(email, function (err, json) {
-                      if (err) { 
+                      if (err) {
                         const message = err || 'Failed to sending email'
                         logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
-                      }                    
+                      }
                     })
                     // Sending email to sojharo and sir
                     let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -264,16 +264,16 @@ exports.create = function (req, res) {
 
                     if (config.env === 'production') {
                       sendgrid.send(inHouseEmail, function (err, json) {
-                        if (err) { 
+                        if (err) {
                           const message = err || 'Failed to sending email'
-                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')      
+                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
                         }
                       })
                     }
                   })
                   .catch(err => {
                     const message = err || 'Failed to create Profile'
-                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')    
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
                     sendErrorResponse(res, 500, err)
                   })
               })
@@ -422,7 +422,7 @@ exports.joinCompany = function (req, res) {
 
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {
-          if (err) { 
+          if (err) {
             const message = ` Error on sending email`
             logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {}, 'error')
           }
@@ -688,9 +688,15 @@ exports.updatePicture = function (req, res) {
             sendErrorResponse(res, 500, err)
           })
       } else {
-        const message = `profile picture not found for user with _id ${req.body.user._id}`
-        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
-        sendErrorResponse(res, 500, `profile picture not found for user with _id ${req.body.user._id}`)
+        dataLayer.genericUpdateUserObject({_id: req.body.user._id}, {facebookConnect: false, 'facebookInfo.profilePic': null}, {})
+          .then(updated => {
+            sendSuccessResponse(res, 200, null)
+          })
+          .catch(err => {
+            const message = err || 'Failed to update user'
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
+            sendErrorResponse(res, 500, err)
+          })
       }
     })
 }
