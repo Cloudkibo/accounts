@@ -133,7 +133,7 @@ exports.updatePicture = function (req, res) {
           })
       } else {
         const message = `profile picture not found for subscriber with senderId ${subscriber.senderId}`
-        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {resp: JSON.stringify(resp.body)}, 'error')
+        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {resp: JSON.stringify(resp.body)}, 'info')
         sendErrorResponse(res, 404, `profile picture not found for subscriber with senderId ${subscriber.senderId}`)
       }
     })
