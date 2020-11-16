@@ -62,7 +62,7 @@ exports.pageWiseData = function (req, res) {
   if (req.body.startDate && req.body.startDate !== '') {
     dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
   }
-
+  var query = [ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ]
   let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ])
   let numberOfBroadcast = dataLayer.aggregateForBroadcastPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfPoll = dataLayer.aggregateForPollPages(dateFilterAggregates, pageWiseAggregate)
@@ -79,7 +79,7 @@ exports.pageWiseData = function (req, res) {
     sendSuccessResponse(res, 200, data)
   }).catch((err) => {
     const message = err || 'Failed to Find  pageWiseData'
-    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {}, 'error')
+    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {query, joinPageWithSubscribers, dateFilterSubscribers, selectPageFields}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }
