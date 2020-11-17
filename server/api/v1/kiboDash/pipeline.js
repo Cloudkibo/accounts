@@ -23,11 +23,11 @@ exports.selectPageFields = {
   $project:
   {
     _id: true,
-    pageName: '$page.pageName',
-    pageId: '$page.pageId',
-    pageUserName: '$page.pageUserName',
-    likes: '$page.likes',
-    numberOfSubscribers: true,
+    pageName: true,
+    pageId: true,
+    pageUserName: true,
+    likes: true,
+    numberOfSubscribers: {'$literal': 0},
     numberOfBroadcasts: {'$literal': 0},
     numberOfPolls: {'$literal': 0},
     numberOfSurveys: {'$literal': 0}
@@ -73,7 +73,9 @@ exports.selectCompanyFields = {
   $project: {
     companyId: true,
     userId: true,
-    numberOfSubscribers: { $size: '$companysubscribers' },
+    numberOfSubscribers: {
+      $literal: 0
+    },
     numberOfBroadcasts: {
       $literal: 0
     },
