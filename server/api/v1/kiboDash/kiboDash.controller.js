@@ -7,9 +7,9 @@ const logicLayer = require('./logiclayer')
 const SubscribersDataLayer = require('../subscribers/subscribers.datalayer')
 const { filterConnectedPages, countResults, joinCompanyWithSubscribers, selectCompanyFields,
   groupCompanyWiseAggregates, companyWisePageCount, joinPageWithSubscribers, selectPageFields,
-  filterCompanySubscribers, filterUserDate, pageWiseAggregate, filterPageSubscribers,
+  filterCompanySubscribers, filterUserDate, pageWiseAggregate, groupByPageId,
   joinAutpostingMessages, selectAutoPostingFields,
-  selectTwitterType, selectFacebookType, selectWordpressType, dateFilterAutoposting } = require('./pipeline')
+  selectTwitterType, selectFacebookType, selectWordpressType, dateFilterAutoposting, projectArrayElemAsPage } = require('./pipeline')
 const CompanyUsersDataLayer = require('../companyuser/companyuser.datalayer')
 const mongoose = require('mongoose')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
@@ -54,16 +54,17 @@ exports.platformWiseData = function (req, res) {
 exports.pageWiseData = function (req, res) {
   logger.serverLog(TAG, `Request from KiboDash ${req.body}`)
   let startDate = req.body.startDate
-  let dateFilterSubscribers = filterPageSubscribers
+  let matchNewSubscribers = {$match: {}}
+  if (req.body.startDate && req.body.startDate !== '') {
+    matchNewSubscribers['$match']['datetime'] = { '$gte': new Date(startDate) }
+  }
   // add the date filter(as from reqeust) in the aggregate pipeline query for subscribers page wise
-  dateFilterSubscribers['$project']['pageSubscribers']['$filter']['cond'] = {$gte: ['$$pageSubscriber.datetime', new Date(startDate)]}
   let dateFilterAggregates = {$match: {}}
   // add date filter for broadcasts, polls, surveys count-page wise
   if (req.body.startDate && req.body.startDate !== '') {
-    dateFilterAggregates['$match']['datetime'] = { $gte: new Date(startDate) }
+    dateFilterAggregates['$match']['datetime'] = { '$gte': new Date(startDate) }
   }
-  var query = [ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ]
-  let data = PagesDataLayer.aggregateInfo([ joinPageWithSubscribers, dateFilterSubscribers, selectPageFields ])
+  let data = SubscribersDataLayer.aggregateInfo([ matchNewSubscribers, groupByPageId, joinPageWithSubscribers, projectArrayElemAsPage, selectPageFields ])
   let numberOfBroadcast = dataLayer.aggregateForBroadcastPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfPoll = dataLayer.aggregateForPollPages(dateFilterAggregates, pageWiseAggregate)
   let numberOfSurvey = dataLayer.aggregateForSurveyPages(dateFilterAggregates, pageWiseAggregate)
@@ -79,7 +80,7 @@ exports.pageWiseData = function (req, res) {
     sendSuccessResponse(res, 200, data)
   }).catch((err) => {
     const message = err || 'Failed to Find  pageWiseData'
-    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {query, joinPageWithSubscribers, dateFilterSubscribers, selectPageFields}, 'error')
+    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }

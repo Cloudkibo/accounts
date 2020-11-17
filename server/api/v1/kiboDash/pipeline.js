@@ -3,44 +3,41 @@ exports.countResults = { $group: { _id: null, count: { $sum: 1 } } }
 exports.joinPageWithSubscribers = {
   $lookup:
   {
-    from: 'subscribers',
+    from: 'pages',
     localField: '_id',
-    foreignField: 'pageId',
-    as: 'pageSubscribers'
+    foreignField: '_id',
+    as: 'page'
   }
 }
 
-exports.filterPageSubscribers = {
-  $project: {
+exports.projectArrayElemAsPage = {
+  $project:
+  {
     _id: true,
-    pageName: true,
-    pageId: true,
-    pageSubscribers: {
-      $filter: {
-        input: '$pageSubscribers',
-        as: 'pageSubscriber'
-      }
-    }
+    numberOfSubscribers: true,
+    page: { $arrayElemAt: ['$page', 0] }
   }
 }
+
 exports.selectPageFields = {
-  $project: {
+  $project:
+  {
     _id: true,
-    pageName: true,
-    pageId: true,
-    pageUserName: true,
-    likes: true,
-    numberOfSubscribers: { $size: { '$ifNull': ['$pageSubscribers', []] } },
-    numberOfBroadcasts: {
-      $literal: 0
-    },
-    numberOfPolls: {
-      $literal: 0
-    },
-    numberOfSurveys: {
-      $literal: 0
-    }
+    pageName: '$page.pageName',
+    pageId: '$page.pageId',
+    pageUserName: '$page.pageUserName',
+    likes: '$page.likes',
+    numberOfSubscribers: true,
+    numberOfBroadcasts: {'$literal': 0},
+    numberOfPolls: {'$literal': 0},
+    numberOfSurveys: {'$literal': 0}
   }
+}
+
+exports.groupByPageId = {
+  $group: {
+    _id: '$pageId',
+    numberOfSubscribers: {$sum: 1}}
 }
 
 exports.companyWisePageCount = {
