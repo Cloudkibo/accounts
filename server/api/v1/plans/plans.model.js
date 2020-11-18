@@ -10,8 +10,7 @@ let PlansSchema = new Schema({
   amount: Number,
   interval: String,
   trial_period: { type: Number, default: 30 },
-  default_individual: { type: Boolean, default: false },
-  default_team: { type: Boolean, default: false }
+  default: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('plans', PlansSchema)
