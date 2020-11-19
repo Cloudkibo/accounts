@@ -52,7 +52,10 @@ exports.verify = function (req, res) {
                   }
 
                   sendgrid.send(email, function (err, json) {
-                    if (err) logger.serverLog('Unable to send email', `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
+                    if (err) { 
+                      const message = err || 'Failed to send email'
+                      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
+                    }
                   })
                   UserDataLayer.saveUserObject(user)
                     .then(updatedUser => {
@@ -88,7 +91,11 @@ exports.resend = function (req, res) {
         let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
         logiclayer.getResendEmailBody(email, tokenString)
         sendgrid.send(email, (err) => {
-          if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
+          if (err) {
+            const message = err || 'Failed to send email'
+            logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
+            return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) 
+          }
           sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
         })
       })

@@ -21,6 +21,8 @@ exports.createSetup = function (req, res) {
 
   QRCode.toDataURL(url, async (err, dataURL) => {
     if (err) {
+      const message = err || 'Error in generating QR code for 2FA'
+      logger.serverLog(message, `${TAG}: exports.createSetup`, req.body, {user: req.user}, 'error') 
       return sendErrorResponse(res, 500, err)
     }
 

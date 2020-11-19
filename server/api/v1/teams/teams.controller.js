@@ -58,8 +58,6 @@ exports.update = function (req, res) {
         sendErrorResponse(res, 500, err)
       })
   } else {
-    const message = 'No field provided to update'
-    logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
     sendErrorResponse(res, 400, 'Provide field to update')
   }
 }

@@ -278,7 +278,7 @@ exports.whitelistDomain = function (req, res) {
               logger.serverLog(response.error.message, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')      
               sendErrorResponse(res, 500, response.error.message)
             } else {
-              logger.serverLog(res, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')      
+              logger.serverLog(response.error, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')      
               sendErrorResponse(res, 500, response)
             }
           }
@@ -286,7 +286,8 @@ exports.whitelistDomain = function (req, res) {
       } else {
         needle.request('post', requesturl, {whitelisted_domains: req.body.whitelistDomains && req.body.whitelistDomains.length > 0 ? req.body.whitelistDomains : []}, {json: true}, function (err, resp) {
           if (err) {
-            logger.serverLog(TAG, `Failed to whitelist domains for page ${page.pageId} ${util.inspect(err)}`, 'error')
+            const message = err || `Failed to fetch whitelist domain`
+            logger.serverLog(message, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')
           }
           var response = JSON.parse(JSON.stringify(resp.body))
           if (response.result === 'success') {
@@ -296,7 +297,7 @@ exports.whitelistDomain = function (req, res) {
               logger.serverLog(response.error.message, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')      
               sendErrorResponse(res, 500, response.error.message)
             } else {
-              logger.serverLog(res, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')
+              logger.serverLog(response.error, `${TAG}: exports.whitelistDomain`, req.body, {user: req.user}, 'error')
               sendErrorResponse(res, 500, response)
             }
           }
@@ -327,7 +328,6 @@ exports.deleteWhitelistDomain = function (req, res) {
             }
           }
           if (temp.length > 0 && temp.length === whitelistDomains.length) {
-            logger.serverLog('Domain not found', `${TAG}: exports.deleteWhitelistDomain`, req.body, {user: req.user}, 'error')      
             return res.status(500).json({ status: 'failed', description: 'Domain not found' })
           }
           let whitelistedDomains = {
@@ -337,14 +337,13 @@ exports.deleteWhitelistDomain = function (req, res) {
             let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
             needle.request('delete', requesturl, { 'fields': ['whitelisted_domains'] }, { json: true }, function (err, resp) {
               if (err) {
-                const message = `Error in delete whitelisted_domains ${JSON.stringify(err)}`
+                const message = err || `Error in delete whitelisted_domains`
                 logger.serverLog(message, `${TAG}: exports.deleteWhitelistDomain`, req.body, {user: req.user}, 'error')
               }
               var response = JSON.parse(JSON.stringify(resp.body))
               if (response.result === 'success') {
                 sendSuccessResponse(res, 200, temp)
               } else {
-                logger.serverLog(`Unable to delete whitelist domain ${response}`, `${TAG}: exports.deleteWhitelistDomain`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, '', `Unable to delete whitelist domain ${response}`)
               }
             })
@@ -352,6 +351,8 @@ exports.deleteWhitelistDomain = function (req, res) {
             let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
             needle.request('post', requesturl, whitelistedDomains, { json: true }, function (err, resp) {
               if (err) {
+                const message = `Error in save whitelisted_domains ${JSON.stringify(err)}`
+                logger.serverLog(message, `${TAG}: exports.deleteWhitelistDomain`, req.body, {user: req.user}, 'error')
               }
               if (resp.body.result === 'success') {
                 sendSuccessResponse(res, 200, temp)
@@ -376,35 +377,32 @@ exports.updatePageNames = function (req, res) {
         sendSuccessResponse(res, 200, {}, 'There are no records with null Page Names')
       }
       userPages.forEach((page, index) => {
-        logger.serverLog(TAG,
-          `Page#${index} user access token - ${page.userId.facebookInfo.fbToken}`, 'info')
+        logger.serverLog(
+          `Page#${index} user access token - ${page.userId.facebookInfo.fbToken}`, TAG)
         needle.get(
           `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
           (err, resp) => {
             if (err) {
-              const message = `Page#${index} access token from graph api error ${JSON.stringify(err)}`
+              const message = err || `Failed to fetch access page token`
               logger.serverLog(message, `${TAG}: exports.updatePageNames`, req.body, {user: req.user}, 'error')
             }
             if (resp.body.error) {
-              const message = `Page#${index}: Update Page Name Script in Accounts ${JSON.stringify(
-                resp.body.error)}`
+              const message = resp.body.error || `Failed to fetch access page token`
               logger.serverLog(message, `${TAG}: exports.updatePageNames`, req.body, {user: req.user}, 'error')
             }
             if (resp && resp.body && resp.body.access_token) {
-              logger.serverLog(TAG,
+              logger.serverLog(
                 `Page#${index} current Access Token ${JSON.stringify(
-                  resp.body.access_token)}`, 'info')
+                  resp.body.access_token)}`, TAG)
               needle.get(
                 `https://graph.facebook.com/v6.0/${page.pageId}?fields=name&access_token=${resp.body.access_token}`,
                 (err, pageResponse) => {
-                  console.log('Page Info Respone', pageResponse.body)
                   if (err) {
-                    const message = `Page name from graph api error ${JSON.stringify(err)}`
+                    const message = err || `Failed to fetch pageName grom GraphApi`
                     logger.serverLog(message, `${TAG}: exports.updatePageNames`, req.body, {user: req.user}, 'error')
                   }
                   if (pageResponse.body.error) {
-                    const message = `Update Page Name Script in Accounts${JSON.stringify(
-                      pageResponse.body.error)}`
+                    const message = err || `Failed to fetch pageName grom GraphApi`
                     logger.serverLog(message, `${TAG}: exports.updatePageNames`, req.body, {user: req.user}, 'error')
                   }
                   if (pageResponse && pageResponse.body && pageResponse.body.name) {
@@ -451,16 +449,16 @@ function createTag (user, page, tag) {
           })
           .catch(err => {
             const message = err || `Failed to save Tag`
-            logger.serverLog(message, `${TAG}: exports.createTag`, page, {}, 'error')                        
+            logger.serverLog(message, `${TAG}: exports.createTag`, page, {user: user}, 'error')                        
           })
       } else {
         const message = `Error at create tag on Facebook ${util.inspect(label.error)}`
-        logger.serverLog(message, `${TAG}: exports.createTag`, page, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.createTag`, page, {user: user}, 'error')
       }
     })
     .catch(err => {
-      const message = `Error at create tag on Facebook ${util.inspect(err)}`
-      logger.serverLog(message, `${TAG}: exports.createTag`, page, {}, 'error')
+      const message = err || 'Failed to create tag on Facebook'
+      logger.serverLog(message, `${TAG}: exports.createTag`, page, {user: user}, 'error')
     })
 }
 
@@ -473,6 +471,8 @@ function fetchPages (url, user, res) {
   }
   needle.get(url, options, (err, resp) => {
     if (err !== null) {
+      const message = err || `Failed to fetch page`
+      logger.serverLog(message, `${TAG}: exports.refreshPages`, url, {user: user}, 'error')
       return
     }
     const data = resp.body.data
@@ -480,6 +480,8 @@ function fetchPages (url, user, res) {
     if (data) {
       async.each(data, updatePages.bind(null, user), function (err) {
         if (err) {
+          const message = err || `Failed to update pages`
+          logger.serverLog(message, `${TAG}: exports.refreshPages`, url, {user: user}, 'error')    
           return res.status(500).json({ status: 'failed', payload: err })
         } else
         if (!cursor.next) {
@@ -504,13 +506,12 @@ function updatePages (user, item, callback) {
   }
   needle.get(options2.url, options2, (error, fanCount) => {
     if (error !== null) {
-      logger.serverLog(error, `${TAG}: exports.updatePages`, item, {user: user}, 'error')
       callback(error)
     } else {
       CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
         .then(companyUser => {
           if (!companyUser) {
-            logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updatePages`, item, {user: user}, 'error')
+            logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updatePages`)
           } else {
             dataLayer.findPageObjects({pageId: item.id, userId: user._id, companyId: companyUser.companyId})
               .then(pages => {
@@ -532,12 +533,9 @@ function updatePages (user, item, callback) {
                   }
                   dataLayer.savePageObject(payloadPage)
                     .then(page => {
-                      logger.serverLog(
-                        `Page ${item.name} created with id ${page.pageId}`, TAG)
                       callback()
                     })
                     .catch(err => {
-                      logger.serverLog('Unable to create Page', `${TAG}: exports.updatePages`, item, {user: user}, 'error')
                       callback(err)
                     })
                 } else {
@@ -551,27 +549,19 @@ function updatePages (user, item, callback) {
                   }
                   dataLayer.updatePageObjectUsingQuery({ _id: page._id }, updatedPayload, {})
                     .then(updated => {
-                      logger.serverLog(
-                        `page updated successfuly ${JSON.stringify(updated)}`, TAG)
                       callback()
                     })
                     .catch(err => {
-                      const message = err || `Failed to  update page`
-                      logger.serverLog(message, `${TAG}: exports.updatePages`, item, {user: user}, 'error')
                       callback(err)
                     })
                 }
               })
               .catch(err => {
-                const message = err || `Failed to find fetching pages`
-                logger.serverLog(message, `${TAG}: exports.updatePages`, item, {user: user}, 'error')
                 callback(err)
               })
           }
         })
         .catch(err => {
-          const message = err || `Failed to find company user`
-          logger.serverLog(message, `${TAG}: exports.updatePages`, item, {user: user}, 'error')
           callback(err)
         })
     }

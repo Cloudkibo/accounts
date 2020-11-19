@@ -112,17 +112,16 @@ exports.genericUpdate = function (req, res) {
 exports.updatePicture = function (req, res) {
   let subscriber = req.body.subscriber
   let accessToken = subscriber.pageId.accessToken
-  logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`)
   needle.get(
     `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`,
     (err, resp) => {
       if (err) {
-        logger.serverLog(`error in retrieving https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken} ${JSON.stringify(err)}`, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
+        const message = err || 'Failed to fetch subscriber Data from facebook'
+        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       }
       if (resp.body.profile_pic) {
-        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {user: req.user})
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
           .then(updated => {
-            logger.serverLog(TAG, `Succesfully updated subscriber with senderId ${subscriber.senderId}`)
             sendSuccessResponse(res, 200, resp.body.profile_pic)
           })
           .catch(err => {
@@ -154,17 +153,15 @@ exports.updateData = function (req, res) {
                     `https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken}`,
                     (err, resp) => {
                       if (err) {
-                        const message = err || `error in retrieving https://graph.facebook.com/v6.0/${users[i].senderId}?access_token=${accessToken} ${JSON.stringify(err)}`
+                        const message = err || 'Failed to fetch user data from Facebook '
                         logger.serverLog(message, `${TAG}: exports.updateData`, req.body, {user: req.user}, 'error')
                       }
-                      subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {user: req.user})
+                      subscribersDataLayer.genericUpdateSubscriberObject({_id: users[i]._id}, {firstName: resp.body.first_name, lastName: resp.body.last_name, profilePic: resp.body.profile_pic, locale: resp.body.locale, timezone: resp.body.timezone, gender: resp.body.gender}, {})
                         .then(updated => {
                           resolve(users[i]._id)
                         })
                         .catch(err => {
                           reject(err)
-                          const message = err || 'Failed to update subscriber'
-                          logger.serverLog(message, `${TAG}: exports.updateData`, req.body, {user: req.user}, 'error')
                         })
                     })
                 })
@@ -182,6 +179,8 @@ exports.updateData = function (req, res) {
             })
         })
         .catch(err => {
+          const message = err || 'Failed to Fetch subscriber'
+          logger.serverLog(message, `${TAG}: exports.updateData`, req.body, {user: req.user}, 'error')          
           sendErrorResponse(res, 500, err)
         })
     })

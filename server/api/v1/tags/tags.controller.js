@@ -10,7 +10,6 @@ exports.index = function (req, res) {
 
   datalayer.findAllTagObjectUsingQuery({})
     .then(tags => {
-      logger.serverLog(TAG, `Found tags: ${util.inspect(tags)}`)
       sendSuccessResponse(res, 200, tags)
     })
     .catch(err => {
@@ -26,7 +25,6 @@ exports.findOne = function (req, res) {
   datalayer.findOneTagObjectUsingQuery(query)
     .then(tag => {
       // tag sub will be null if the given id is not found
-      logger.serverLog(TAG, `Found tag: ${util.inspect(tag)}`)
       sendSuccessResponse(res, 200, tag)
     })
     .catch(err => {
@@ -40,7 +38,6 @@ exports.create = function (req, res) {
   logger.serverLog(TAG, 'Hit the create point')
   datalayer.createTagObject(req.body)
     .then(tag => {
-      logger.serverLog(TAG, `created tag: ${util.inspect(tag)}`)
       sendSuccessResponse(res, 200, tag)
     })
     .catch(err => {
@@ -55,7 +52,6 @@ exports.delete = function (req, res) {
   let query = { _id: req.params.id ? req.params.id : '' }
   datalayer.deleteOneTagObjectUsingQuery(query)
     .then(tag => {
-      logger.serverLog(TAG, `deleted tag: ${util.inspect(tag)}`)
       sendSuccessResponse(res, 200, tag)
     })
     .catch(err => {
@@ -70,7 +66,6 @@ exports.deleteMany = function (req, res) {
   let query = req.body ? req.body : ''
   datalayer.deleteTagObjectUsingQuery(query)
     .then(tag => {
-      logger.serverLog(TAG, `deleted tags: ${util.inspect(tag)}`)
       sendSuccessResponse(res, 200, tag)
     })
     .catch(err => {
@@ -85,7 +80,6 @@ exports.query = function (req, res) {
 
   datalayer.findAllTagObjectUsingQuery(req.body)
     .then(result => {
-      logger.serverLog(TAG, `found tags: ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -96,12 +90,10 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
   let query = logiclayer.validateAndConvert(req.body)
-  logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
+  logger.serverLog(`after conversion query ${util.inspect(query)}`, TAG)
   datalayer.findTagObjectUsingAggregate(req.body)
     .then(result => {
-      logger.serverLog(TAG, `found tags: ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
@@ -112,11 +104,8 @@ exports.aggregate = function (req, res) {
 }
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   datalayer.genericUpdateTagObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
-      logger.serverLog(TAG, `updated tags: ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {

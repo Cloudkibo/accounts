@@ -87,6 +87,8 @@ exports.aggregate = function (req, res) {
 exports.populatePlanPermissions = function (req, res) {
   PlanModel.find({}, (err, plans) => {
     if (err) {
+      const message = err || 'Failed to find Plan Model'
+      logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     }
     plans.forEach((plan, index) => {
@@ -131,6 +133,8 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
+            const message = err || 'Failed to insert record1'
+            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, 'Failed to insert record1')
           }
         })
@@ -175,6 +179,8 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
+            const message = err || 'Failed to insert record2'
+            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, 'Failed to insert record2')
           }
         })
@@ -219,6 +225,8 @@ exports.populatePlanPermissions = function (req, res) {
         let feature = new Features(featuresData)
         feature.save((err) => {
           if (err) {
+            const message = err || 'Failed to insert record3'
+            logger.serverLog(message, `${TAG}: exports.populatePlanPermissions`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, 'Failed to insert record3')
           }
         })

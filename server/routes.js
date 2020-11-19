@@ -165,14 +165,15 @@ module.exports = function (app) {
   if (config.env === 'production' || config.env === 'staging') {
     app.use(Raven.errorHandler())
     app.use(function (err, req, res, next) {
-      console.error(err.stack)
       logger.serverLog(err.stack, TAG )
       logger.serverLog(err.message, TAG)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
         return res.status(401).json({ status: 'Unauthorized', payload: 'jwt expired' })
       }
-      res.status(500).send('Something broke! Please go to home page')
+      let message = 'Something broke! Please go to home page'
+      logger.serverLog(message, `${TAG}: MiddleWare`, req.body, {user: req.user}, 'error')
+      res.status(500).send(message)
       /**
        * Further logic for error handling.
        * You may integrate with Crash reporting tool like Raven.

@@ -23,7 +23,6 @@ exports.index = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
 
   if (req.files.file.size === 0) {
-    logger.serverLog('No file submitted', `${TAG}: exports.index`, req.body, {user: req.user}, 'error')       
     sendErrorResponse(res, 400, '', 'No file submitted')
   }
   fs.rename(
@@ -47,6 +46,8 @@ exports.index = function (req, res) {
               `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
               (err, resp2) => {
                 if (err) {
+                  const message = err || `Failed to get page access_token from Graph Api`
+                  logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
                   sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
                 }
                 let pageAccessToken = resp2.body.access_token

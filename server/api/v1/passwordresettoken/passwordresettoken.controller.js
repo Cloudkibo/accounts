@@ -18,8 +18,6 @@ exports.forgot = function (req, res) {
     .findOneUserByEmail(req.body)
     .then(fetchedUser => {
       if (!fetchedUser) {
-        const message = 'Sorry! No such account or company exists'
-        logger.serverLog(message, `${TAG}: exports.forgot`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
       } else {
         let token = resetTokenLogicLayer.getRandomString()
@@ -90,7 +88,8 @@ exports.reset = function (req, res) {
       sendSuccessResponse(res, 200, '', 'Password successfully changed. Please login with your new password.')
     })
     .catch(err => {
-      logger.serverLog(err, `${TAG}: exports.reset`, req.body, {user: req.user}, 'error')
+      const message = err || 'Failed to reset token'
+      logger.serverLog(message, `${TAG}: exports.reset`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
 }
@@ -107,7 +106,7 @@ exports.verify = function (req, res) {
           path.join(config.root, 'views/pages/change_password_failed.html'))
     })
     .catch(err => {
-      const message = err 
+      const message = err || 'Failed to find token'
       logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
@@ -127,17 +126,16 @@ exports.change = function (req, res) {
           sendSuccessResponse(res, 200, '', 'Password changed successfully.')
         })
           .catch((err) => {
-            const message = err 
+            const message = err || 'Failed to save user'
             logger.serverLog(message, `${TAG}: exports.change`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       } else {
-        
         sendErrorResponse(res, 404, '', 'Wrong current password.')
       }
     })
     .catch(err => {
-      const message = err 
+      const message = err || 'Failed to find user'
       logger.serverLog(message, `${TAG}: exports.change`, req.body, {user: req.user}, 'error')      
       sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
     })
@@ -148,7 +146,6 @@ exports.forgotWorkspaceName = function (req, res) {
     .findOneUserByEmail(req.body)
     .then(user => {
       if (!user) {
-        logger.serverLog(TAG, `fetchedUser not found ${util.inspect(user)}`)
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
       }
       let sendgrid = require('sendgrid')(config.sendgrid.username,

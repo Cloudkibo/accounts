@@ -31,8 +31,6 @@ exports.index = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        const message = 'The user account does not belong to any company'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')    
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       dataLayer
@@ -57,8 +55,6 @@ exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
       if (!profile) { 
-        const message = 'Company not found'
-        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')    
         sendErrorResponse(res, 404, '', 'Company not found') 
       }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
@@ -79,14 +75,9 @@ exports.setCard = function (req, res) {
 
 exports.updatePlan = function (req, res) {
   if (req.user.plan.unique_ID === req.body.plan) {
-    const message = `The selected plan is the same as the current plan.`
-    logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')    
     sendErrorResponse(res, 500, '', `The selected plan is the same as the current plan.`)
   }
   if (!req.user.last4 && !req.body.stripeToken) {
-    const message = `Please add a card to your account before choosing a plan.`
-    logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')    
-
     sendErrorResponse(res, 500, '', `Please add a card to your account before choosing a plan.`)
   }
   PlanDataLayer.findOnePlanObjectUsingQuery({unique_ID: req.body.plan})
@@ -100,7 +91,6 @@ exports.updatePlan = function (req, res) {
       dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
         .then(company => {
           if (!company) {
-            logger.serverLog('Company not found', `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')            
             sendErrorResponse(res, 500, '', 'Company not found')
           }
           let result = logicLayer.setPlan(company, req.body.stripeToken, plan)
@@ -131,7 +121,6 @@ exports.invite = function (req, res) {
     .then(companyUser => {
       if (companyUser) logger.serverLog(`Company User found: ${util.inspect(companyUser)}`, TAG)
       else {
-        logger.serverLog('The user account logged in does not belong to any company. Please contact support', `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')              
         sendErrorResponse(res, 404, '', 'The user account logged in does not belong to any company. Please contact support')
       }
       // Query Objects
@@ -306,7 +295,6 @@ exports.updateAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.updateAutomatedOptions`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
       let query = {_id: companyUser.companyId}
@@ -330,7 +318,6 @@ exports.getAutomatedOptions = function (req, res) {
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
       if (!companyUser) {
-        logger.serverLog('The user account does not belong to any company. Please contact support', `${TAG}: exports.getAutomatedOptions`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'The user account does not belong to any company. Please contact support')
       }
 

@@ -57,6 +57,8 @@ var knownEvents = {
   'charge.failed': function (req, res, next) {
     Companyprofile.findOne({'stripe.customerId': req.body.data.object.customer}).populate('ownerId').exec((err, company) => {
       if (err) {
+        const message = err || 'Failed to find company profile'
+        logger.serverLog(message, `${TAG}: charge.failed`, req.body, {user: req.user}, 'error')
         return res.status(500).json({
           status: 'failed',
           description: `Internal Server Error ${JSON.stringify(err)}`

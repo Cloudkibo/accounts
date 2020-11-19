@@ -34,8 +34,6 @@ exports.index = function (req, res) {
 
       if (!user || !companyUser || !permissions) {
         let resp = logicLayer.getResponse(user, companyUser, permissions)
-        const message = resp || 'Error in Promise All'
-        logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, resp)
       }
 
@@ -46,8 +44,6 @@ exports.index = function (req, res) {
         })
         .then(plan => {
           if (!plan) {
-            const message = 'Error in plan not set for this user'
-            logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
           }
           user = user.toObject()
@@ -104,8 +100,6 @@ exports.updateMode = function (req, res) {
     })
     .then(plan => {
       if (!plan) {
-        const message = 'Error in plan not set for this user'
-        logger.serverLog(message, `${TAG}: exports.updateMode`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
       }
       user = user.toObject()
@@ -197,12 +191,12 @@ exports.create = function (req, res) {
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
-                    logger.serverLog(`Company created: ${companySaved}`, TAG)
                     let companyUsageData = logicLayer.companyUsageData(companySaved._id)
                     FeatureUsageDataLayer.createCompanyUsage(companyUsageData)
                       .then()
                       .catch(err => {
-                        logger.serverLog(`Error at: ${err}`, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
+                        const message = err || 'Failed to create company Usage'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
                         sendErrorResponse(res, 500, err)
                       })
                     // Create customer on stripe
@@ -210,10 +204,10 @@ exports.create = function (req, res) {
                     let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
                     CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
                       .then(companyUserSaved => {
-                        logger.serverLog(TAG, `Company User created: ${companyUserSaved}`)
+                        logger.serverLog(`Company User created: ${companyUserSaved}`, TAG)
                         PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
                           .then(permissionSaved => {
-                            logger.serverLog(TAG, `Permission Saved: ${permissionSaved}`)
+                            logger.serverLog(`Permission Saved: ${permissionSaved}`, TAG)
                             let token = auth.signToken(user._id)
                             res.cookie('token', token)
                             res.status(201)
@@ -311,7 +305,6 @@ exports.joinCompany = function (req, res) {
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
-        logger.serverLog('user or company user not found', `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
         let accountData = {
@@ -373,7 +366,10 @@ exports.joinCompany = function (req, res) {
       let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
       email = logicLayer.setEmailBody(email, tokenString, req.body)
       sendgrid.send(email, function (err, json) {
-        if (err) logger.serverLog(`Internal Server Error on sending email : ${JSON.stringify(err)}`, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error') 
+        if (err) {
+          const message = err || 'Failed to send email'
+          logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error') 
+        }
       })
       // Sending email to sojharo and sir
       let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -382,14 +378,14 @@ exports.joinCompany = function (req, res) {
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {
           if (err) { 
-            const message = ` Error on sending email`
+            const message = err || 'Failed to send email'
             logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
           }
         })
       }
     })
     .catch(err => {
-      const message = `Error at Promise Chaining ${util.inspect(err)}`
+      const message = err || `Error at Promise Chaining`
       logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -399,8 +395,6 @@ exports.update = function (req, res) {
   let id
   if (req.params._id) id = req.params._id
   else {
-    const message = 'ID is not provided'
-    logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
     sendErrorResponse(res, 400, 'ID is not provided')
   }
 
@@ -420,7 +414,7 @@ exports.update = function (req, res) {
         sendErrorResponse(res, 500, err)
       })
   } else {
-    logger.serverLog(TAG, `No field provided to update`)
+    logger.serverLog(`No field provided to update`, TAG)
     sendErrorResponse(res, 400, 'Provide field to update')
   }
 }
@@ -429,8 +423,6 @@ exports.delete = function (req, res) {
   let id
   if (req.params._id) id = req.params._id
   else {
-    const message = 'ID is not provided'
-    logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
     sendErrorResponse(res, 400, 'ID is not provided')
   }
   dataLayer.deleteUserObject(id)
@@ -455,7 +447,7 @@ exports.authenticatePassword = function (req, res) {
       }
     })
     .catch(err => {
-      const message = `Error at authenticatePassword user ${util.inspect(err)}`
+      const message = err || `Failed to authenticatePassword user`
       logger.serverLog(message, `${TAG}: exports.authenticatePassword`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -479,7 +471,6 @@ exports.addAccountType = function (req, res) {
             return dataLayer.saveUserObject(user)
           })
           .then(savedUser => {
-            logger.serverLog(`saved User: ${savedUser}`, TAG)
           })
           .catch(err => {
             const message = err || 'Error at company addAccountType'
@@ -516,10 +507,7 @@ exports.enableDelete = function (req, res) {
       sendgrid.send(email, function (err, json) {
         if (err) {
           const message = err || 'Error at send email'
-          logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
-          return logger.serverLog(TAG,
-            `Internal Server Error on sending email : ${JSON.stringify(
-              err)}`)
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')     
         }
       })
       let emailAdmin = new sendgrid.Email({
@@ -532,7 +520,8 @@ exports.enableDelete = function (req, res) {
       logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
       sendgrid.send(emailAdmin, function (err, json) {
         if (err) {
-          return logger.serverLog(`Internal Server Error on sending email to Admin :`, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       sendSuccessResponse(res, 200, updatedUser)
@@ -560,7 +549,8 @@ exports.cancelDeletion = function (req, res) {
       email = logicLayer.setEnableDeleteEmailBody(email, emailText)
       sendgrid.send(email, function (err, json) {
         if (err) {
-          return logger.serverLog(`Internal Server Error on sending email :`, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       let emailAdmin = new sendgrid.Email({
@@ -573,7 +563,8 @@ exports.cancelDeletion = function (req, res) {
       emailAdmin = logicLayer.setInhouseCancelDeleteEmailBody(emailAdmin, req.user)
       sendgrid.send(emailAdmin, function (err, json) {
         if (err) {
-          return logger.serverLog(`Internal Server Error on sending email :`, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       sendSuccessResponse(res, 200, updatedUser)
@@ -603,7 +594,7 @@ exports.fetchGeneral = function (req, res) {
       sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
-      const message = err || 'Failed to fetch All  user'
+      const message = err || 'Failed to find All users'
       logger.serverLog(message, `${TAG}: exports.fetchGeneral`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
