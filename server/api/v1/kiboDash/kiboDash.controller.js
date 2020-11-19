@@ -79,7 +79,7 @@ exports.pageWiseData = function (req, res) {
     sendSuccessResponse(res, 200, pagesData)
   }).catch((err) => {
     const message = err || 'Failed to Find  pageWiseData'
-    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {query, joinPageWithSubscribers, dateFilterSubscribers, selectPageFields}, 'error')
+    logger.serverLog(message, `${TAG}: exports.pageWiseData`, req.body, {}, 'error')
     sendErrorResponse(res, 500, '', '', err)
   })
 }
