@@ -1,8 +1,8 @@
 const { joinAutpostingMessages, dateFilterAutoposting, selectAutoPostingFields, selectFacebookType } = require('./pipeline')
-exports.mapData = (data, broadcastAggregates, pollsAggregate, surveysAggregate) => {
+exports.mapData = (data, subscribersAggregate, broadcastAggregates, pollsAggregate, surveysAggregate) => {
   data = data.map((page) => {
     broadcastAggregates.forEach((broadcast) => {
-      if (page.pageId.toString() === broadcast._id) {
+      if (page.pageId.toString().trim() === broadcast._id.toString().trim()) {
         page.numberOfBroadcasts = broadcast.totalCount
       }
     })
@@ -11,7 +11,7 @@ exports.mapData = (data, broadcastAggregates, pollsAggregate, surveysAggregate) 
   // set Polls counts
   data = data.map((page) => {
     pollsAggregate.forEach((poll) => {
-      if (page.pageId.toString() === poll._id) {
+      if (page.pageId.toString().trim() === poll._id.toString().trim()) {
         page.numberOfPolls = poll.totalCount
       }
     })
@@ -20,8 +20,17 @@ exports.mapData = (data, broadcastAggregates, pollsAggregate, surveysAggregate) 
   // set Survey count
   data = data.map((page) => {
     surveysAggregate.forEach((survey) => {
-      if (page.pageId.toString() === survey._id) {
+      if (page.pageId.toString().trim() === survey._id.toString().trim()) {
         page.numberOfSurveys = survey.totalCount
+      }
+    })
+    return page
+  })
+  // set Subsriber count
+  data = data.map((page) => {
+    subscribersAggregate.forEach((subscriber) => {
+      if (page._id.toString().trim() === subscriber._id.toString().trim()) {
+        page.numberOfSubscribers = subscriber.totalCount
       }
     })
     return page
@@ -79,6 +88,17 @@ exports.setConnectedPagesCount = function (results, data) {
       if (results[5][j]._id.toString() === data[i].companyId.toString()) {
         let pages = results[5][j]
         data[i].numberOfConnectedPages = pages.totalPages
+      }
+    }
+  }
+}
+
+exports.setSubscribersCount = function (results, data) {
+  for (let i = 0; i < data.length; i++) {
+    for (let j = 0; j < results[6].length; j++) {
+      if (results[6][j]._id.toString().trim() === data[i].companyId.toString().trim()) {
+        let subscribers = results[6][j]
+        data[i].numberOfSubscribers = subscribers.totalCount
       }
     }
   }
