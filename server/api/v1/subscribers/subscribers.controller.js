@@ -116,19 +116,13 @@ exports.updatePicture = function (req, res) {
     `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}&fields=picture`,
     (err, resp) => {
       if (err) {
-<<<<<<< HEAD
         const message = err || 'Failed to fetch subscriber Data from facebook'
         logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
-=======
-        logger.serverLog(`error in retrieving picture from  https://graph.facebook.com/v6.0/${subscriber.senderId}/`, TAG, req.body, {subscriber, error: err}, 'error')
-        sendErrorResponse(res, 500, err)
->>>>>>> 7bf663d15aee3df3ed8a48b10d7a78d275fd974a
       }
       if (resp.body && resp.body.picture && resp.body.picture.data) {
         var picUrl = resp.body.picture.data.url
         subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.picUrl}, {})
           .then(updated => {
-<<<<<<< HEAD
             sendSuccessResponse(res, 200, resp.body.profile_pic)
           })
           .catch(err => {
@@ -139,19 +133,6 @@ exports.updatePicture = function (req, res) {
       } else {
         const message = err || `profile picture not found for subscriber with senderId ${subscriber.senderId}`
         logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
-=======
-            logger.serverLog(TAG, `Succesfully updated subscriber with senderId ${subscriber.senderId}`, req.body, {resp: resp.body}, 'info')
-            sendSuccessResponse(res, 200, picUrl)
-          })
-          .catch(err => {
-            const message = err || 'Failed to update subscriber record'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {resp: JSON.stringify(resp.body)}, 'error')   
-            sendErrorResponse(res, 500, err)
-          })
-      } else {
-        const message = `profile picture not found for subscriber with senderId ${subscriber.senderId}`
-        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {resp: JSON.stringify(resp.body)}, 'info')
->>>>>>> 7bf663d15aee3df3ed8a48b10d7a78d275fd974a
         sendErrorResponse(res, 404, `profile picture not found for subscriber with senderId ${subscriber.senderId}`)
       }
     })
