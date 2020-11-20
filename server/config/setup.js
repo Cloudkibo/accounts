@@ -34,13 +34,13 @@ module.exports = function (app, httpapp, config) {
   }
 
   server.listen(config.port, () => {
-    logger.serverLog(TAG, `CloudKibo Authentication server STARTED on ${
-      config.port} in ${config.env} mode`)
+    logger.serverLog(`CloudKibo Authentication server STARTED on ${
+      config.port} in ${config.env} mode`, TAG)
   })
 
   httpsServer.listen(config.secure_port, () => {
-    logger.serverLog(TAG, `CloudKibo Authentication server STARTED on ${
-      config.secure_port} in ${config.env} mode`)
+    logger.serverLog(`CloudKibo Authentication server STARTED on ${
+      config.secure_port} in ${config.env} mode`, TAG)
   })
 
   if (config.env === 'production') {

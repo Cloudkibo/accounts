@@ -1,12 +1,16 @@
 const compose = require('composable-middleware')
 const CompanyUserDataLayer = require('./../v1/companyuser/companyuser.datalayer')
 const UserDataLayer = require('./../v1/user/user.datalayer')
+const logger = require('../../components/logger')
+const TAG = '/api/global/utility.js'
 
 const attachBuyerInfo = function () {
   return compose().use((req, res, next) => {
     CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({ companyId: req.user.companyId, role: 'buyer' })
       .then(buyerInfo => {
         if (!buyerInfo) {
+          const message = 'Failed to fetch buyerInfo'
+          logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, req.body, {user: req.user}, 'error')
           return res.status(404).json({
             status: 'failed',
             description: 'The buyer account has some technical problems. Please contact support'
@@ -25,6 +29,8 @@ const attachBuyerInfo = function () {
         next()
       })
       .catch(error => {
+        const message = error || 'Failed to fetch buyer account'
+        logger.serverLog(message, `${TAG} : exports.attachBuyerInfo`, req.body, {user: req.user}, 'error')
         return res.status(500).json({
           status: 'failed',
           payload: `Failed to fetch buyer account ${JSON.stringify(error)}`

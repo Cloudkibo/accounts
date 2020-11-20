@@ -13,7 +13,6 @@ exports.prepareCreatePayload = (body) => {
     subscriberId: body.subscriberId,
     companyId: body.companyId
   }
-  logger.serverLog(TAG, `going to return payload: ${payload}`)
   return payload
 }
 

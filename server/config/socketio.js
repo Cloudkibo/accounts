@@ -14,15 +14,15 @@ function onDisconnect (socket) {
 
 // When the user connects.. perform this
 function onConnect (socket) {
-  logger.serverLog(TAG, 'On Connect Called Server Side')
+  logger.serverLog('On Connect Called Server Side', TAG)
   socket.emit('message', {hello: 'hello'})
   socket.on('logClient', function (data) {
-    logger.serverLog(TAG, 'Got A Message From Log Client ')
+    logger.serverLog('Got A Message From Log Client ', TAG)
     logger.clientLog(data.tag, data.data)
   })
 
   socket.on('message', (data) => {
-    logger.serverLog(TAG, `Joining room for ${JSON.stringify(data)}`)
+    logger.serverLog(`Joining room for ${JSON.stringify(data)}`, TAG)
     if (data.action === 'join_room') {
       socket.join(data.room_id)
     }
@@ -50,12 +50,12 @@ exports.setup = function (socketio) {
   // }));
 
   socketio.on('connection', function (socket) {
-    logger.serverLog(TAG, 'On Connect Called Server Side')
+    logger.serverLog('On Connect Called Server Side', TAG)
     socket.connectedAt = new Date()
 
     // Call onDisconnect.
     socket.on('disconnect', function () {
-      logger.serverLog(TAG, 'On Disconnect Called Server Side')
+      logger.serverLog('On Disconnect Called Server Side', TAG)
       onDisconnect(socket)
       // logger.serverLog(TAG, `SOCKET ${socket.id} DISCONNECTED AT ${new Date()}`)
     })
@@ -67,7 +67,7 @@ exports.setup = function (socketio) {
 }
 
 exports.sendToClient = function (data) {
-  logger.serverLog(TAG, `Sending ${data} payload to client using socket.io`)
+  logger.serverLog(`Sending ${data} payload to client using socket.io`, TAG)
   // globalSocket.to(data.room_id).emit('[NAME]', data.payload)
   globalSocket.emit('message', data)
 }
