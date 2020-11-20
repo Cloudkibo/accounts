@@ -351,7 +351,7 @@ exports.deleteWhitelistDomain = function (req, res) {
             let requesturl = `https://graph.facebook.com/v6.0/me/messenger_profile?access_token=${accessToken}`
             needle.request('post', requesturl, whitelistedDomains, { json: true }, function (err, resp) {
               if (err) {
-                const message = `Error in save whitelisted_domains ${JSON.stringify(err)}`
+                const message = err || `Error in save whitelisted_domains`
                 logger.serverLog(message, `${TAG}: exports.deleteWhitelistDomain`, req.body, {user: req.user}, 'error')
               }
               if (resp.body.result === 'success') {

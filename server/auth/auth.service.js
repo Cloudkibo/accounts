@@ -372,8 +372,10 @@ function saveLastLoginIpAddress (req) {
     { upsert: false }
   )
     .then(result => logger.serverLog('updated user ip address for last login', TAG))
-    .catch(err => logger.serverLog(`error in updating IP address of user for last login ${JSON.stringify(err)}`, `${TAG}: exports.fetchPages`)
-    )
+    .catch(err => {
+      const message = err || 'error in updating IP address of user for last login'
+      logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
+    })
 }
 
 exports.isAuthenticated = isAuthenticated

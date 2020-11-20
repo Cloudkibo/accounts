@@ -607,7 +607,7 @@ exports.updatePicture = function (req, res) {
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
     (err, resp) => {
       if (err) {
-        const message = `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture ${JSON.stringify(err)}`
+        const message = err || `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture`
         logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {

@@ -171,7 +171,7 @@ module.exports = function (app) {
         res.clearCookie('token')
         return res.status(401).json({ status: 'Unauthorized', payload: 'jwt expired' })
       }
-      let message = 'Something broke! Please go to home page'
+      let message = err || 'Something broke! Please go to home page'
       logger.serverLog(message, `${TAG}: MiddleWare`, req.body, {user: req.user}, 'error')
       res.status(500).send(message)
       /**

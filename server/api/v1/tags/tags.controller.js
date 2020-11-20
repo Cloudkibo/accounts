@@ -6,8 +6,6 @@ const TAG = 'api/v1/tags/tags.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the index point')
-
   datalayer.findAllTagObjectUsingQuery({})
     .then(tags => {
       sendSuccessResponse(res, 200, tags)
@@ -20,7 +18,6 @@ exports.index = function (req, res) {
 }
 
 exports.findOne = function (req, res) {
-  logger.serverLog(TAG, 'Hit the findOne point')
   let query = { _id: req.params.id ? req.params.id : '' }
   datalayer.findOneTagObjectUsingQuery(query)
     .then(tag => {
@@ -35,7 +32,6 @@ exports.findOne = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create point')
   datalayer.createTagObject(req.body)
     .then(tag => {
       sendSuccessResponse(res, 200, tag)
@@ -48,7 +44,6 @@ exports.create = function (req, res) {
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete point')
   let query = { _id: req.params.id ? req.params.id : '' }
   datalayer.deleteOneTagObjectUsingQuery(query)
     .then(tag => {
@@ -62,7 +57,6 @@ exports.delete = function (req, res) {
 }
 
 exports.deleteMany = function (req, res) {
-  logger.serverLog(TAG, 'Hit the deleteMany point')
   let query = req.body ? req.body : ''
   datalayer.deleteTagObjectUsingQuery(query)
     .then(tag => {
@@ -76,8 +70,6 @@ exports.deleteMany = function (req, res) {
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(TAG, 'Hit the genericFetch controller index')
-
   datalayer.findAllTagObjectUsingQuery(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
