@@ -113,14 +113,15 @@ exports.updatePicture = function (req, res) {
   let subscriber = req.body.subscriber
   let accessToken = subscriber.pageId.accessToken
   needle.get(
-    `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}`,
+    `https://graph.facebook.com/v6.0/${subscriber.senderId}?access_token=${accessToken}&fields=picture`,
     (err, resp) => {
       if (err) {
         const message = err || 'Failed to fetch subscriber Data from facebook'
         logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       }
-      if (resp.body.profile_pic) {
-        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.profile_pic}, {})
+      if (resp.body && resp.body.picture && resp.body.picture.data) {
+        var picUrl = resp.body.picture.data.url
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.picUrl}, {})
           .then(updated => {
             sendSuccessResponse(res, 200, resp.body.profile_pic)
           })

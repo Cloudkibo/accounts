@@ -9,7 +9,6 @@ const TAG = '/api/v1/api_settings/index.js'
 
 const dataLayer = require('./api_ngp.datalayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
-const _ = require('lodash')
 
 exports.query = function (req, res) {
   dataLayer.findOneApiObject({company_id: req.body.company_id})
@@ -25,8 +24,9 @@ exports.query = function (req, res) {
             logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, '', `Unable to save${error}`)
           })
+      } else {
+        sendSuccessResponse(res, 200, settings)
       }
-      sendSuccessResponse(res, 200, settings)
     })
     .catch(err => {
       const message = err || 'Failed to Fetch setting'
@@ -46,8 +46,7 @@ exports.enable = function (req, res) {
         logger.serverLog(message, `${TAG}: exports.enable`, req.body, {user: req.user}, 'error')  
         sendErrorResponse(res, 500, '', `Unable to save${error}`)
       })
-  }
-  else {
+  } else {
     dataLayer.update_ngp({_id: req.body.settings._id}, {enabled: req.body.settings.enabled})
       .then(savedSettings => {
         sendSuccessResponse(res, 200, savedSettings)

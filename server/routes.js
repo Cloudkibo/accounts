@@ -1,13 +1,13 @@
 const config = require('./config/environment/index')
 const logger = require('./../server/components/logger')
 const TAG = '/server/routes.js'
-const Raven = require('raven')
 const cors = require('cors')
 const controller = require('./api/v1/files/files.controller')
 const userController = require('./api/v1/user/user.controller')
 const corsOptions = require('./api/v1/files/utility')
 const multiparty = require('connect-multiparty')
 const multipartyMiddleware = multiparty()
+const Sentry = require('@sentry/node')
 
 module.exports = function (app) {
   // API middlewares go here
@@ -50,6 +50,7 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
+  app.use('/api/v1/addOns', require('./api/v1/addOns'))
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
@@ -98,7 +99,8 @@ module.exports = function (app) {
   // })
 
   // signup page
-  app.get('/signup', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup/team', function (req, res) {
     res.render('layouts/index', {
       buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
@@ -131,9 +133,9 @@ module.exports = function (app) {
   })
 
   // signup page
-  app.get('/signup/team', function (req, res) {
-    res.render('layouts/signup', {
-      individual: false,
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup', function (req, res) {
+    res.render('layouts/signup', {individual: false,
       data: [
         { name: 'Customer Engagement', value: 'engage' },
         { name: 'Customer Chat', value: 'chat' },
@@ -162,8 +164,32 @@ module.exports = function (app) {
     res.status(404).send({ url: `${req.originalUrl} not found` })
   })
 
+  /*
+    Setup a general error handler for JsonSchemaValidation errors.
+  */
+  app.use(function (err, req, res, next) {
+    if (err.name === 'JsonSchemaValidation') {
+      const responseData = {
+        statusText: 'Bad Request',
+        jsonSchemaValidation: true,
+        validations: err.validations
+      }
+
+      const message = err || `JsonSchemaValidation error`
+      logger.serverLog(message, `${TAG}: ${req.path ? req.path : req.originalUrl}`, req.body, {responseData}, 'error')
+
+      res.status(400).json(responseData)
+    } else {
+    // pass error to next error middleware handler
+      next(err)
+    }
+  })
+
   if (config.env === 'production' || config.env === 'staging') {
-    app.use(Raven.errorHandler())
+    // app.use(Raven.errorHandler())
+    app.use(Sentry.Handlers.errorHandler())
+    app.use(Sentry.Handlers.requestHandler())
+
     app.use(function (err, req, res, next) {
       logger.serverLog(err.stack, TAG )
       logger.serverLog(err.message, TAG)
