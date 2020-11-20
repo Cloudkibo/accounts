@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/Cloudkibo/accounts#readme",
   "dependencies": {
+    "@sentry/node": "^5.27.3",
     "async": "^2.6.1",
     "babel-eslint": "^9.0.0",
     "composable-middleware": "^0.3.0",
