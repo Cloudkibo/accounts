@@ -6,7 +6,6 @@ const speakeasy = require('speakeasy')
 const QRCode = require('qrcode')
 
 exports.createSetup = function (req, res) {
-  logger.serverLog(TAG, 'going to create enable 2factor auth')
   const secret = speakeasy.generateSecret({
     length: 10,
     name: req.user.email,
@@ -22,7 +21,8 @@ exports.createSetup = function (req, res) {
 
   QRCode.toDataURL(url, async (err, dataURL) => {
     if (err) {
-      logger.serverLog(TAG, `Error in generating QR code for 2FA.`, 'error')
+      const message = err || 'Error in generating QR code for 2FA'
+      logger.serverLog(message, `${TAG}: exports.createSetup`, req.body, {user: req.user}, 'error') 
       return sendErrorResponse(res, 500, err)
     }
 
@@ -46,7 +46,8 @@ exports.createSetup = function (req, res) {
 
       sendSuccessResponse(res, 200, finalPayload)
     } catch (err) {
-      logger.serverLog(TAG, `Error in generating QR code for 2FA.`, 'error')
+      const message = err || 'Error in generating QR code for 2FA'
+      logger.serverLog(message, `${TAG}: exports.createSetup`, req.body, {user: req.user}, 'error') 
       return sendErrorResponse(res, 500, err)
     }
   })
@@ -59,7 +60,8 @@ exports.deleteSetup = async function (req, res) {
 
     sendSuccessResponse(res, 200, {}, 'Successfully deleted 2FA for the user')
   } catch (err) {
-    logger.serverLog(TAG, `Error in deleting the 2FA for the user`, 'error')
+    const message = err || 'Error in deleting the 2FA for the user'
+    logger.serverLog(message, `${TAG}: exports.deleteSetup`, req.body, {user: req.user}, 'error')
     return sendErrorResponse(res, 500, err)
   }
 }
@@ -72,15 +74,11 @@ exports.verifySetup = async function (req, res) {
   })
 
   if (isVerified) {
-    logger.serverLog(TAG, `TFA is verified to be enabled`, 'debug')
-
     await userDataLayer.updateOneUserObjectUsingQuery({_id: req.user._id},
       {'tfa.secret': req.user.tfa.tempSecret, tfaEnabled: true}, {multi: false})
 
     return sendSuccessResponse(res, 200, {}, 'Two-factor Auth is enabled successfully')
   }
-
-  logger.serverLog(TAG, `TFA is verified to be wrong`, 'debug')
 
   return sendErrorResponse(res, 403, {message: 'Invalid Auth Code, verification failed. Please verify the system Date and Time'})
 }

@@ -7,7 +7,6 @@ const TAG = 'api/v1/inviteagenttoken/inviteagenttoken.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  logger.serverLog(TAG, 'Hit the index point')
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
@@ -22,19 +21,18 @@ exports.index = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to  find All Invitations '
-          logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
       const message = err || 'Failed to  find CompanyUser'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }
 
 exports.cancel = function (req, res) {
-  logger.serverLog(TAG, 'Hit the index point')
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
@@ -56,13 +54,13 @@ exports.cancel = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to remove Invitation'
-          logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {}, 'error')
+          logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', 'Internal Server Error')
         })
     })
     .catch(err => {
       const message = err || 'Failed to Find CompanyUser'
-      logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.cancel`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', 'Internal Server Error')
     })
 }

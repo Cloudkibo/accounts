@@ -14,14 +14,12 @@ const TAG = '/api/v1/verificationtoken/verificationtoken.controller.js'
 
 // Get a single verificationtoken
 exports.verify = function (req, res) {
-  logger.serverLog(TAG, 'Hit the verify controller index')
 
   datalayer.findOneVerificationTokenObject({token: req.params.id})
     .then(verificationtoken => {
       if (!verificationtoken) {
         // Change the path according to requirement
         // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
-        logger.serverLog(TAG, `Verification token not found`)
         return res.render('layouts/verification', {verification: false, isAlreadyVerified: false})
       }
 
@@ -30,19 +28,16 @@ exports.verify = function (req, res) {
           if (!user) {
             // Change the path according to requirement
             // return res.sendFile(path.join(config.root, 'client/pages/verification_failed.html'))
-            logger.serverLog(TAG, `User Object not found`)
             return res.render('layouts/verification', {verification: false, isAlreadyVerified: false})
           } else {
             CompanyUsersDataLayer
               .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
               .then(companyuser => {
-                logger.serverLog(TAG, `Company User found ${companyuser}`)
                 return CompanyProfileDataLayer
                   .findOneCPWithPlanPop({_id: companyuser.companyId}, true, 'planId')
               })
               .then(company => {
                 if (!user.emailVerified) {
-                  logger.serverLog(TAG, `Company Profile found ${company}`)
                   user.emailVerified = true
                   let sendgrid = utility.getSendGridObject()
                   let email = new sendgrid.Email(logiclayer.getEmailHeader(user))
@@ -57,14 +52,15 @@ exports.verify = function (req, res) {
                   }
 
                   sendgrid.send(email, function (err, json) {
-                    if (err) logger.serverLog(TAG, {status: 'failed', description: 'Internal Server Error'})
+                    if (err) { 
+                      const message = err || 'Failed to send email'
+                      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
+                    }
                   })
-                  logger.serverLog(TAG, `Going to save user object ${user}`)
                   UserDataLayer.saveUserObject(user)
                     .then(updatedUser => {
                       // Update the UI path
                       // return res.sendFile(path.join(config.root, 'client/pages/verification_success.html'))
-                      logger.serverLog(TAG, `Updated User: ${user}`)
                       return res.render('layouts/verification', {verification: true, isAlreadyVerified: false})
                     })
                 } else {
@@ -75,19 +71,18 @@ exports.verify = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to fetch User'
-          logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
+          logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, '', err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to fetch verification token'
-      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
 }
 
 exports.resend = function (req, res) {
-  logger.serverLog(TAG, `Resending verification email`)
   if (!req.user.emailVerified) {
     let tokenString = UserLogicLayer.getRandomString()
     datalayer.createVerificationToken({ userId: req.user._id, token: tokenString })
@@ -96,14 +91,17 @@ exports.resend = function (req, res) {
         let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
         logiclayer.getResendEmailBody(email, tokenString)
         sendgrid.send(email, (err) => {
-          if (err) { return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) }
-          logger.serverLog(TAG, `verification email resent: ${JSON.stringify(email)}`)
+          if (err) {
+            const message = err || 'Failed to send email'
+            logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
+            return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) 
+          }
           sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
         })
       })
       .catch(err => {
         const message = err || 'Failed to create verification token'
-        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {}, 'error') 
+        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error') 
         sendErrorResponse(res, 500, '', err) 
       })
   } else {

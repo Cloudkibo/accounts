@@ -144,8 +144,8 @@ const companyUsageData = (companyId) => {
 const createCustomerOnStripe = (email, name, companySaved) => {
   companySaved.createCustomer(email, name, function (err) {
     if (err) {
-      logger.serverLog(TAG, `Failed to add customer on stripe : ${JSON.stringify(
-        err)}`)
+      const message = err || 'Error in deleting the 2FA for the user'
+      logger.serverLog(message, `${TAG}: exports.createCustomerOnStripe`, companySaved, {}, 'error')
     }
   })
 }
@@ -173,9 +173,10 @@ const sendEmailUsingMailChimp = (body) => {
     }
   }, function (err, result) {
     if (err) {
-      logger.serverLog(TAG, `welcome email error: ${JSON.stringify(err)}`)
+      const message = err || 'welcome email error:'
+      logger.serverLog(message, `${TAG}: exports.sendEmailUsingMailChimp`, body, {}, 'error')
     } else {
-      logger.serverLog(TAG, `welcome email successfuly sent: ${JSON.stringify(result)}`)
+      logger.serverLog(`welcome email successfuly sent: ${JSON.stringify(result)}`, TAG)
     }
   })
 }

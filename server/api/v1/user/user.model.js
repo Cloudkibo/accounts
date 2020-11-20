@@ -47,7 +47,6 @@ UserSchema.virtual('password').set(function (password) {
   this._password = password
   this.salt = this.makeSalt()
   this.hashedPassword = this.encryptPassword(password)
-  logger.serverLog('UserModel Virtual Password: ', password)
 }).get(function () {
   return this._password
 })
