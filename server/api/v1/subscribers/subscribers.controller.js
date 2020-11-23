@@ -121,9 +121,9 @@ exports.updatePicture = function (req, res) {
       }
       if (resp.body && resp.body.picture && resp.body.picture.data) {
         var picUrl = resp.body.picture.data.url
-        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.picUrl}, {})
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: picUrl}, {})
           .then(updated => {
-            sendSuccessResponse(res, 200, resp.body.profile_pic)
+            sendSuccessResponse(res, 200, picUrl)
           })
           .catch(err => {
             const message = err || 'Failed to update subscriber record'
@@ -132,7 +132,7 @@ exports.updatePicture = function (req, res) {
           })
       } else {
         const message = err || `profile picture not found for subscriber with senderId ${subscriber.senderId}`
-        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
+        logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'info')
         sendErrorResponse(res, 404, `profile picture not found for subscriber with senderId ${subscriber.senderId}`)
       }
     })
