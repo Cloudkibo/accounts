@@ -18,4 +18,4 @@ let contacts = new Schema({
   datetime: { type: Date, default: Date.now }
 })
 
-module.exports = mongoose.model('whatsAppContacts', contacts)
+module.exports = mongoose.model('MessengerComponent', contacts)
