@@ -123,7 +123,7 @@ exports.updatePicture = function (req, res) {
         var picUrl = resp.body.picture.data.url
         subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: picUrl}, {})
           .then(updated => {
-            sendSuccessResponse(res, 200, resp.body.profile_pic)
+            sendSuccessResponse(res, 200, picUrl)
           })
           .catch(err => {
             const message = err || 'Failed to update subscriber record'
