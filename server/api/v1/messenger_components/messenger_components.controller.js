@@ -1,7 +1,7 @@
 const dataLayer = require('./messenger_components.datalayer')
 const logicLayer = require('./messenger_components.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
-const TAG = '/api/v1/whatsAppContacts/whatsAppContacts.controller.js'
+const TAG = '/api/v1/messenger_components/whatsAppContacts.controller.js'
 const logger = require('../../../components/logger')
 
 exports.create = function (req, res) {
@@ -10,7 +10,7 @@ exports.create = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      const message = err || 'Failed to create Whatsapp Contact'
+      const message = err || 'Failed to create Messenger Components record'
       logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -22,7 +22,7 @@ exports.query = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      const message = err || 'Failed to fetch Whatsapp Contacts'
+      const message = err || 'Failed to fetch Messenger Components record'
       logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -35,7 +35,7 @@ exports.aggregate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      const message = err || 'Failed to aggregate Whatsapp Contacts'
+      const message = err || 'Failed to aggregate Messenger Components record'
       logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -47,7 +47,7 @@ exports.genericUpdate = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      const message = err || 'Failed to update Whatsapp Contacts'
+      const message = err || 'Failed to update Messenger Components record'
       logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
@@ -59,7 +59,7 @@ exports.deleteMany = function (req, res) {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
-      const message = err || 'Failed to delete Whatsapp Contacts'
+      const message = err || 'Failed to delete Messenger Components record'
       logger.serverLog(message, `${TAG}: exports.deleteMany`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
