@@ -20,7 +20,8 @@ let contacts = new Schema({
   chatbotContext: {type: 'String'},
   commerceCustomer: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
-  activeChatbotId: {type: String}
+  activeChatbotId: {type: String},
+  activeChatbotBuilt: {type: String}
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)
