@@ -133,7 +133,7 @@ router.post('/', function (req, res, next) {
           if (user.facebookInfo) {
             auth.fetchPages(`https://graph.facebook.com/v6.0/${
               user.facebookInfo.fbId}/accounts?access_token=${
-              user.facebookInfo.fbToken}`, user)
+              user.facebookInfo.fbToken}`, user, req)
           }
           auth.saveLastLoginIpAddress(req)
           return auth.setTokenCookie(req, res)
