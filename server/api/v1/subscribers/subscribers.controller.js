@@ -121,7 +121,7 @@ exports.updatePicture = function (req, res) {
       }
       if (resp.body && resp.body.picture && resp.body.picture.data) {
         var picUrl = resp.body.picture.data.url
-        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: resp.body.picUrl}, {})
+        subscribersDataLayer.genericUpdateSubscriberObject({senderId: subscriber.senderId}, {profilePic: picUrl}, {})
           .then(updated => {
             sendSuccessResponse(res, 200, resp.body.profile_pic)
           })
