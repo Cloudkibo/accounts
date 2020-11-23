@@ -6,20 +6,18 @@ const TAG = '/api/v1/landingPage/landingPage.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create landing page controller', req.body)
   dataLayer.createLandingPage(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to create Landing Page'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.query = function (req, res) {
-  logger.serverLog(TAG, 'Hit the query endpoint for landing page controller')
   dataLayer.findLandingPages(req.body)
     .then(result => {
       if (result.length > 0) {
@@ -36,26 +34,24 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find Landing Page'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the update landing page controller')
   dataLayer.updateLandingPage(req.params._id, req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to Update Landing Page'
-      logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete landing page controller')
 
   dataLayer.deleteLandingPage(req.params._id)
     .then(result => {
@@ -63,20 +59,19 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete Landing Page'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.createLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create landing page state controller', req.body)
   landingPageStateDataLayer.createLandingPageState(req.body)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to create LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.createLandingPageState`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.createLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -88,21 +83,19 @@ exports.updateLandingPageState = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Update LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.updateLandingPageState`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updateLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.deleteLandingPageState = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete landing page controller', req.params._id)
-
   landingPageStateDataLayer.deleteLandingPageState(req.params._id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to delete LandingPageState'
-      logger.serverLog(message, `${TAG}: exports.deleteLandingPageState`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.deleteLandingPageState`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

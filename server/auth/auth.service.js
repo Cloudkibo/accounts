@@ -51,7 +51,8 @@ function isAuthenticated () {
                     attachUserAndActingUserInfo(req, res, next, loggedInUser, actingAsUser)
                   })
                   .catch(err => {
-                    logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+                    const message = err || 'Unable to get loggin in user details'
+                    logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
                     return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
                   })
               } else {
@@ -62,7 +63,8 @@ function isAuthenticated () {
             }
           })
           .catch(err => {
-            logger.serverLog(TAG, `Unable to get loggin in user details ${util.inspect(err)}`)
+            const message = err || 'Unable to get loggin in user details'
+            logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
             return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
           })
       } else if (req.headers.hasOwnProperty('consumer_id')) {
@@ -115,12 +117,14 @@ function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser
           }
         })
         .catch(err => {
-          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          const message = err || 'Error at Plan Catch:'
+          logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
           return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      const message = err || 'Error at Promise All:'
+      logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
@@ -167,12 +171,14 @@ function attachUserToRequest (req, res, next, userId) {
           next()
         })
         .catch(err => {
-          logger.serverLog(TAG, `Error at Plan Catch: ${util.inspect(err)}`)
+          const message = err || 'Error at Plan Catch:'
+          logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')     
           return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
         })
     })
     .catch(err => {
-      logger.serverLog(TAG, `Error at Promise All: ${util.inspect(err)}`)
+      const message = err || 'Error at Promise All:'
+      logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')     
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
@@ -234,7 +240,7 @@ function setTokenCookie (req, res) {
     })
   }
   const token = signToken(req.user._id)
-  logger.serverLog(TAG, `Here is the signed token: ${token}`)
+  logger.serverLog(`Here is the signed token: ${token}`, TAG)
   res.cookie('token', token)
   // We will change it to based on the request of project
   return res.status(200).json({status: 'success', description: 'successfully logged in', token})
@@ -250,17 +256,14 @@ function fetchPages (url, user, req, token) {
   }
   needle.get(url, options, (err, resp) => {
     if (err !== null) {
-      logger.serverLog(TAG, 'error from graph api to get pages list data: ')
-      logger.serverLog(TAG, JSON.stringify(err))
+      const message = err || 'error from graph api to get pages list data:'
+      logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
       return
     }
-    logger.serverLog(TAG, 'resp from graph api to get pages list data: ')
-    logger.serverLog(TAG, JSON.stringify(resp.body))
     const data = resp.body.data
     const cursor = resp.body.paging
     if (data) {
       data.forEach((item) => {
-        logger.serverLog(TAG, `foreach ${JSON.stringify(item.name)}`)
         //  createMenuForPage(item)
         const options2 = {
           url: `https://graph.facebook.com/v6.0/${item.id}/?fields=fan_count,username&access_token=${item.access_token}`,
@@ -269,7 +272,7 @@ function fetchPages (url, user, req, token) {
         }
         needle.get(options2.url, options2, (error, fanCount) => {
           if (error !== null) {
-            return logger.serverLog(TAG, `Error occurred ${error}`)
+            return logger.serverLog(`Error occurred ${error}`, TAG)
           } else {
             // logger.serverLog(TAG, `Data by fb for page likes ${JSON.stringify(
             //   fanCount.body.fan_count)}`)
@@ -301,14 +304,12 @@ function fetchPages (url, user, req, token) {
                       }
                       PagesDataLayer.savePageObject(payloadPage)
                         .then(page => {
-                          logger.serverLog(TAG,
-                            `Page ${item.name} created with id ${page.pageId}`)
+                          logger.serverLog(
+                            `Page ${item.name} created with id ${page.pageId}`, TAG)
                         })
                         .catch(err => {
-                          logger.serverLog(TAG, {
-                            status: 'failed',
-                            description: `Unable to create Page Object ${err}`
-                          })
+                          const message = err || 'Unable to create Page Object'
+                          logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
                         })
                     } else {
                       let updatedPayload = {
@@ -319,40 +320,38 @@ function fetchPages (url, user, req, token) {
                       if (fanCount.body.username) {
                         updatedPayload['pageUserName'] = fanCount.body.username
                       }
-                      PagesDataLayer.updatePageObjectUsingQuery({_id: page._id}, updatedPayload, {})
+                      PagesDataLayer.updatePageObjectUsingQuery({_id: page._id}, updatedPayload, {user: req.user})
                         .then(updated => {
-                          logger.serverLog(TAG,
-                            `page updated successfuly ${JSON.stringify(updated)}`)
+                          logger.serverLog(
+                            `page updated successfuly ${JSON.stringify(updated)}`, TAG)
                         })
                         .catch(err => {
-                          logger.serverLog(TAG,
-                            `failed to update page ${JSON.stringify(err)}`)
+                          const message = err || 'failed to update page:'
+                          logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')                    
                         })
                     }
                   })
                   .catch(err => {
-                    return logger.serverLog(TAG, {
-                      status: 'failed',
-                      description: `Error while fetching pages ${err}`
-                    })
+                    const message = err || 'Error while fetching pages'
+                    return logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
+                    
                   })
               })
               .catch(err => {
-                return logger.serverLog(TAG, {
-                  status: 'failed',
-                  description: `Error while fetching company user${err}`
-                })
+                const message = err || 'Error while fetching user'
+                return logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
+            
               })
           }
         })
       })
     } else {
-      logger.serverLog(TAG, 'Empty response from graph API to get pages list data')
+      logger.serverLog('Empty response from graph API to get pages list data', TAG)
     }
     if (cursor && cursor.next) {
       fetchPages(cursor.next, user, req)
     } else {
-      logger.serverLog(TAG, 'Undefined Cursor from graph API')
+      logger.serverLog('Undefined Cursor from graph API', TAG)
     }
   })
 }
@@ -360,7 +359,7 @@ function fetchPages (url, user, req, token) {
 function saveLastLoginIpAddress (req) {
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
 
-  logger.serverLog(TAG, `IP found: ${ip}`, 'debug')
+  logger.serverLog(`IP found: ${ip}`, TAG)
 
   if (ip.includes('ffff')) {
     let temp = ip.split(':')
@@ -372,8 +371,11 @@ function saveLastLoginIpAddress (req) {
     { lastLoginIPAddress: ip },
     { upsert: false }
   )
-    .then(result => logger.serverLog(TAG, 'updated user ip address for last login', 'debug'))
-    .catch(err => logger.serverLog(TAG, `error in updating IP address of user for last login ${JSON.stringify(err)}`))
+    .then(result => logger.serverLog('updated user ip address for last login', TAG))
+    .catch(err => {
+      const message = err || 'error in updating IP address of user for last login'
+      logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
+    })
 }
 
 exports.isAuthenticated = isAuthenticated
@@ -381,5 +383,6 @@ exports.signToken = signToken
 exports.setTokenCookie = setTokenCookie
 exports.isAuthorizedSuperUser = isAuthorizedSuperUser
 exports.fetchPages = fetchPages
+exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer
 exports.saveLastLoginIpAddress = saveLastLoginIpAddress
 exports.isSuperUserActingAsCustomer = isSuperUserActingAsCustomer

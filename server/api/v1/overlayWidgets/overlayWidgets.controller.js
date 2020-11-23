@@ -11,7 +11,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create overlayWidgets '
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -22,7 +22,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Find overlayWidgets '
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -33,7 +33,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Update overlayWidgets '
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -44,7 +44,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete overlayWidgets '
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -56,7 +56,7 @@ exports.aggregate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate overlayWidgets '
-      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

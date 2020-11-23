@@ -11,7 +11,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create record of comments'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -23,7 +23,7 @@ exports.delete = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to delete record of comments'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -36,7 +36,7 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch comments'
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -49,7 +49,7 @@ exports.aggregateFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to aggregate fetch comments'
-      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -61,7 +61,7 @@ exports.genericUpdate = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to Update comments'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

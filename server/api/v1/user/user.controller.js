@@ -19,6 +19,7 @@ const util = require('util')
 const _ = require('lodash')
 const moment = require('moment')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
+const { updateCompanyUsage } = require('../../global/billingPricing')
 
 exports.index = function (req, res) {
   let userPromise = dataLayer.findOneUserObject(req.user._id)
@@ -50,6 +51,7 @@ exports.index = function (req, res) {
           user.companyId = companyUser.companyId
           user.permissions = permissions
           user.currentPlan = company.planId
+          user.trialPeriod = company.trialPeriod
           user.last4 = company.stripe.last4
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
@@ -58,19 +60,18 @@ exports.index = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to fetch CPWithPlanPop'
-          logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Error at Promise All'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updateMode = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller updateMode')
   // Never delete following variables. They are used in Promise chaining
   let user
   let companyUser
@@ -115,34 +116,28 @@ exports.updateMode = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error at Promise All'
-      logger.serverLog(message, `${TAG}: exports.updateMode`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updateMode`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.updateSkipConnect = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller updateSkipConnect')
-
   dataLayer.findOneAndUpdateUsingQuery({_id: req.user._id}, {skippedFacebookConnect: true}, {new: true})
     .then(user => {
-      logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
       sendSuccessResponse(res, 200, user)
     })
     .catch(err => {
       const message = err || 'Failed to update skip connect'
-      logger.serverLog(message, `${TAG}: exports.updateSkipConnect`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updateSkipConnect`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.fbAppId = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller fbAppId')
   sendSuccessResponse(res, 200, config.facebook.clientID)
 }
 
 exports.updateChecks = function (req, res) {
-  logger.serverLog(TAG, 'Hit the find user controller updateChecks')
-
   dataLayer.findOneUserObject(req.user._id)
     .then(user => {
       // return if user not found
@@ -163,24 +158,21 @@ exports.updateChecks = function (req, res) {
       if (req.body.wizardSeen) user.wizardSeen = req.body.wizardSeen
 
       dataLayer.saveUserObject(user).then(result => {
-        logger.serverLog(TAG, `sending success message ${util.inspect(user)}`)
         sendSuccessResponse(res, 200, user)
       })
     })
     .catch(err => {
       const message = err || 'Failed to fetch user'
-      logger.serverLog(message, `${TAG}: exports.updateChecks`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.updateChecks`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.create = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create user controller index')
   let isTeam = logicLayer.isTeamAccount(req.body)
   logicLayer
     .isEmailAndDomainFound(req.body)
     .then(result => {
-      logger.serverLog(TAG, 'result')
       if (result.email) {
         sendErrorResponse(res, 422, 'This email address already has an account on KiboPush. Contact support for more information.')
       } else if (result.domain) {
@@ -191,24 +183,20 @@ exports.create = function (req, res) {
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
-            PlanDataLayer.findAllPlanObjectsUsingQuery({unique_ID: {$in: ['plan_D', 'plan_B']}})
-              .then(result => {
-                logger.serverLog(TAG, `Plans Found: ${util.inspect(result)}`)
-                // Separate default plans
-                let { defaultPlanTeam, defaultPlanIndividual } = logicLayer.defaultPlans(result)
-                let companyprofileData = logicLayer
-                  .prepareCompanyProfile(
-                    req.body, user._id, isTeam, domain,
-                    isTeam ? defaultPlanTeam : defaultPlanIndividual)
+            PlanDataLayer.findAllPlanObjectsUsingQuery({default: true})
+              .then(plans => {
+                const defaultPlan = plans[0]
+                logger.serverLog(TAG, `Default plan Found: ${util.inspect(defaultPlan)}`)
+                let companyprofileData = logicLayer.prepareCompanyProfile(req.body, user._id, isTeam, domain, defaultPlan)
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
-                    logger.serverLog(TAG, `Company created: ${companySaved}`)
                     let companyUsageData = logicLayer.companyUsageData(companySaved._id)
                     FeatureUsageDataLayer.createCompanyUsage(companyUsageData)
                       .then()
                       .catch(err => {
-                        logger.serverLog(TAG, `Error at: ${err}`)
+                        const message = err || 'Failed to create company Usage'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
                         sendErrorResponse(res, 500, err)
                       })
                     // Create customer on stripe
@@ -216,10 +204,10 @@ exports.create = function (req, res) {
                     let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
                     CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
                       .then(companyUserSaved => {
-                        logger.serverLog(TAG, `Company User created: ${companyUserSaved}`)
+                        logger.serverLog(`Company User created: ${companyUserSaved}`, TAG)
                         PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
                           .then(permissionSaved => {
-                            logger.serverLog(TAG, `Permission Saved: ${permissionSaved}`)
+                            logger.serverLog(`Permission Saved: ${permissionSaved}`, TAG)
                             let token = auth.signToken(user._id)
                             res.cookie('token', token)
                             res.status(201)
@@ -230,13 +218,13 @@ exports.create = function (req, res) {
                           })
                           .catch(err => {
                             const message = err || 'Failed to save Permission'
-                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
                             sendErrorResponse(res, 500, err)
                           })
                       })
                       .catch(err => {
                         const message = err || 'Failed to create company User'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                         sendErrorResponse(res, 500, err)
                       })
                     let tokenString = logicLayer.getRandomString()
@@ -245,7 +233,7 @@ exports.create = function (req, res) {
                       .then()
                       .catch(err => {
                         const message = err || 'Failed to New Token save'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                       })
                     // Sending email using mailchimp if team account
                     if (isTeam) logicLayer.sendEmailUsingMailChimp(req.body)
@@ -253,12 +241,11 @@ exports.create = function (req, res) {
                     let sendgrid = utility.getSendGridObject()
                     let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
                     email = logicLayer.setEmailBody(email, tokenString, req.body)
-                    logger.serverLog(TAG, util.inspect(email))
                     sendgrid.send(email, function (err, json) {
                       if (err) {
                         const message = err || 'Failed to sending email'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
-                      }
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                      }                    
                     })
                     // Sending email to sojharo and sir
                     let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -268,26 +255,26 @@ exports.create = function (req, res) {
                       sendgrid.send(inHouseEmail, function (err, json) {
                         if (err) {
                           const message = err || 'Failed to sending email'
-                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')      
                         }
                       })
                     }
                   })
                   .catch(err => {
                     const message = err || 'Failed to create Profile'
-                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
                     sendErrorResponse(res, 500, err)
                   })
               })
               .catch(err => {
                 const message = err || 'Failed to fetch all plan'
-                logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+                logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, err)
               })
           })
           .catch(err => {
             const message = err || 'Failed to create user'
-            logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, err)
           })
       }
@@ -295,7 +282,6 @@ exports.create = function (req, res) {
 }
 
 exports.joinCompany = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create user controller joinCompany')
   // Never delete following variables. They are used in Promise chaining
   let invitationToken
   let companyUser
@@ -303,6 +289,8 @@ exports.joinCompany = function (req, res) {
   let companyUserSaved
   let permissionSaved
   let tokenString
+  let company
+  let planUsage
 
   InviteAgentTokenDataLayer.findOneCompanyUserObjectUsingQuery({token: req.body.token})
     .then(token => {
@@ -310,11 +298,26 @@ exports.joinCompany = function (req, res) {
       if (!invitationToken) {
         sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
       }
-      return CompanyUserDataLayer
-        .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: invitationToken.companyId})
+    })
+    .then(companyFound => {
+      company = companyFound
+      return FeatureUsageDataLayer.findAllPlanUsageObjects({planId: company.planId})
+    })
+    .then(planUsageFound => {
+      planUsage = planUsageFound[0]
+      return FeatureUsageDataLayer.findAllCompanyUsageObjects({companyId: company._id})
+    })
+    .then(companyUsage => {
+      companyUsage = companyUsage[0]
+      if (planUsage.members !== -1 && companyUsage.members >= planUsage.members) {
+        throw new Error('Members limit has been reached for this company. Please talk to company buyer/admin and ask them to upgrade their plan to let new members join.')
+      } else {
+        return CompanyUserDataLayer
+          .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
+      }
     })
     .then(compUser => {
-      logger.serverLog(TAG, `Found Company User : ${util.inspect(compUser)}`)
       companyUser = compUser
       return dataLayer.findOneUserObject(compUser.userId)
     })
@@ -322,7 +325,6 @@ exports.joinCompany = function (req, res) {
       if (!companyUser || !foundUser) {
         sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
-        logger.serverLog(TAG, `foundUser : ${util.inspect(foundUser)}`)
         let accountData = {
           name: req.body.name,
           email: req.body.email,
@@ -339,7 +341,7 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdUser => {
       user = createdUser
-      logger.serverLog(TAG, `Created User : ${util.inspect(createdUser)}`)
+      updateCompanyUsage(invitationToken.companyId, 'members', 1)
       let companyUserData = {
         companyId: invitationToken.companyId,
         userId: createdUser._id,
@@ -350,16 +352,21 @@ exports.joinCompany = function (req, res) {
     })
     .then(createdCompanyUser => {
       companyUserSaved = createdCompanyUser
-      logger.serverLog(TAG, `Created Company User : ${util.inspect(createdCompanyUser)}`)
-      let permissionsPayload = { companyId: invitationToken.companyId, userId: user._id }
-
-      permissionsPayload = _.merge(permissionsPayload, config.permissions[invitationToken.role] || {})
+      return PermissionDataLayer.findOneRolePermissionObject(invitationToken.role)
+    })
+    .then(rolePermissions => {
+      console.log('role Permission', rolePermissions)
+      let roleBasedPermissions = Object.assign({}, rolePermissions)
+      delete roleBasedPermissions._id
+      delete roleBasedPermissions.__v
+      delete roleBasedPermissions.role
+      let permissionsPayload = _.merge({ companyId: invitationToken.companyId, userId: user._id }, roleBasedPermissions)
+      console.log('After Permission', permissionsPayload)
       return PermissionDataLayer.createUserPermission(permissionsPayload)
     })
     .then(createdPermissions => {
+      console.log('createdPermissions', createdPermissions)
       permissionSaved = createdPermissions
-      logger.serverLog(TAG, `Created Permissions: ${util.inspect(createdPermissions)}`)
-
       let token = auth.signToken(user._id)
       res.clearCookie('email')
       res.clearCookie('companyId')
@@ -380,15 +387,16 @@ exports.joinCompany = function (req, res) {
       return Promise.all([tokenPromise, inviRemPromise, inviAgentTokenRemove])
     })
     .then(resultAll => {
-      logger.serverLog(TAG, `Result All: ${util.inspect(resultAll)}`)
 
       // Sending email via sendgrid
       let sendgrid = utility.getSendGridObject()
       let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
       email = logicLayer.setEmailBody(email, tokenString, req.body)
-      logger.serverLog(TAG, util.inspect(email))
       sendgrid.send(email, function (err, json) {
-        if (err) logger.serverLog(TAG, `Internal Server Error on sending email : ${JSON.stringify(err)}`)
+        if (err) {
+          const message = err || 'Failed to send email'
+          logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error') 
+        }
       })
       // Sending email to sojharo and sir
       let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -396,27 +404,26 @@ exports.joinCompany = function (req, res) {
 
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {
-          if (err) {
-            const message = ` Error on sending email`
-            logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {}, 'error')
+          if (err) { 
+            const message = err || 'Failed to send email'
+            logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
           }
         })
       }
     })
     .catch(err => {
-      const message = `Error at Promise Chaining ${util.inspect(err)}`
-      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {}, 'error')
+      const message = err || `Error at Promise Chaining`
+      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.update = function (req, res) {
-  logger.serverLog(TAG, 'Hit the create user controller index')
-
   let id
-  req.params._id
-    ? id = req.params._id
-    : sendErrorResponse(res, 400, 'ID is not provided')
+  if (req.params._id) id = req.params._id
+  else {
+    sendErrorResponse(res, 400, 'ID is not provided')
+  }
 
   let name = req.body.name ? req.body.name : false
   let email = req.body.email ? req.body.email : false
@@ -430,37 +437,33 @@ exports.update = function (req, res) {
       })
       .catch(err => {
         const message = err || 'Failed to update user'
-        logger.serverLog(message, `${TAG}: exports.update`, req.body, {}, 'error')
+        logger.serverLog(message, `${TAG}: exports.update`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, err)
       })
   } else {
-    logger.serverLog(TAG, `No field provided to update`)
+    logger.serverLog(`No field provided to update`, TAG)
     sendErrorResponse(res, 400, 'Provide field to update')
   }
 }
 
 exports.delete = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete user controller index')
-
   let id
-  req.params._id
-    ? id = req.params._id
-    : sendErrorResponse(res, 500, '', 'ID is not provided')
-
+  if (req.params._id) id = req.params._id
+  else {
+    sendErrorResponse(res, 400, 'ID is not provided')
+  }
   dataLayer.deleteUserObject(id)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to delete user'
-      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.delete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.authenticatePassword = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete user controller authenticatePassword')
-
   dataLayer.findOneUserByEmail(req.body)
     .then(user => {
       if (!user) return res.status(404).json({status: 'failed', description: 'User Not Found'})
@@ -471,25 +474,22 @@ exports.authenticatePassword = function (req, res) {
       }
     })
     .catch(err => {
-      const message = `Error at authenticatePassword user ${util.inspect(err)}`
-      logger.serverLog(message, `${TAG}: exports.authenticatePassword`, req.body, {}, 'error')
+      const message = err || `Failed to authenticatePassword user`
+      logger.serverLog(message, `${TAG}: exports.authenticatePassword`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.addAccountType = function (req, res) {
-  logger.serverLog(TAG, 'Hit the delete user controller addAccountType')
 
   dataLayer.findAllUserObjects()
     .then(users => {
       users.forEach((user, index) => {
         CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
           .then(companyUser => {
-            logger.serverLog(TAG, `Found Company User: ${companyUser}`)
             return CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
           })
           .then(cp => {
-            logger.serverLog(TAG, `Found Company Profile: ${cp}`)
             if (cp.planId.unique_ID === 'plan_A' || cp.planId.unique_ID === 'plan_B') {
               user.accountType = 'individual'
             } else if (cp.planId.unique_ID === 'plan_C' || cp.planId.unique_ID === 'plan_D') {
@@ -498,11 +498,10 @@ exports.addAccountType = function (req, res) {
             return dataLayer.saveUserObject(user)
           })
           .then(savedUser => {
-            logger.serverLog(TAG, `saved User: ${savedUser}`)
           })
           .catch(err => {
             const message = err || 'Error at company addAccountType'
-            logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, err)
           })
         if (index === (users.length - 1)) {
@@ -512,7 +511,7 @@ exports.addAccountType = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error at addAccountType'
-      logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.addAccountType`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -532,12 +531,10 @@ exports.enableDelete = function (req, res) {
         text: ' Delete Confirmation'
       })
       email = logicLayer.setEnableDeleteEmailBody(email, emailText)
-      logger.serverLog(TAG, `email in user_controller${JSON.stringify(email)}`)
       sendgrid.send(email, function (err, json) {
         if (err) {
-          return logger.serverLog(TAG,
-            `Internal Server Error on sending email : ${JSON.stringify(
-              err)}`)
+          const message = err || 'Error at send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')     
         }
       })
       let emailAdmin = new sendgrid.Email({
@@ -550,23 +547,20 @@ exports.enableDelete = function (req, res) {
       logicLayer.setInhouseEnableDeleteEmailBody(emailAdmin, req.user, req.body, deletionDate)
       sendgrid.send(emailAdmin, function (err, json) {
         if (err) {
-          return logger.serverLog(TAG,
-            `Internal Server Error on sending email to Admin : ${JSON.stringify(
-              err)}`)
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
       const message = err || 'Error at update user'
-      logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.cancelDeletion = function (req, res) {
-  logger.serverLog(TAG, 'Disabling GDPR Delete')
-
   let deleteInformation = {delete_option: 'NONE', deletion_date: ''}
   dataLayer.updateUserObject(req.user._id, {deleteInformation}, {new: true})
     .then(updatedUser => {
@@ -582,9 +576,8 @@ exports.cancelDeletion = function (req, res) {
       email = logicLayer.setEnableDeleteEmailBody(email, emailText)
       sendgrid.send(email, function (err, json) {
         if (err) {
-          return logger.serverLog(TAG,
-            `Internal Server Error on sending email : ${JSON.stringify(
-              err)}`)
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       let emailAdmin = new sendgrid.Email({
@@ -597,44 +590,39 @@ exports.cancelDeletion = function (req, res) {
       emailAdmin = logicLayer.setInhouseCancelDeleteEmailBody(emailAdmin, req.user)
       sendgrid.send(emailAdmin, function (err, json) {
         if (err) {
-          return logger.serverLog(TAG,
-            `Internal Server Error on sending email to Admin : ${JSON.stringify(
-              err)}`)
+          const message = err || 'Failed to send email'
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       sendSuccessResponse(res, 200, updatedUser)
     })
     .catch(err => {
       const message = err || 'Error at update user'
-      logger.serverLog(message, `${TAG}: exports.cancelDeletion`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.cancelDeletion`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.genericUpdate = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   dataLayer.genericUpdateUserObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to update user'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.fetchGeneral = function (req, res) {
-  logger.serverLog(TAG, 'generic update endpoint')
-
   dataLayer.findAllUserObjectsUsingQuery(req.body)
     .then(users => {
       sendSuccessResponse(res, 200, users)
     })
     .catch(err => {
-      const message = err || 'Failed to fetch All  user'
-      logger.serverLog(message, `${TAG}: exports.fetchGeneral`, req.body, {}, 'error')
+      const message = err || 'Failed to find All users'
+      logger.serverLog(message, `${TAG}: exports.fetchGeneral`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -642,23 +630,21 @@ exports.fetchGeneral = function (req, res) {
 exports.updatePicture = function (req, res) {
   let userFbId = req.body.user.facebookInfo.fbId
   let userFbToken = req.body.user.facebookInfo.fbToken
-  logger.serverLog(TAG, `https://graph.facebook.com/v6.0/${userFbId}/picture`)
   needle.get(
     `https://graph.facebook.com/v3.2/${userFbId}?access_token=${userFbToken}&fields=picture`,
     (err, resp) => {
       if (err) {
-        const message = `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture ${JSON.stringify(err)}`
-        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
+        const message = err || `error in retrieving https://graph.facebook.com/v6.0/${userFbId}/picture`
+        logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')
       }
       if (resp.body.picture && resp.body.picture.data && resp.body.picture.data.url) {
         dataLayer.genericUpdateUserObject({_id: req.body.user._id}, {'facebookInfo.profilePic': resp.body.picture.data.url}, {})
           .then(updated => {
-            logger.serverLog(TAG, `Succesfully updated user's profile picture ${req.body.user._id}`)
             sendSuccessResponse(res, 200, resp.body.picture.data.url)
           })
           .catch(err => {
             const message = err || 'Failed to update user'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, err)
           })
       } else {
@@ -668,26 +654,23 @@ exports.updatePicture = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to update user'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {}, 'error')
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')
             sendErrorResponse(res, 500, err)
           })
       }
     })
 }
 exports.aggregate = function (req, res) {
-  logger.serverLog(TAG, `Hit the aggregate endpoint for subscriber controller: ${util.inspect(req.body)}`)
   let query = logicLayer.validateAndConvert(req.body)
-  logger.serverLog(TAG, `after conversion query ${util.inspect(query)}`)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
   dataLayer.aggregateInfo(query)
     .then(result => {
-      logger.serverLog(TAG, `aggregate endpoint for subscriber found result ${util.inspect(result)}`)
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Failed to fetch aggregateInfo'
-      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.aggregate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -698,7 +681,7 @@ exports.distinct = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to fetch'
-      logger.serverLog(message, `${TAG}: exports.distinct`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.distinct`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -714,7 +697,7 @@ exports.markAccountAsDisabled = (req, res) => {
     })
     .catch(err => {
       const message = err || 'Failed to update user'
-      logger.serverLog(message, `${TAG}: exports.markAccountAsDisabled`, req.body, {}, 'error')
+      logger.serverLog(message, `${TAG}: exports.markAccountAsDisabled`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }

@@ -32,7 +32,7 @@ const UserSchema = new Schema({
   showIntegrations: {type: Boolean, default: false},
   connectFacebook: {type: Boolean, default: false},
   deleteInformation: Schema.Types.Mixed, // GDPR INFO
-  platform: {type: String},
+  platform: {type: String, default: 'messenger'},
   disableMember: {type: Boolean, default: false},
   actingAsUser: Schema.Types.Mixed,
   lastLoginIPAddress: String,
@@ -47,7 +47,6 @@ UserSchema.virtual('password').set(function (password) {
   this._password = password
   this.salt = this.makeSalt()
   this.hashedPassword = this.encryptPassword(password)
-  logger.serverLog('UserModel Virtual Password: ', password)
 }).get(function () {
   return this._password
 })

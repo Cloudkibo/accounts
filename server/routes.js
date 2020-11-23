@@ -50,6 +50,7 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
+  app.use('/api/v1/addOns', require('./api/v1/addOns'))
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
@@ -98,7 +99,8 @@ module.exports = function (app) {
   // })
 
   // signup page
-  app.get('/signup', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup/team', function (req, res) {
     res.render('layouts/index', {
       buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
@@ -131,9 +133,9 @@ module.exports = function (app) {
   })
 
   // signup page
-  app.get('/signup/team', function (req, res) {
-    res.render('layouts/signup', {
-      individual: false,
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup', function (req, res) {
+    res.render('layouts/signup', {individual: false,
       data: [
         { name: 'Customer Engagement', value: 'engage' },
         { name: 'Customer Chat', value: 'chat' },
@@ -189,14 +191,15 @@ module.exports = function (app) {
     app.use(Sentry.Handlers.requestHandler())
 
     app.use(function (err, req, res, next) {
-      console.error(err.stack)
-      logger.serverLog(TAG, err.stack)
-      logger.serverLog(TAG, err.message)
+      logger.serverLog(err.stack, TAG )
+      logger.serverLog(err.message, TAG)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
         return res.status(401).json({ status: 'Unauthorized', payload: 'jwt expired' })
       }
-      res.status(500).send('Something broke! Please go to home page')
+      let message = err || 'Something broke! Please go to home page'
+      logger.serverLog(message, `${TAG}: MiddleWare`, req.body, {user: req.user}, 'error')
+      res.status(500).send(message)
       /**
        * Further logic for error handling.
        * You may integrate with Crash reporting tool like Raven.
