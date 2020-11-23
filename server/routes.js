@@ -55,6 +55,7 @@ module.exports = function (app) {
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
   app.use('/api/v1/bigcommerce', require('./api/v1/bigcommerceintegrations'))
   app.use('/api/v1/scripts', require('./api/scripts'))
+  app.use('/api/v1/messenger_components', require('./api/v1/messenger_components'))
 
   // auth middleware go here
   app.use('/auth', require('./auth'))
