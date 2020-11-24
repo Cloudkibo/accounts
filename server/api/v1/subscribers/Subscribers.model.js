@@ -91,7 +91,8 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: false
   },
-  agent_activity_time: { type: Date }
+  agent_activity_time: { type: Date },
+  awaitingQuickReplyPayload: { type: Schema.Types.Mixed }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
