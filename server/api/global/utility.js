@@ -6,7 +6,7 @@ const TAG = '/api/global/utility.js'
 
 const attachBuyerInfo = function () {
   return compose().use((req, res, next) => {
-    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({ companyId: req.user.companyId, role: 'buyer' })
+    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({ companyId: req.actingAsUser ? req.actingAsUser.companyId : req.user.companyId, role: 'buyer' })
       .then(buyerInfo => {
         if (!buyerInfo) {
           const message = 'Failed to fetch buyerInfo'
