@@ -4,7 +4,7 @@ const UserDataLayer = require('./../v1/user/user.datalayer')
 
 const attachBuyerInfo = function () {
   return compose().use((req, res, next) => {
-    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({ companyId: req.user.companyId, role: 'buyer' })
+    CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({companyId: req.actingAsUser ? req.actingAsUser.companyId : req.user.companyId, role: 'buyer'})
       .then(buyerInfo => {
         if (!buyerInfo) {
           return res.status(404).json({
