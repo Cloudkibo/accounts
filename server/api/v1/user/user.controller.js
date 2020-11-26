@@ -419,7 +419,8 @@ exports.joinCompany = function (req, res) {
     })
     .catch(err => {
       const message = err || `Error at Promise Chaining`
-      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
+      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user},
+        message.message && message.message.includes('invalid or expired') ? 'info' : 'error')
       sendErrorResponse(res, 500, err.message ? err.message : err)
     })
 }
