@@ -196,7 +196,7 @@ exports.create = function (req, res) {
                       .then()
                       .catch(err => {
                         const message = err || 'Failed to create company Usage'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                         sendErrorResponse(res, 500, err)
                       })
                     // Create customer on stripe
@@ -218,7 +218,7 @@ exports.create = function (req, res) {
                           })
                           .catch(err => {
                             const message = err || 'Failed to save Permission'
-                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
+                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                             sendErrorResponse(res, 500, err)
                           })
                       })
@@ -245,7 +245,7 @@ exports.create = function (req, res) {
                       if (err) {
                         const message = err || 'Failed to sending email'
                         logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                      }                    
+                      }
                     })
                     // Sending email to sojharo and sir
                     let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
@@ -255,14 +255,14 @@ exports.create = function (req, res) {
                       sendgrid.send(inHouseEmail, function (err, json) {
                         if (err) {
                           const message = err || 'Failed to sending email'
-                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')      
+                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                         }
                       })
                     }
                   })
                   .catch(err => {
                     const message = err || 'Failed to create Profile'
-                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')    
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                     sendErrorResponse(res, 500, err)
                   })
               })
@@ -294,18 +294,24 @@ exports.joinCompany = function (req, res) {
     .then(token => {
       invitationToken = token
       if (!invitationToken) {
-        sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
+        throw new Error('Invitation token invalid or expired. Please contact admin to invite you again.')
+        // sendErrorResponse(res, 404, 'Invitation token invalid or expired. Please contact admin to invite you again.')
       }
       return CompanyUserDataLayer
         .findOneCompanyUserObjectUsingQueryPoppulate({companyId: invitationToken.companyId, role: 'buyer'})
     })
     .then(compUser => {
-      companyUser = compUser
-      return dataLayer.findOneUserObject(compUser.userId)
+      if (!compUser) {
+        throw new Error('company user not found')
+      } else {
+        companyUser = compUser
+        return dataLayer.findOneUserObject(compUser.userId)
+      }
     })
     .then(foundUser => {
       if (!companyUser || !foundUser) {
-        sendErrorResponse(res, 404, '', 'user or company user not found')
+        throw new Error('user not found')
+        // sendErrorResponse(res, 404, '', 'user or company user not found')
       } else {
         let accountData = {
           name: req.body.name,
@@ -368,7 +374,7 @@ exports.joinCompany = function (req, res) {
       sendgrid.send(email, function (err, json) {
         if (err) {
           const message = err || 'Failed to send email'
-          logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error') 
+          logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
         }
       })
       // Sending email to sojharo and sir
@@ -377,7 +383,7 @@ exports.joinCompany = function (req, res) {
 
       if (config.env === 'production') {
         sendgrid.send(inHouseEmail, function (err, json) {
-          if (err) { 
+          if (err) {
             const message = err || 'Failed to send email'
             logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
           }
@@ -386,8 +392,9 @@ exports.joinCompany = function (req, res) {
     })
     .catch(err => {
       const message = err || `Error at Promise Chaining`
-      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user}, 'error')
-      sendErrorResponse(res, 500, err)
+      logger.serverLog(message, `${TAG}: exports.joinCompany`, req.body, {user: req.user},
+        message.message && message.message.includes('invalid or expired') ? 'info' : 'error')
+      sendErrorResponse(res, 500, err.message ? err.message : err)
     })
 }
 
@@ -507,7 +514,7 @@ exports.enableDelete = function (req, res) {
       sendgrid.send(email, function (err, json) {
         if (err) {
           const message = err || 'Error at send email'
-          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')     
+          return logger.serverLog(message, `${TAG}: exports.enableDelete`, req.body, {user: req.user}, 'error')
         }
       })
       let emailAdmin = new sendgrid.Email({
