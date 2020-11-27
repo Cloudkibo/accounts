@@ -336,3 +336,30 @@ exports.normalizeTagsData = (req, res) => {
       return res.status(500).json({status: 'Failed', payload: err})
     })
 }
+exports.correctTagsSubscribers = (req, res) => {
+  TagSubscribersModel.aggregate([
+    { $lookup: {from: 'tags', localField: 'tagId', foreignField: '_id', as: 'tagId'} },
+    { $unwind: { path: '$tagId', preserveNullAndEmptyArrays: true } },
+    { $match: {'tagId': {$exists: false}} },
+    { $limit: req.body.limit }
+  ]).exec()
+    .then(tagSubscribers => {
+      console.log('tagSubscribers got', tagSubscribers.length)
+      if (tagSubscribers.length > 0) {
+        let tagSubscriberIds = tagSubscribers.map((t) => t._id)
+        TagSubscribersModel.deleteMany({_id: {$in: tagSubscriberIds}})
+          .then(result => {
+            console.log('result', result)
+            return res.status(200).json({status: 'success', payload: 'Deleted successfully!'})
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'success', payload: err})
+          })
+      } else {
+        return res.status(200).json({status: 'success', payload: 'No tags subscribers found!'})
+      }
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'success', payload: err})
+    })
+}
