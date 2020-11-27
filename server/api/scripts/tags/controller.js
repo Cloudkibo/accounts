@@ -344,12 +344,10 @@ exports.correctTagsSubscribers = (req, res) => {
     { $limit: req.body.limit }
   ]).exec()
     .then(tagSubscribers => {
-      console.log('tagSubscribers got', tagSubscribers.length)
       if (tagSubscribers.length > 0) {
         let tagSubscriberIds = tagSubscribers.map((t) => t._id)
         TagSubscribersModel.deleteMany({_id: {$in: tagSubscriberIds}})
           .then(result => {
-            console.log('result', result)
             return res.status(200).json({status: 'success', payload: 'Deleted successfully!'})
           })
           .catch(err => {
