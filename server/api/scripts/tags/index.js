@@ -8,5 +8,6 @@ router.post('/removeDefaultTagSubscribers', controller.removeDefaultTagSubscribe
 router.delete('/removeDefaultTags', controller.removeDefaultTags)
 
 router.get('/normalizeTagsData', controller.normalizeTagsData)
+router.post('/correctTagsSubscribers', controller.correctTagsSubscribers)
 
 module.exports = router
