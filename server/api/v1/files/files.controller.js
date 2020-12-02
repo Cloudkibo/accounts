@@ -197,17 +197,13 @@ function deleteFile (id) {
 
 exports.download = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/userfiles')
-  // try {
-  //   res.sendfile(req.params.id, {root: dir})
-  // } catch (err) {
-  //   logger.serverLog(TAG,
-  //     Inside Download file, err = ${JSON.stringify(err)})
-  //   sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
-  // }
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
-      logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'error')
-      res.status(err.status).end()
+      if (err && err.message === 'Request aborted') {
+        res.status(err.status).end()
+      } else {
+        logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'error')
+      }
     } else {
       logger.serverLog(
         `Inside Download file, req.params.id: = ${req.params.id}`, TAG)
