@@ -32,7 +32,8 @@ let RolePermissionsSchema = new Schema({
   pollsPermission: Boolean,
   subscriberPermission: Boolean,
   surveySermission: Boolean,
-  apiPermission: Boolean
+  apiPermission: Boolean,
+  slaDashboard: Boolean
 })
 
 module.exports = mongoose.model('role_permissions', RolePermissionsSchema)
