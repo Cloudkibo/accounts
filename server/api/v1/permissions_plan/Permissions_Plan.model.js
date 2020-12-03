@@ -36,7 +36,8 @@ var PermissionsSchema = new Schema({
   kibopush_widget: Boolean,
   webhook: Boolean,
   survey_templates: Boolean,
-  poll_templates: Boolean
+  poll_templates: Boolean,
+  sla_dashboard: Boolean
 })
 
 module.exports = mongoose.model('permissions_plan', PermissionsSchema)
