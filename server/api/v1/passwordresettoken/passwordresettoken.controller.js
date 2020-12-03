@@ -131,7 +131,7 @@ exports.change = function (req, res) {
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       } else {
-        sendErrorResponse(res, 404, '', 'Wrong current password.')
+        sendErrorResponse(res, 404, 'Wrong current password.')
       }
     })
     .catch(err => {
