@@ -75,6 +75,7 @@ const subscriberSchema = new Schema({
     default: false
   },
   agent_activity_time: { type: Date },
+  awaitingQuickReplyPayload: { type: Schema.Types.Mixed },
   usingChatBot: {type: Boolean, default: false},
   disabledByPlan: {type: Boolean, default: false}
 })
