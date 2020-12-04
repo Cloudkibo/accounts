@@ -127,7 +127,7 @@ exports.updatePicture = function (req, res) {
           })
           .catch(err => {
             const message = err || 'Failed to update subscriber record'
-            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')     
+            logger.serverLog(message, `${TAG}: exports.updatePicture`, req.body, {user: req.user}, 'error')      
             sendErrorResponse(res, 500, err)
           })
       } else {
