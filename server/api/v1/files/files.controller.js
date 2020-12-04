@@ -11,7 +11,6 @@ const youtubedl = require('youtube-dl')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 
 exports.index = function (req, res) {
-  console.log('req.body in index', req.body)
   var today = new Date()
   var uid = crypto.randomBytes(5).toString('hex')
   var serverPath = 'f' + uid + '' + today.getFullYear() + '' +
@@ -34,7 +33,6 @@ exports.index = function (req, res) {
         logger.serverLog('internal server error', `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, '', 'internal server error' + JSON.stringify(err))
       }
-      console.log('serverPath', serverPath)
       if (req.body.pages && req.body.pages !== 'undefined' && req.body.pages.length > 0) {
         // saving this file to send files with its original name
         // it will be deleted once it is successfully uploaded to facebook
@@ -65,7 +63,6 @@ exports.index = function (req, res) {
                   }),
                   'filedata': fileReaderStream
                 }
-                console.log('messageData', messageData)
                 request(
                   {
                     'method': 'POST',
@@ -74,13 +71,12 @@ exports.index = function (req, res) {
                     'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
                   },
                   function (err, resp) {
-                    // deleteFile(req.files.file.name)
+                    deleteFile(req.files.file.name)
                     if (err) {
                       const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(err)
                       logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else {
-                      console.log('req.body.error', resp.body)
                       logger.serverLog(
                         `file uploaded on Facebook index ${JSON.stringify(resp.body)}`, `${TAG}: exports.index`)
                       let payload = {
@@ -112,83 +108,79 @@ exports.index = function (req, res) {
 }
 
 exports.uploadForTemplate = function (req, res) {
-  console.log('req.body in uploadForTemplate', req.body)
-  // let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
-  // console.log('dir', dir)
-  // if (req.body.pages && req.body.pages.length > 0) {
-  //   // saving this file to send files with its original name
-  //   // it will be deleted once it is successfully uploaded to facebook
-  //   let readData = fs.createReadStream(dir + '/userfiles/' + req.body.id)
-  //   let writeData = fs.createWriteStream(dir + '/userfiles/' + req.body.name)
-  //   readData.pipe(writeData)
-  //   pageDataLayer.findOnePageObject(req.body.pages[0])
-  //     .then(page => {
-  //       needle.get(
-  //         `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
-  //         (err, resp2) => {
-  //           if (err) {
-  //             const message = 'unable to get page access_token: ' + JSON.stringify(err)
-  //             logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
-  //             sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
-  //           }
-  //           let pageAccessToken = resp2.body.access_token
-  //           console.log('pageAccessToken', pageAccessToken)
-  //           let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
-  //           const messageData = {
-  //             'message': JSON.stringify({
-  //               'attachment': {
-  //                 'type': req.body.componentType,
-  //                 'payload': {
-  //                   'is_reusable': true
-  //                 }
-  //               }
-  //             }),
-  //             'filedata': fileReaderStream
-  //           }
-  //           request(
-  //             {
-  //               'method': 'POST',
-  //               'json': true,
-  //               'formData': messageData,
-  //               'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
-  //             },
-  //             function (err, resp) {
-  //               deleteFile(req.body.name)
-  //               if (err) {
-  //                 console.log('err from facebook', err)
-  //                 logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
-  //                 sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
-  //               } else if (resp.body) {
-  //                 if (resp.body.error) {
-  //                   console.log('err from facebook1', resp.body.error)
-  //                   logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
-  //                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
-  //                 } else {
-  //                   logger.serverLog(
-  //                     `file uploaded on Facebook template ${JSON.stringify(resp.body)}`, TAG)
-  //                   let payload = {
-  //                     id: req.body.id,
-  //                     attachment_id: resp.body.attachment_id,
-  //                     name: req.body.name,
-  //                     url: req.body.url
-  //                   }
-  //                   sendSuccessResponse(res, 200, payload)
-  //                   if (req.body.deleteLater) {
-  //                     deleteFile(req.body.id)
-  //                   }
-  //                 }
-  //               }
-  //             })
-  //         })
-  //     })
-  //     .catch(error => {
-  //       const message = error || '`Failed to fetch page'
-  //       logger.serverLog(message, `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
-  //       sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
-  //     })
-  // } else {
-  //   sendErrorResponse(res, 500, `Failed to upload`)
-  // }
+  let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
+  if (req.body.pages && req.body.pages.length > 0) {
+    // saving this file to send files with its original name
+    // it will be deleted once it is successfully uploaded to facebook
+    let readData = fs.createReadStream(dir + '/userfiles/' + req.body.id)
+    let writeData = fs.createWriteStream(dir + '/userfiles/' + req.body.name)
+    readData.pipe(writeData)
+    pageDataLayer.findOnePageObject(req.body.pages[0])
+      .then(page => {
+        needle.get(
+          `https://graph.facebook.com/v6.0/${page.pageId}?fields=access_token&access_token=${page.userId.facebookInfo.fbToken}`,
+          (err, resp2) => {
+            if (err) {
+              const message = 'unable to get page access_token: ' + JSON.stringify(err)
+              logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
+              sendErrorResponse(res, 500, '', 'unable to get page access_token: ' + JSON.stringify(err))
+            }
+            let pageAccessToken = resp2.body.access_token
+
+            let fileReaderStream = fs.createReadStream(dir + '/userfiles/' + req.body.name)
+            const messageData = {
+              'message': JSON.stringify({
+                'attachment': {
+                  'type': req.body.componentType,
+                  'payload': {
+                    'is_reusable': true
+                  }
+                }
+              }),
+              'filedata': fileReaderStream
+            }
+            request(
+              {
+                'method': 'POST',
+                'json': true,
+                'formData': messageData,
+                'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
+              },
+              function (err, resp) {
+                deleteFile(req.body.name)
+                if (err) {
+                  logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
+                  sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
+                } else if (resp.body) {
+                  if (resp.body.error) {
+                    logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
+                    sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(resp.body.error))
+                  } else {
+                    logger.serverLog(
+                      `file uploaded on Facebook template ${JSON.stringify(resp.body)}`, TAG)
+                    let payload = {
+                      id: req.body.id,
+                      attachment_id: resp.body.attachment_id,
+                      name: req.body.name,
+                      url: req.body.url
+                    }
+                    sendSuccessResponse(res, 200, payload)
+                    if (req.body.deleteLater) {
+                      deleteFile(req.body.id)
+                    }
+                  }
+                }
+              })
+          })
+      })
+      .catch(error => {
+        const message = error || '`Failed to fetch page'
+        logger.serverLog(message, `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
+        sendErrorResponse(res, 500, `Failed to fetch page ${JSON.stringify(error)}`)
+      })
+  } else {
+    sendErrorResponse(res, 500, `Failed to upload`)
+  }
 }
 
 function deleteFile (id) {
