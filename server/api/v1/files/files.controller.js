@@ -59,11 +59,11 @@ exports.index = function (req, res) {
                     'attachment': {
                       'type': req.body.componentType,
                       'payload': {
-                        'is_reusable': true,
-                        'url': `${config.domain}/api/v1/files/download/${serverPath}`
+                        'is_reusable': true
                       }
                     }
-                  })
+                  }),
+                  'filedata': fileReaderStream
                 }
                 console.log('messageData', messageData)
                 request(
