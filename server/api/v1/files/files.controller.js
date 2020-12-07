@@ -220,6 +220,7 @@ exports.downloadYouTubeVideo = function (req, res) {
       sendSuccessResponse(res, 200, video)
     })
     .catch(err => {
+      console.log('in catch', err)
       const message = err || 'Failed to downloadYouTubeVideo'
       logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
       sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
@@ -232,7 +233,10 @@ function downloadVideo (data) {
     let video = youtubedl(data.url, ['--format=18'])
     let stream1
     let stream2
-
+    video.on('error', function error (err) {
+      console.log('error 2:', err)
+      reject(err)
+    })
     video.on('info', (info) => {
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
