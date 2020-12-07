@@ -221,7 +221,9 @@ exports.downloadYouTubeVideo = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to downloadYouTubeVideo'
-      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
+      if (message === 'ERROR: wHFflWvii3M: YouTube said: Unable to extract video data') {
+        logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
+      }
       sendErrorResponse(res, 500, '', 'Unable to process video link. Please try again.')
     })
 }
