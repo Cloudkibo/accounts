@@ -221,8 +221,10 @@ exports.downloadYouTubeVideo = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to downloadYouTubeVideo'
-      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
-      sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
+      if (message !== 'ERROR: wHFflWvii3M: YouTube said: Unable to extract video data') {
+        logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
+      }
+      sendErrorResponse(res, 500, '', 'Unable to process video link. Please try again.')
     })
 }
 
@@ -233,6 +235,10 @@ function downloadVideo (data) {
     let stream1
     let stream2
 
+    video.on('error', function error (err) {
+      let error = err.stderr ? err.stderr : err
+      reject(error)
+    })
     video.on('info', (info) => {
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
