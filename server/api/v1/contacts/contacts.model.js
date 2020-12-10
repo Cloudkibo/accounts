@@ -27,7 +27,11 @@ let contacts = new Schema({
     type: Boolean,
     default: false
   },
-  listIds: [String]
+  listIds: [String],
+  waitingForBroadcastResponse: {
+    status: Boolean,
+    broadcastId: String
+  }
 })
 
 module.exports = mongoose.model('contacts', contacts)
