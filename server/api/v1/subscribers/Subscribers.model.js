@@ -57,6 +57,8 @@ const subscriberSchema = new Schema({
     type: String,
     default: 'new'
   },
+  openedAt: { type: Date, default: Date.now },
+  resolvedAt: { type: Date },
   last_activity_time: {
     type: Date,
     default: Date.now
@@ -78,6 +80,7 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: true
   },
+  pendingAt: { type: Date },
   unreadCount: { type: Number, default: 0 },
   messagesCount: { type: Number, default: 0 },
   awaitingCommentReply: { type: Schema.Types.Mixed },
@@ -91,9 +94,7 @@ const subscriberSchema = new Schema({
     type: Boolean,
     default: false
   },
-  agent_activity_time: { type: Date },
-  openedAt: { type: Date, default: Date.now },
-  resolvedAt: { type: Date }
+  agent_activity_time: { type: Date }
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)

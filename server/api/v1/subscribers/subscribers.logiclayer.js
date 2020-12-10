@@ -28,6 +28,16 @@ exports.convertIdtoObjectId = (body) => {
   return newBody
 }
 
+const _convertIntoDatetime = (field) => {
+  if (typeof field === 'string') {
+    return new Date(field)
+  } else if (typeof field === 'object') {
+    if (field.$lt) field.$lt = new Date(field.$lt)
+    else if (field.$gt) field.$gt = new Date(field.$gt)
+    return field
+  }
+}
+
 exports.validateAndConvert = (body) => {
   let newBody = body
   body.forEach((obj, index) => {
@@ -89,7 +99,13 @@ exports.validateAndConvert = (body) => {
       if (obj.$match.datetime.$lt) {
         newBody[index].$match.datetime.$lt = new Date(newBody[index].$match.datetime.$lt)
       }
+      if (obj.$match.datetime.$gt) {
+        newBody[index].$match.datetime.$gt = new Date(newBody[index].$match.datetime.$gt)
+      }
     }
+    if (obj.$match && obj.$match.pendingAt) newBody[index].$match.pendingAt = _convertIntoDatetime(obj.$match.pendingAt)
+    if (obj.$match && obj.$match.openedAt) newBody[index].$match.openedAt = _convertIntoDatetime(obj.$match.openedAt)
+    if (obj.$match && obj.$match.resolvedAt) newBody[index].$match.resolvedAt = _convertIntoDatetime(obj.$match.resolvedAt)
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
         if (object.companyId) {
