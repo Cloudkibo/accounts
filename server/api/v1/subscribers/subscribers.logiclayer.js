@@ -106,6 +106,7 @@ exports.validateAndConvert = (body) => {
     if (obj.$match && obj.$match.pendingAt) newBody[index].$match.pendingAt = _convertIntoDatetime(obj.$match.pendingAt)
     if (obj.$match && obj.$match.openedAt) newBody[index].$match.openedAt = _convertIntoDatetime(obj.$match.openedAt)
     if (obj.$match && obj.$match.resolvedAt) newBody[index].$match.resolvedAt = _convertIntoDatetime(obj.$match.resolvedAt)
+    if (obj.$match && obj.$match.assignedAt) newBody[index].$match.assignedAt = _convertIntoDatetime(obj.$match.assignedAt)
     if (obj.$match && obj.$match.$and) {
       obj.$match.$and.forEach((object, index1) => {
         if (object.companyId) {
