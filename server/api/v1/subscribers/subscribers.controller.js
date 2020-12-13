@@ -83,7 +83,9 @@ exports.query = function (req, res) {
 }
 
 exports.aggregate = function (req, res) {
+  console.log('before req.body', req.body)
   let query = logicLayer.validateAndConvert(req.body)
+  console.log('After req.body', query)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.datetime)}`)
   //   logger.serverLog(TAG, `after conversion query ${util.inspect(query[0].$match.pageId)}`)
   subscribersDataLayer.aggregateInfo(query)
