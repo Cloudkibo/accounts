@@ -77,7 +77,6 @@ exports.index = function (req, res) {
                       logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
                     } else if (resp.body && resp.body.error) {
-                      console.log('resp.body', resp.body)
                       const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(resp.body.error)
                       logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
                       sendErrorResponse(res, 500, '', resp.body.error.message)
