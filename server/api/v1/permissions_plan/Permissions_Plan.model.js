@@ -31,6 +31,7 @@ var PermissionsSchema = new Schema({
   webhook: Boolean,
   survey_templates: Boolean,
   poll_templates: Boolean,
+  sla_dashboard: Boolean,
   custom_fields: Boolean,
   tags: Boolean,
   unsubscribe_subscribers: Boolean,
