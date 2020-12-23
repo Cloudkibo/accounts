@@ -76,6 +76,10 @@ exports.index = function (req, res) {
                       const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(err)
                       logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
                       sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
+                    } else if (resp.body && resp.body.error) {
+                      const message = 'unable to upload attachment on Facebook, sending response ' + JSON.stringify(resp.body.error)
+                      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
+                      sendErrorResponse(res, 500, '', resp.body.error.message)
                     } else {
                       logger.serverLog(
                         `file uploaded on Facebook index ${JSON.stringify(resp.body)}`, `${TAG}: exports.index`)
@@ -206,8 +210,11 @@ exports.download = function (req, res) {
   // }
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
-      logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'error')
-      res.status(err.status).end()
+      if (err && (err === 'Request aborted' || err.message === 'Request aborted' || err.message.includes('EPIPE'))) {
+        res.status(err.status).end()
+      } else {
+        logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'error')
+      }
     } else {
       logger.serverLog(
         `Inside Download file, req.params.id: = ${req.params.id}`, TAG)
@@ -221,8 +228,10 @@ exports.downloadYouTubeVideo = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to downloadYouTubeVideo'
-      logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
-      sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
+      if (message !== 'ERROR: wHFflWvii3M: YouTube said: Unable to extract video data') {
+        logger.serverLog(message, `${TAG}: exports.downloadYouTubeVideo`, req.body, {user: req.user}, 'error')
+      }
+      sendErrorResponse(res, 500, '', 'Unable to process video link. Please try again.')
     })
 }
 
@@ -233,6 +242,10 @@ function downloadVideo (data) {
     let stream1
     let stream2
 
+    video.on('error', function error (err) {
+      let error = err.stderr ? err.stderr : err
+      reject(error)
+    })
     video.on('info', (info) => {
       let today = new Date()
       let uid = crypto.randomBytes(5).toString('hex')
