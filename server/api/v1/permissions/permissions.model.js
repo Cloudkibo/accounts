@@ -115,7 +115,8 @@ var UserPermissionsSchema = new Schema({
   create_chatbot_automation: {type: Boolean, default: true},
   update_chatbot_automation: {type: Boolean, default: true},
   configure_chatbot_automation: {type: Boolean, default: true},
-  muteNotifications: [String]
+  muteNotifications: [String],
+  sla_dashboard: Boolean
 })
 
 module.exports = mongoose.model('permissions', UserPermissionsSchema)
