@@ -31,6 +31,7 @@ var UserPermissionsSchema = new Schema({
   subscriberPermission: { type: Boolean, default: true },
   surveyPermission: { type: Boolean, default: true },
   apiPermission: { type: Boolean, default: true },
+  configure_message_alerts: { type: Boolean, default: true },
   muteNotifications: [String]
 })
 
