@@ -32,7 +32,7 @@ const UserSchema = new Schema({
   showIntegrations: {type: Boolean, default: false},
   connectFacebook: {type: Boolean, default: false},
   deleteInformation: Schema.Types.Mixed, // GDPR INFO
-  platform: {type: String},
+  platform: {type: String, default: 'messenger'},
   disableMember: {type: Boolean, default: false},
   actingAsUser: Schema.Types.Mixed,
   lastLoginIPAddress: String,
