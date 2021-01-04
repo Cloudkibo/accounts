@@ -17,8 +17,9 @@ let contacts = new Schema({
   unSubscribedBy: { type: String, default: 'subscriber' },
   lastMessagedAt: { type: Date },
   lastMessageSentByBot: { type: Schema.Types.Mixed },
-  commerceCustomer: { type: Schema.Types.Mixed },
   chatbotContext: {type: 'String'},
+  commerceCustomer: { type: Schema.Types.Mixed }, // default one is for big commerce
+  commerceCustomerShopify: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
   activeChatbotId: {type: String},
   activeChatbotBuilt: {type: String}
