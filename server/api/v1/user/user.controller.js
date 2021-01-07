@@ -12,6 +12,7 @@ const PermissionPlanDataLayer = require('./../permissions_plan/permissions_plan.
 const VertificationTokenDataLayer = require('./../verificationtoken/verificationtoken.datalayer')
 const InviteAgentTokenDataLayer = require('./../inviteagenttoken/inviteagenttoken.datalayer')
 const InvitationDataLayer = require('./../invitations/invitations.datalayer')
+const CompanyPreferencesDataLayer = require('./../companyPreferences/companyPreferences.datalayer')
 const auth = require('./../../../auth/auth.service')
 const TAG = '/api/v1/user/user.controller.js'
 const needle = require('needle')
@@ -191,6 +192,16 @@ exports.create = function (req, res) {
                 CompanyProfileDataLayer
                   .createProfileObject(companyprofileData)
                   .then(companySaved => {
+                    let companyPreferences = logicLayer.prepareCompanyPreference(companySaved._id)
+                    CompanyPreferencesDataLayer.createCompanyPreferencesObject(companyPreferences)
+                      .then(res => {
+                        logger.serverLog('Company preferences saved', `${TAG}: exports.create`, req.body, {res, companyPreferences}, 'debug')
+                      })
+                      .catch(err => {
+                        const message = err || 'Failed to create company preference'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                        sendErrorResponse(res, 500, err)
+                      })
                     let companyUsageData = logicLayer.companyUsageData(companySaved._id)
                     FeatureUsageDataLayer.createCompanyUsage(companyUsageData)
                       .then()
