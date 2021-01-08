@@ -95,7 +95,23 @@ const prepareCompanyProfile = (body, userId, isTeam, domain, defaultPlan) => {
     }
   }
 }
-
+const prepareCompanyPreference = (companyId) => {
+  return {
+    companyId: companyId,
+    unresolveSessionAlert: {
+      enabled: false,
+      notification_interval: 30,
+      interval_unit: 'mins',
+      assignedMembers: 'buyer'
+    },
+    pendingSessionAlert: {
+      enabled: false,
+      notification_interval: 5,
+      interval_unit: 'mins',
+      assignedMembers: 'buyer'
+    }
+  }
+}
 const companyUsageData = (companyId) => {
   return {
     companyId: companyId,
@@ -390,6 +406,7 @@ exports.prepareCompanyProfile = prepareCompanyProfile
 exports.companyUsageData = companyUsageData
 exports.createCustomerOnStripe = createCustomerOnStripe
 exports.prepareCompanyUser = prepareCompanyUser
+exports.prepareCompanyPreference = prepareCompanyPreference
 exports.sendEmailUsingMailChimp = sendEmailUsingMailChimp
 exports.emailHeader = emailHeader
 exports.inHouseEmailHeader = inHouseEmailHeader

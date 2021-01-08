@@ -15,6 +15,7 @@ const PlanUsageModel = require('./../featureUsage/planUsage.model')
 const PagesModel = require('./../pages/Pages.model')
 const config = require('./../../../config/environment/index')
 const TAG = '/api/v1/companyprofile/companyprofile.controller.js'
+const CompanyPreferencesDataLayer = require('./../companyPreferences/companyPreferences.datalayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const util = require('util')
 const async = require('async')
@@ -468,4 +469,55 @@ exports.genericUpdate = function (req, res) {
 
 exports.getKeys = function (req, res) {
   sendSuccessResponse(res, 200, {captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
+}
+
+exports.setCompanyPrefences = function (req, res) {
+  dataLayer.findAllProfileObjectsUsingQuery({})
+    .then(companyProfiles => {
+      let updatedCompanies = 0
+      companyProfiles.forEach((companyProfile, index) => {
+        CompanyPreferencesDataLayer.findOneCompanyPreferencesUsingQuery({companyId: companyProfile._id})
+          .then(companyPreference => {
+            if (!companyPreference) {
+              let companyPreferenceObject = {
+                companyId: companyProfile._id,
+                unresolveSessionAlert: {
+                  enabled: false,
+                  notification_interval: 30,
+                  interval_unit: 'mins',
+                  assignedMembers: 'buyer'
+                },
+                pendingSessionAlert: {
+                  enabled: false,
+                  notification_interval: 5,
+                  interval_unit: 'mins',
+                  assignedMembers: 'buyer'
+                }
+              }
+              CompanyPreferencesDataLayer.createCompanyPreferencesObject(companyPreferenceObject)
+                .then(saved => {
+                  updatedCompanies = updatedCompanies + 1
+                  logger.serverLog('company preference object created', `${TAG}: exports.setCompanyPrefences`, req.body, {companyProfile, index}, 'info')
+                })
+                .catch(err => {
+                  const message = err || 'Failed to create company preference object'
+                  logger.serverLog(message, `${TAG}: exports.setCompanyPrefences`, req.body, {companyProfile, index}, 'error')
+                })
+            }
+            if (index === (companyProfiles.length - 1)) {
+              sendSuccessResponse(res, 200, {'Records Created' : updatedCompanies}, 'Successfully Executed')
+            }
+          })
+          .catch(err => {
+            const message = err || 'Error in fetching companypreferences'
+            logger.serverLog(message, `${TAG}: exports.setCompanyPrefences`, req.body, {companyProfile, index}, 'error')
+            sendErrorResponse(res, 500, err)
+          })
+      })
+    })
+    .catch(err => {
+      const message = err || 'Error in fetching companyprofile'
+      logger.serverLog(message, `${TAG}: exports.setCompanyPrefences`, req.body, {}, 'error')
+      sendErrorResponse(res, 500, err)
+    })
 }
