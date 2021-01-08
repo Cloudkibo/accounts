@@ -153,7 +153,7 @@ exports.uploadForTemplate = function (req, res) {
                 'uri': 'https://graph.facebook.com/v6.0/me/message_attachments?access_token=' + pageAccessToken
               },
               function (err, resp) {
-                // deleteFile(req.body.name)
+                deleteFile(req.body.name)
                 if (err) {
                   logger.serverLog('unable to upload attachment on Facebook', `${TAG}: exports.uploadForTemplate`, req.body, {user: req.user}, 'error')
                   sendErrorResponse(res, 500, '', 'unable to upload attachment on Facebook, sending response' + JSON.stringify(err))
@@ -170,10 +170,10 @@ exports.uploadForTemplate = function (req, res) {
                       name: req.body.name,
                       url: req.body.url
                     }
+                    if (req.body.deleteLater) {
+                      deleteFile(req.body.id)
+                    }
                     sendSuccessResponse(res, 200, payload)
-                    // if (req.body.deleteLater) {
-                    //   deleteFile(req.body.id)
-                    // }
                   }
                 }
               })
