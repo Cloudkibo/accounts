@@ -113,17 +113,12 @@ exports.index = function (req, res) {
 
 exports.uploadForTemplate = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
-  console.log('console.body', req.body)
-  console.log('console.body', req.body.deleteLater)
   if (req.body.pages && req.body.pages.length > 0) {
     // saving this file to send files with its original name
     // it will be deleted once it is successfully uploaded to facebook
     let readData = fs.createReadStream(dir + '/userfiles/' + req.body.id)
     let writeData = fs.createWriteStream(dir + '/userfiles/' + req.body.name)
     readData.pipe(writeData)
-    if (req.body.deleteLater) {
-      deleteFile(req.body.id)
-    }
     pageDataLayer.findOnePageObject(req.body.pages[0])
       .then(page => {
         needle.get(
@@ -174,6 +169,9 @@ exports.uploadForTemplate = function (req, res) {
                       url: req.body.url
                     }
                     sendSuccessResponse(res, 200, payload)
+                    if (req.body.deleteLater) {
+                      deleteFile(req.body.id)
+                    }
                   }
                 }
               })
@@ -213,7 +211,7 @@ exports.download = function (req, res) {
   res.sendFile(req.params.id, {root: dir}, function (err) {
     if (err) {
       if (err && (err === 'Request aborted' || err.message === 'Request aborted' || err.message.includes('EPIPE'))) {
-        res.status(err.statusCode || 500).end()
+        res.status(err.status).end()
       } else {
         logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'error')
       }
@@ -258,7 +256,6 @@ function downloadVideo (data) {
       let fext = info._filename.split('.')
       serverPath += '.' + fext[fext.length - 1].toLowerCase()
       let size = info.size
-      console.log('serverPath', serverPath)
       if (size < 25000000) {
         stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))
         stream1.on('error', (error) => {
@@ -273,7 +270,6 @@ function downloadVideo (data) {
             reject(error)
           })
           stream2.on('finish', () => {
-            console.log('serverPath in finish', serverPath)
             resolve({
               id: data.id,
               componentType: 'video',
