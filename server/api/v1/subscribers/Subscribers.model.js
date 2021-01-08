@@ -87,10 +87,7 @@ const subscriberSchema = new Schema({
   commerceCustomer: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
   lastMessageSentByBot: { type: Schema.Types.Mixed },
-  usingChatBot: {
-    type: Boolean,
-    default: false
-  },
+  chatbotPaused: { type: Boolean, default: false },
   agent_activity_time: { type: Date },
   awaitingQuickReplyPayload: { type: Schema.Types.Mixed }
 })
