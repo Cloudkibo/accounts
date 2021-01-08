@@ -121,6 +121,9 @@ exports.uploadForTemplate = function (req, res) {
     let readData = fs.createReadStream(dir + '/userfiles/' + req.body.id)
     let writeData = fs.createWriteStream(dir + '/userfiles/' + req.body.name)
     readData.pipe(writeData)
+    if (req.body.deleteLater) {
+      deleteFile(req.body.id)
+    }
     pageDataLayer.findOnePageObject(req.body.pages[0])
       .then(page => {
         needle.get(
@@ -170,9 +173,6 @@ exports.uploadForTemplate = function (req, res) {
                       name: req.body.name,
                       url: req.body.url
                     }
-                    // if (req.body.deleteLater) {
-                    //   deleteFile(req.body.id)
-                    // }
                     sendSuccessResponse(res, 200, payload)
                   }
                 }
