@@ -258,6 +258,7 @@ function downloadVideo (data) {
       let fext = info._filename.split('.')
       serverPath += '.' + fext[fext.length - 1].toLowerCase()
       let size = info.size
+      console.log('serverPath', serverPath)
       if (size < 25000000) {
         stream1 = video.pipe(fs.createWriteStream(`${dir}/${serverPath}`))
         stream1.on('error', (error) => {
@@ -272,6 +273,7 @@ function downloadVideo (data) {
             reject(error)
           })
           stream2.on('finish', () => {
+            console.log('serverPath in finish', serverPath)
             resolve({
               id: data.id,
               componentType: 'video',
