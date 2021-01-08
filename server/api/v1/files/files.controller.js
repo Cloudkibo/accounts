@@ -113,6 +113,8 @@ exports.index = function (req, res) {
 
 exports.uploadForTemplate = function (req, res) {
   let dir = path.resolve(__dirname, '../../../../broadcastFiles/')
+  console.log('console.body', req.body)
+  console.log('console.body', req.body.deleteLater)
   if (req.body.pages && req.body.pages.length > 0) {
     // saving this file to send files with its original name
     // it will be deleted once it is successfully uploaded to facebook
