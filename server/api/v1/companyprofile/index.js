@@ -19,6 +19,10 @@ router.get('/',
   auth.isAuthenticated(),
   controller.index)
 
+router.get('/switchToBasicPlan',
+  auth.isAuthenticated(),
+  controller.switchToBasicPlan)
+
 router.post('/invite',
   validate({body: validationSchema.invitePayload}),
   auth.isAuthenticated(),
@@ -88,5 +92,8 @@ router.put('/update',
   auth.isAuthenticated(),
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
+
+router.get('/normalizeCompanyPreferences',
+  controller.setCompanyPrefences)
 
 module.exports = router
