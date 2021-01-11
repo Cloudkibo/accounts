@@ -5,6 +5,7 @@ let contacts = new Schema({
   name: { type: String },
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
   number: { type: String },
+  whatsAppId: { type: String },
   datetime: { type: Date, default: Date.now },
   last_activity_time: { type: Date, default: Date.now },
   isSubscribed: { type: Boolean, default: true },
