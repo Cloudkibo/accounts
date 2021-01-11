@@ -21,6 +21,8 @@ let contacts = new Schema({
   commerceCustomer: { type: Schema.Types.Mixed }, // default one is for big commerce
   commerceCustomerShopify: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
+  chatbotPaused: { type: Boolean, default: false },
+  agent_activity_time: { type: Date },
   activeChatbotId: {type: String},
   activeChatbotBuilt: {type: String}
 })
