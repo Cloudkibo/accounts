@@ -208,18 +208,22 @@ exports.download = function (req, res) {
   //     Inside Download file, err = ${JSON.stringify(err)})
   //   sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
   // }
-  res.sendFile(req.params.id, {root: dir}, function (err) {
-    if (err) {
-      if (err && (err === 'Request aborted' || err.message === 'Request aborted' || err.message.includes('EPIPE'))) {
-        res.status(err.statusCode || 500).end()
+  if (fs.existsSync(dir + '/' + req.params.id)) {
+    res.sendFile(req.params.id, {root: dir}, function (err) {
+      if (err) {
+        if (err && (err === 'Request aborted' || err.message === 'Request aborted' || err.message.includes('EPIPE'))) {
+          res.status(err.statusCode || 500).end()
+        } else {
+          logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'info')
+        }
       } else {
-        logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'info')
+        logger.serverLog(
+          `Inside Download file, req.params.id: = ${req.params.id}`, TAG)
       }
-    } else {
-      logger.serverLog(
-        `Inside Download file, req.params.id: = ${req.params.id}`, TAG)
-    }
-  })
+    })
+  } else {
+    sendErrorResponse(res, 500, '', 'File not found')
+  }
 }
 exports.downloadYouTubeVideo = function (req, res) {
   downloadVideo(req.body)
