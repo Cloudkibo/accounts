@@ -62,7 +62,6 @@ const subscriberSchema = new Schema({
   lastMessageSentByBot: { type: Schema.Types.Mixed },
   chatbotPaused: { type: Boolean, default: false },
   agent_activity_time: { type: Date },
-  agent_activity_time: { type: Date },
   awaitingQuickReplyPayload: { type: Schema.Types.Mixed },
   disabledByPlan: {type: Boolean, default: false}
 })
