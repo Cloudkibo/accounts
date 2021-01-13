@@ -50,6 +50,7 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
+  app.use('/api/v1/addOns', require('./api/v1/addOns'))
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
@@ -98,7 +99,8 @@ module.exports = function (app) {
   // })
 
   // signup page
-  app.get('/signup', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup/team', function (req, res) {
     res.render('layouts/index', {
       buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
@@ -131,9 +133,9 @@ module.exports = function (app) {
   })
 
   // signup page
-  app.get('/signup/team', function (req, res) {
-    res.render('layouts/signup', {
-      individual: false,
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup', function (req, res) {
+    res.render('layouts/signup', {individual: false,
       data: [
         { name: 'Customer Engagement', value: 'engage' },
         { name: 'Customer Chat', value: 'chat' },

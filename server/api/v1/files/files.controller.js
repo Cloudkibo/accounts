@@ -213,7 +213,7 @@ exports.download = function (req, res) {
     res.sendFile(req.params.id, {root: dir}, function (err) {
       if (err) {
         if (err && (err === 'Request aborted' || err.message === 'Request aborted' || err.message.includes('EPIPE'))) {
-          res.status(err.status).end()
+          res.status(err.statusCode || 500).end()
         } else {
           logger.serverLog(err, `${TAG}: exports.download`, req.body, {id: req.params.id, user: req.user}, 'info')
         }
