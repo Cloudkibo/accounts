@@ -208,7 +208,6 @@ exports.download = function (req, res) {
   //     Inside Download file, err = ${JSON.stringify(err)})
   //   sendSuccessResponse(res, 404, 'Not Found ' + JSON.stringify(err))
   // }
-  console.log('dir + req.params.id', dir + req.params.id)
   if (fs.existsSync(dir + '/' + req.params.id)) {
     res.sendFile(req.params.id, {root: dir}, function (err) {
       if (err) {
