@@ -112,6 +112,7 @@ const prepareCompanyPreference = (companyId) => {
     }
   }
 }
+
 const companyUsageData = (companyId) => {
   return {
     companyId: companyId,
