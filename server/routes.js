@@ -54,6 +54,7 @@ module.exports = function (app) {
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
   app.use('/api/v1/bigcommerce', require('./api/v1/bigcommerceintegrations'))
+  app.use('/api/v1/facebookshops', require('./api/v1/facebookshops'))
   app.use('/api/v1/scripts', require('./api/scripts'))
 
   // auth middleware go here
@@ -189,7 +190,7 @@ module.exports = function (app) {
     app.use(Sentry.Handlers.requestHandler())
 
     app.use(function (err, req, res, next) {
-      logger.serverLog(err.stack, TAG )
+      logger.serverLog(err.stack, TAG)
       logger.serverLog(err.message, TAG)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
