@@ -181,7 +181,7 @@ exports.invite = function (req, res) {
                   if (json) sendSuccessResponse(res, 200, 'Email has been sent')
                   else {
                     logger.serverLog(err, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
-                    sendErrorResponse(res, 500, err)
+                    sendErrorResponse(res, 400, 'Failed to send Invitation')
                   }
                 })
               })
