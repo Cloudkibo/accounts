@@ -148,8 +148,7 @@ exports.forgotWorkspaceName = function (req, res) {
       if (!user) {
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
       }
-      let sendgrid = require('sendgrid')(config.sendgrid.username,
-        config.sendgrid.password)
+      let sendgrid = utility.getSendGridObject()
 
       var email = new sendgrid.Email({
         to: user.email,
