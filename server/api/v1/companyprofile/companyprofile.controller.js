@@ -175,7 +175,7 @@ exports.invite = function (req, res) {
                 emailParam = logicLayer.setEmailBody(emailParam, req.user, companyUser, uniqueTokenId, req.body.role)
                 sendgrid.send(emailParam, (err, json) => {
                   err
-                    ? console.log('err at sendGrid', err)
+                    ? logger.serverLog(`error at sendgrid send ${(err)}`, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')
                     : logger.serverLog(`response from sendgrid send: ${JSON.stringify(json)}`, TAG)
 
                   if (json) sendSuccessResponse(res, 200, 'Email has been sent')
