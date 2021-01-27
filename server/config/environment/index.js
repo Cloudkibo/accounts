@@ -18,7 +18,8 @@ const all = {
   allowedIps: ['::ffff:142.93.66.26', '::ffff:165.227.178.70', '::ffff:167.99.56.161', '::ffff:159.65.47.134', '::ffff:159.203.175.244', '::ffff:159.89.185.221', '::ffff:165.227.66.158', '::ffff:104.131.67.58', '::ffff:165.227.130.222', '::ffff:127.0.0.1'],
   sendgrid: {
     username: process.env.SENDGRID_USERNAME,
-    password: process.env.SENDGRID_PASSWORD
+    password: process.env.SENDGRID_PASSWORD,
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY || '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'
   },
   captchaKey: process.env.googleCaptchaKey || '6LetXYIUAAAAACuNrn9vRPbZLuhI8l6a7LaJPW8j',
   stripeOptions: {
