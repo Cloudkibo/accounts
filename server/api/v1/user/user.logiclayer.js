@@ -112,23 +112,6 @@ const prepareCompanyPreference = (companyId) => {
     }
   }
 }
-const prepareCompanyPreference = (companyId) => {
-  return {
-    companyId: companyId,
-    unresolveSessionAlert: {
-      enabled: false,
-      notification_interval: 30,
-      interval_unit: 'mins',
-      assignedMembers: 'buyer'
-    },
-    pendingSessionAlert: {
-      enabled: false,
-      notification_interval: 5,
-      interval_unit: 'mins',
-      assignedMembers: 'buyer'
-    }
-  }
-}
 const companyUsageData = (companyId) => {
   return {
     companyId: companyId,
