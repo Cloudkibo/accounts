@@ -2,16 +2,18 @@
 
 let express = require('express')
 let controller = require('./email_verification_otps.controller')
+const validate = require('express-jsonschema').validate
+
+const validationSchema = require('./validationSchema')
 
 let router = express.Router()
-const auth = require('../../../auth/auth.service')
 
 router.post('/',
-  auth.isAuthorizedWebHookTrigger(),
+  validate({ body: validationSchema.create }),
   controller.create)
 
 router.post('/verify',
-  auth.isAuthorizedWebHookTrigger(),
+  validate({ body: validationSchema.verify }),
   controller.verify)
 
 module.exports = router

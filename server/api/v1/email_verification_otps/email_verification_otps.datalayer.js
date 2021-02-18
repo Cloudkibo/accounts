@@ -5,7 +5,7 @@ Thus we can use it from other non express callers like cron etc
 */
 const EmailVerificationModel = require('./email_verification_otps.model')
 
-exports.findOneVerificationTokenObject = (query) => {
+exports.findOneOtpObject = (query) => {
   return EmailVerificationModel.findOne(query)
     .exec()
 }
@@ -13,4 +13,9 @@ exports.findOneVerificationTokenObject = (query) => {
 exports.createVerificationOtp = (payload) => {
   let obj = new EmailVerificationModel(payload)
   return obj.save()
+}
+
+exports.deleteVerificationOtp = (otpId) => {
+  return EmailVerificationModel.deleteOne({ _id: otpId })
+    .exec()
 }
