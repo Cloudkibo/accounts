@@ -1,17 +1,68 @@
-let datalayer = require('./verificationtoken.datalayer')
-let logiclayer = require('./verificationtoken.logiclayer')
-let UserLogicLayer = require('./../user/user.logiclayer')
-let UserDataLayer = require('./../user/user.datalayer')
-let CompanyProfileDataLayer = require('./../companyprofile/companyprofile.datalayer')
-let CompanyUsersDataLayer = require('./../companyuser/companyuser.datalayer')
+let datalayer = require('./email_verification_otps.datalayer')
+let logiclayer = require('./email_verification_otps.logiclayer')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const logger = require('../../../components/logger')
 const utility = require('./../../../components/utility')
 
-const TAG = '/api/v1/verificationtoken/verificationtoken.controller.js'
+const TAG = '/api/v1/email_verification_otps/email_verification_otps.controller.js'
 
 // Get a single verificationtoken
+exports.create = function (req, res) {
+  const token = '' + Math.floor(100000 + Math.random() * 900000)
+  const payload = {
+    companyId: req.body.companyId,
+    otp: token,
+    platform: req.body.platform,
+    commercePlatform: req.body.commercePlatform,
+    subscriberId: req.body.subscriberId,
+    phone: req.body.phone,
+    emailAddress: req.body.emailAddress
+  }
+  datalayer.createVerificationOtp(payload)
+    .then(result => {
+      let sendgrid = utility.getSendGridObject()
+      let email = new sendgrid.Email(logiclayer.getEmailHeader(req.body))
+      logiclayer.getEmailBody(email, token)
+      sendgrid.send(email, (err) => {
+        if (err) {
+          const message = err || 'Failed to send email'
+          logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+          return sendErrorResponse(res, 500, 'Internal Server Error', err)
+        }
+        sendSuccessResponse(res, 200, { otp: token })
+      })
+    })
+    .catch(err => {
+      const message = err || 'Failed to create verification otp'
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {}, 'error')
+      sendErrorResponse(res, 500, '', err)
+    })
+}
+
 exports.verify = function (req, res) {
+  datalayer.findOneOtpObject(req.body)
+    .then(result => {
+      if (result) {
+        sendSuccessResponse(res, 200, 'otp matched')
+        datalayer.deleteVerificationOtp(result._id)
+          .then(deleted => {
+            const message = 'OTP deleted successfully'
+            logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'info')
+          })
+          .catch(err => {
+            const message = err || 'Failed to delete verification otp'
+            logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
+          })
+      } else {
+        sendErrorResponse(res, 404, 'OTP not matched or expired.')
+      }
+    })
+    .catch(err => {
+      const message = err || 'Failed to find verification otp'
+      logger.serverLog(message, `${TAG}: exports.verify`, req.body, {}, 'error')
+      sendErrorResponse(res, 500, '', err)
+    })
+  /*
   datalayer.findOneVerificationTokenObject({token: req.params.id})
     .then(verificationtoken => {
       if (!verificationtoken) {
@@ -77,31 +128,5 @@ exports.verify = function (req, res) {
       logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, '', err)
     })
-}
-
-exports.resend = function (req, res) {
-  if (!req.user.emailVerified) {
-    let tokenString = UserLogicLayer.getRandomString()
-    datalayer.createVerificationToken({ userId: req.user._id, token: tokenString })
-      .then(result => {
-        let sendgrid = utility.getSendGridObject()
-        let email = new sendgrid.Email(logiclayer.getEmailResendHeader(req.user))
-        logiclayer.getResendEmailBody(email, tokenString)
-        sendgrid.send(email, (err) => {
-          if (err) {
-            const message = err || 'Failed to send email'
-            logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
-            return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err})
-          }
-          sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
-        })
-      })
-      .catch(err => {
-        const message = err || 'Failed to create verification token'
-        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
-        sendErrorResponse(res, 500, '', err)
-      })
-  } else {
-    sendSuccessResponse(res, 200, 'You have already verified your email address. Please refresh your page')
-  }
+    */
 }
