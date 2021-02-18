@@ -24,7 +24,8 @@ let contacts = new Schema({
   chatbotPaused: { type: Boolean, default: false },
   agent_activity_time: { type: Date },
   activeChatbotId: {type: String},
-  activeChatbotBuilt: {type: String}
+  activeChatbotBuilt: {type: String},
+  emailVerified: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)
