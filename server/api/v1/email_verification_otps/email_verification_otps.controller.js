@@ -8,7 +8,7 @@ const TAG = '/api/v1/email_verification_otps/email_verification_otps.controller.
 
 // Get a single verificationtoken
 exports.create = function (req, res) {
-  const token = 'F' + Math.floor(100000 + Math.random() * 900000)
+  const token = 'f' + Math.floor(100000 + Math.random() * 900000)
   const payload = {
     companyId: req.body.companyId,
     otp: token,
