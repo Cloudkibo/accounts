@@ -70,7 +70,7 @@ exports.getEmailBody = (email, otp) => {
             <table class="row note">
               <tr>
                 <td class="wrapper last">
-                  <p> Hello, <br> Thank you for shopping with us. <br>Use the following otp to verify your email address <br>
+                  <p> Hello, <br><br> Thank you for shopping with us. <br><br>Use the following otp to verify your email address <br>
                   </p>
                     <p>Send this OTP as message to the chatbot: ${otp}
                     </p>
