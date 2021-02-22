@@ -66,7 +66,7 @@ const subscriberSchema = new Schema({
   awaitingQuickReplyPayload: { type: Schema.Types.Mixed },
   disabledByPlan: {type: Boolean, default: false},
   emailVerified: { type: Boolean, default: false },
-  pendingAt: { type: Number}
+  pendingAt: { type: Date}
 })
 
 module.exports = mongoose.model('subscribers', subscriberSchema)
