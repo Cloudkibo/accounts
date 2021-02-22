@@ -65,7 +65,7 @@ const subscriberSchema = new Schema({
   agent_activity_time: { type: Date },
   awaitingQuickReplyPayload: { type: Schema.Types.Mixed },
   disabledByPlan: {type: Boolean, default: false},
-  emailVerified: { type: Boolean, default: false }.
+  emailVerified: { type: Boolean, default: false },
   pendingAt: { type: Number}
 })
 
