@@ -46,9 +46,6 @@ exports.queryPayload = {
         'companyId': {
           'type': 'string'
         },
-        'shopUrl': {
-          'type': 'string'
-        },
         'shopToken': {
           'type': 'string'
         }
