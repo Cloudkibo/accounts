@@ -30,7 +30,6 @@ exports.create = function (req, res) {
 }
 
 exports.query = function (req, res) {
-  console.log('query', req.body)
   DataLayer.findRecordsUsingQuery(req.body)
     .then(foundObjects => {
       sendSuccessResponse(res, 200, foundObjects)
