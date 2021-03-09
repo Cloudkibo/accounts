@@ -4,8 +4,6 @@ let UserLogicLayer = require('./../user/user.logiclayer')
 let UserDataLayer = require('./../user/user.datalayer')
 let CompanyProfileDataLayer = require('./../companyprofile/companyprofile.datalayer')
 let CompanyUsersDataLayer = require('./../companyuser/companyuser.datalayer')
-let config = require('./../../../config/environment/index')
-let path = require('path')
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
 const logger = require('../../../components/logger')
 const utility = require('./../../../components/utility')
@@ -14,7 +12,6 @@ const TAG = '/api/v1/verificationtoken/verificationtoken.controller.js'
 
 // Get a single verificationtoken
 exports.verify = function (req, res) {
-
   datalayer.findOneVerificationTokenObject({token: req.params.id})
     .then(verificationtoken => {
       if (!verificationtoken) {
@@ -52,7 +49,7 @@ exports.verify = function (req, res) {
                   }
 
                   sendgrid.send(email, function (err, json) {
-                    if (err) { 
+                    if (err) {
                       const message = err || 'Failed to send email'
                       logger.serverLog(message, `${TAG}: exports.verify`, req.body, {user: req.user}, 'error')
                     }
@@ -94,15 +91,15 @@ exports.resend = function (req, res) {
           if (err) {
             const message = err || 'Failed to send email'
             logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
-            return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err}) 
+            return res.status(500).json({status: 'failed', description: 'Internal Server Error ' + err})
           }
           sendSuccessResponse(res, 200, 'Verification email has been sent. Please check your email ')
         })
       })
       .catch(err => {
         const message = err || 'Failed to create verification token'
-        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error') 
-        sendErrorResponse(res, 500, '', err) 
+        logger.serverLog(message, `${TAG}: exports.resend`, req.body, {user: req.user}, 'error')
+        sendErrorResponse(res, 500, '', err)
       })
   } else {
     sendSuccessResponse(res, 200, 'You have already verified your email address. Please refresh your page')

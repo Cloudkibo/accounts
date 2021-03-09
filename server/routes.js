@@ -50,10 +50,13 @@ module.exports = function (app) {
   app.use('/api/v1/integrationUsage', require('./api/v1/integrationUsage'))
   app.use('/api/v1/overlayWidgets', require('./api/v1/overlayWidgets'))
   app.use('/api/v1/contactLists', require('./api/v1/contactLists'))
+  app.use('/api/v1/addOns', require('./api/v1/addOns'))
   app.use('/api/v1/zoomUsers', require('./api/v1/zoomUsers'))
   app.use('/api/v1/zoomMeetings', require('./api/v1/zoomMeetings'))
   app.use('/api/v1/shopify', require('./api/v1/shopifyIntegrations'))
   app.use('/api/v1/bigcommerce', require('./api/v1/bigcommerceintegrations'))
+  app.use('/api/v1/facebookshops', require('./api/v1/facebookshops'))
+  app.use('/api/v1/email_verification_otps', require('./api/v1/email_verification_otps'))
   app.use('/api/v1/scripts', require('./api/scripts'))
 
   // auth middleware go here
@@ -98,7 +101,8 @@ module.exports = function (app) {
   // })
 
   // signup page
-  app.get('/signup', function (req, res) {
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup/team', function (req, res) {
     res.render('layouts/index', {
       buttonOne: { name: 'Individual Account', url: `/signup/single?continue=${req.query.continue ? req.query.continue : ''}` },
       buttonTwo: { name: 'Team Account', url: `/signup/team?continue=${req.query.continue ? req.query.continue : ''}` }
@@ -131,9 +135,9 @@ module.exports = function (app) {
   })
 
   // signup page
-  app.get('/signup/team', function (req, res) {
-    res.render('layouts/signup', {
-      individual: false,
+  // replacing /signup and /signup/team with each other to remove individual
+  app.get('/signup', function (req, res) {
+    res.render('layouts/signup', {individual: false,
       data: [
         { name: 'Customer Engagement', value: 'engage' },
         { name: 'Customer Chat', value: 'chat' },
@@ -189,7 +193,7 @@ module.exports = function (app) {
     app.use(Sentry.Handlers.requestHandler())
 
     app.use(function (err, req, res, next) {
-      logger.serverLog(err.stack, TAG )
+      logger.serverLog(err.stack, TAG)
       logger.serverLog(err.message, TAG)
       if (err.message === 'jwt expired') {
         res.clearCookie('token')
