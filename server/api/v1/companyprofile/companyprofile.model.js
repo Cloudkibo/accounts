@@ -20,7 +20,11 @@ var CompanyprofileSchema = new Schema({
   whatsApp: Schema.Types.Mixed,
   saveAutomationMessages: { type: Boolean, default: false },
   showAgentName: { type: Boolean, default: false },
-  hideChatSessions: { type: Boolean, default: false }
+  hideChatSessions: { type: Boolean, default: false },
+  businessHours: {
+    opening: String, closing: String
+  }
+
 })
 
 var stripeOptions = config.stripeOptions
