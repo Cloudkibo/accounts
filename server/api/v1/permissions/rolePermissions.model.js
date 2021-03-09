@@ -118,7 +118,7 @@ let RolePermissionsSchema = new Schema({
   update_chatbot_automation: Boolean,
   configure_chatbot_automation: Boolean,
   sla_dashboard: Boolean,
-  configure_message_alerts: { type: Boolean: default: true }
+  configure_message_alerts: { type: Boolean, default: true }
 })
 
 module.exports = mongoose.model('role_permissions', RolePermissionsSchema)
