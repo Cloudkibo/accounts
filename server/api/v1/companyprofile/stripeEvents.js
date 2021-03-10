@@ -4,6 +4,7 @@ const logger = require('../../../components/logger')
 const TAG = 'api/companyprofile/stripeEvents.js'
 const Companyprofile = require('./companyprofile.model')
 const config = require('./../../../config/environment/index')
+const utility = require('./../../../components/utility')
 
 var knownEvents = {
   'account.updated': function (req, res, next) {
@@ -32,9 +33,7 @@ var knownEvents = {
         })
       }
       if (company) {
-        let sendgrid = require('sendgrid')(config.sendgrid.username,
-          config.sendgrid.password)
-
+        let sendgrid = utility.getSendGridObject()
         let email = new sendgrid.Email({
           to: company.ownerId.email,
           from: 'support@cloudkibo.com',
@@ -65,9 +64,7 @@ var knownEvents = {
         })
       }
       if (company) {
-        let sendgrid = require('sendgrid')(config.sendgrid.username,
-          config.sendgrid.password)
-
+        let sendgrid = utility.getSendGridObject()
         let email = new sendgrid.Email({
           to: company.ownerId.email,
           from: 'support@cloudkibo.com',

@@ -131,7 +131,7 @@ exports.change = function (req, res) {
             sendErrorResponse(res, 500, '', `Internal Server Error ${JSON.stringify(err)}`)
           })
       } else {
-        sendErrorResponse(res, 404, '', 'Wrong current password.')
+        sendErrorResponse(res, 404, 'Wrong current password.')
       }
     })
     .catch(err => {
@@ -148,8 +148,7 @@ exports.forgotWorkspaceName = function (req, res) {
       if (!user) {
         sendErrorResponse(res, 404, '', 'Sorry! No such account or company exists in our database.')
       }
-      let sendgrid = require('sendgrid')(config.sendgrid.username,
-        config.sendgrid.password)
+      let sendgrid = utility.getSendGridObject()
 
       var email = new sendgrid.Email({
         to: user.email,

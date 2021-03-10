@@ -89,4 +89,7 @@ router.put('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
 
+router.get('/normalizeCompanyPreferences',
+  controller.setCompanyPrefences)
+
 module.exports = router

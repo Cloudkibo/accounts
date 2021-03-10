@@ -52,7 +52,7 @@ function isAuthenticated () {
                   })
                   .catch(err => {
                     const message = err || 'Unable to get loggin in user details'
-                    logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
+                    logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error')
                     return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
                   })
               } else {
@@ -64,7 +64,7 @@ function isAuthenticated () {
           })
           .catch(err => {
             const message = err || 'Unable to get loggin in user details'
-            logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
+            logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error')
             return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
           })
       } else if (req.headers.hasOwnProperty('consumer_id')) {
@@ -118,13 +118,13 @@ function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser
         })
         .catch(err => {
           const message = err || 'Error at Plan Catch:'
-          logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
+          logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error')
           return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
         })
     })
     .catch(err => {
       const message = err || 'Error at Promise All:'
-      logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error') 
+      logger.serverLog(message, `${TAG}: exports.isAuthenticated`, req.body, {user: req.user}, 'error')
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
@@ -172,13 +172,13 @@ function attachUserToRequest (req, res, next, userId) {
         })
         .catch(err => {
           const message = err || 'Error at Plan Catch:'
-          logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')     
+          logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')
           return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
         })
     })
     .catch(err => {
       const message = err || 'Error at Promise All:'
-      logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')     
+      logger.serverLog(message, `${TAG}: exports.attachUserToRequest`, req.body, {user: req.user}, 'error')
       return res.status(500).json({status: 'failed', payload: JSON.stringify(err)})
     })
 }
@@ -274,8 +274,6 @@ function fetchPages (url, user, req, token) {
           if (error !== null) {
             return logger.serverLog(`Error occurred ${error}`, TAG)
           } else {
-            // logger.serverLog(TAG, `Data by fb for page likes ${JSON.stringify(
-            //   fanCount.body.fan_count)}`)
             CompanyUserDataLayer.findOneCompanyUserObjectUsingQueryPoppulate({domain_email: user.domain_email})
               .then(companyUser => {
                 if (!companyUser) {
@@ -327,20 +325,18 @@ function fetchPages (url, user, req, token) {
                         })
                         .catch(err => {
                           const message = err || 'failed to update page:'
-                          logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')                    
+                          logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
                         })
                     }
                   })
                   .catch(err => {
                     const message = err || 'Error while fetching pages'
                     return logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
-                    
                   })
               })
               .catch(err => {
                 const message = err || 'Error while fetching user'
                 return logger.serverLog(message, `${TAG}: exports.fetchPages`, req.body, {user: req.user}, 'error')
-            
               })
           }
         })
