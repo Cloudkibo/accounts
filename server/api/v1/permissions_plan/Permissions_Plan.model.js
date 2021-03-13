@@ -14,6 +14,8 @@ var PermissionsSchema = new Schema({
   surveys_reports: Boolean,
   csv_exports: Boolean,
   livechat: Boolean,
+  whatsappBusiness: Boolean,
+  whatsappSuperNumber: Boolean,
   autoposting: Boolean,
   menu: Boolean,
   manage_pages: Boolean,
