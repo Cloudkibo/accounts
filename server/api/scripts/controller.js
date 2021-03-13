@@ -14,6 +14,8 @@ const ContactModel = require('../v1/whatsAppContacts/whatsAppContacts.model')
 const { callApi } = require('./apiCaller')
 const async = require('async')
 const config = require('./../../config/environment/index')
+const plansDatalayer = require('./../v1/plans/plans.datalayer')
+const plansPermissionsDatalayer = require('./../v1/permissions_plan/permissions_plan.datalayer')
 const needle = require('needle')
 
 exports.normalizeCompanyUsers = function (req, res) {
@@ -761,7 +763,6 @@ function updateCompanyProfile (companyProfileData, callback) {
   }
 }
 
-
 exports.normalizeWhatspContact = function (req, res) {
   CompanyProfilesModel.find({whatsApp: { $exists: true }}).then(companyProfiles => {
     console.log('companyProfiles', companyProfiles.length)
@@ -839,6 +840,83 @@ exports.deleteWhatsappData = function (req, res) {
       })
   })
 }
+
+exports.createSuperNumberPlan = (req, res) => {
+  plansDatalayer.findOnePlanObjectUsingQuery({unique_ID: 'plan_E'})
+    .then(foundPlan => {
+      if (foundPlan) {
+        res.status(200).json({status: 'success', payload: foundPlan, description: 'Plan already created'})
+      } else {
+        const newPlan = {
+          name: 'Individual WhatsApp Super Number',
+          unique_ID: 'plan_E',
+          amount: 10,
+          interval: 'monthly',
+          trial_period: 3
+        }
+        plansDatalayer.createPlanObject(newPlan)
+          .then(async result => {
+            try {
+              await plansPermissionsDatalayer.updateManyPermissionsPlan({}, {$set: { whatsappBusiness: true, whatsappSuperNumber: false }})
+
+              const planPermissionsObject = {
+                plan_id: result._id,
+                customer_matching: false,
+                invite_team: false,
+                dashboard: true,
+                broadcasts: true,
+                broadcasts_templates: false,
+                polls: true,
+                polls_reports: true,
+                surveys: true,
+                surveys_reports: true,
+                csv_exports: false,
+                livechat: true,
+                whatsappBusiness: false,
+                whatsappSuperNumber: true,
+                autoposting: true,
+                menu: true,
+                manage_pages: true,
+                manage_subscribers: true,
+                subscribe_to_messenger: true,
+                team_members_management: false,
+                messenger_links: true,
+                comment_capture: false,
+                messenger_code: false,
+                analytics: false,
+                api: false,
+                advanced_segmentation: false,
+                buy_button: false,
+                segmentation_lists: true,
+                user_permissions: false,
+                greeting_text: true,
+                welcome_message: true,
+                html_widget: true,
+                livechat_response_methods: false,
+                kibopush_widget: false,
+                webhook: false,
+                survey_templates: false,
+                poll_templates: false,
+                sla_dashboard: true
+              }
+
+              plansPermissionsDatalayer.createPermissionsPlanObject(planPermissionsObject)
+
+              res.status(201).json({status: 'success', payload: result})
+            } catch (err) {
+              res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+            }
+          })
+          .catch(err => {
+            res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+          })
+      }
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
+    })
+}
+
 exports.addMessageAlertsPermission = function (req, res) {
   UserModel.aggregate([
     {$match: {$or: [{role: 'buyer'}, {role: 'admin'}]}},

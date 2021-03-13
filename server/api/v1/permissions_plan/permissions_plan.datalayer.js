@@ -33,6 +33,11 @@ exports.createPermissionsPlanObject = (payload) => {
   return obj.save()
 }
 
+exports.updateManyPermissionsPlan = (query, newPayload) => {
+  return PermissionsPlan.updateMany(query, newPayload)
+    .exec()
+}
+
 // DO NOT CHANGE: THIS FUNCTION IS BEING USED IN SEVERAL
 // CONTROLLERS FOR UPDATING USER OBJECT
 exports.updatePermissionsPlanObject = (permissionsPlanId, payload) => {

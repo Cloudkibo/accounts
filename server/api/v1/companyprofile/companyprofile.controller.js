@@ -31,7 +31,6 @@ const async = require('async')
 */
 
 exports.index = function (req, res) {
-
   CompanyUserDataLayer
     .findOneCompanyUserObjectUsingQueryPoppulate({domain_email: req.user.domain_email})
     .then(companyUser => {
@@ -45,13 +44,13 @@ exports.index = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Failed to find CPWithPlanPop'
-          logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')    
+          logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Failed to find company user'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -59,17 +58,16 @@ exports.index = function (req, res) {
 exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
     .then(profile => {
-      if (!profile) { 
-        sendErrorResponse(res, 404, '', 'Company not found') 
+      if (!profile) {
+        sendErrorResponse(res, 404, '', 'Company not found')
       }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
       let result = logicLayer.setCard(profile, req.body.stripeToken)
       if (result.status === 'failed') {
         const message = result.description || 'Error in set Card'
-        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')  
+        logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')
         sendErrorResponse(res, 500, '', result.description)
-      }
-      else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
+      } else if (result.status === 'success') sendSuccessResponse(res, 200, '', result.description)
     })
     .catch(err => {
       const message = err || 'Error in set Card'
@@ -202,7 +200,7 @@ exports.updatePlan = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in update plan'
-      logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')    
+      logger.serverLog(message, `${TAG}: exports.updatePlan`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -280,19 +278,19 @@ exports.invite = function (req, res) {
               })
               .catch(err => {
                 const message = err || 'Failed to invite token save'
-                logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')          
+                logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')
               })
           }
         })
         .catch(err => {
           const message = err || 'Error in getting companies count'
-          logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')          
+          logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Error in getting companies count'
-      logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.invite`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -333,25 +331,25 @@ exports.updateRole = function (req, res) {
         })
         .catch(err => {
           const message = err || 'Error in getting promise all update role'
-          logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')  
+          logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
           sendErrorResponse(res, 500, err)
         })
     })
     .catch(err => {
       const message = err || 'Error in getting promise all update role'
-      logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.updateRole`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
-exports.disableMember = function (req, res) {  
+exports.disableMember = function (req, res) {
   let queryRemovingAssignment = {
     is_assigned: true,
     'assigned_to.type': 'agent',
     'assigned_to.id': req.body.memberId
   }
-  
-  let userDisabled = UserDataLayer.updateOneUserObjectUsingQuery({_id:req.body.memberId}, {disableMember: true}, {upsert: true})
+
+  let userDisabled = UserDataLayer.updateOneUserObjectUsingQuery({_id: req.body.memberId}, {disableMember: true}, {upsert: true})
   let removeAssignment = SubscribersDataLayer.genericUpdateSubscriberObject(queryRemovingAssignment, {is_assigned: false, assigned_to: null}, {multi: true})
 
   Promise.all([userDisabled, removeAssignment])
@@ -378,7 +376,7 @@ exports.members = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in getting company User members'
-      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.disableMember`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -401,7 +399,7 @@ exports.updateAutomatedOptions = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find company user'
-      logger.serverLog(message, `${TAG}: exports.updateAutomatedOptions`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.updateAutomatedOptions`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -422,7 +420,7 @@ exports.getAutomatedOptions = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find company user'
-      logger.serverLog(message, `${TAG}: exports.getAutomatedOptions`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.getAutomatedOptions`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -435,7 +433,7 @@ exports.genericFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find Plan'
-      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.genericFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -448,20 +446,19 @@ exports.aggregateFetch = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Error in find Plan'
-      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.aggregateFetch`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
 
 exports.genericUpdate = function (req, res) {
-
   dataLayer.genericUpdatePostObject(req.body.query, req.body.newPayload, req.body.options)
     .then(result => {
       sendSuccessResponse(res, 200, result)
     })
     .catch(err => {
       const message = err || 'Error in update'
-      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')  
+      logger.serverLog(message, `${TAG}: exports.genericUpdate`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err)
     })
 }
@@ -504,7 +501,7 @@ exports.setCompanyPrefences = function (req, res) {
                 })
             }
             if (index === (companyProfiles.length - 1)) {
-              sendSuccessResponse(res, 200, {'Records Created' : updatedCompanies}, 'Successfully Executed')
+              sendSuccessResponse(res, 200, {'Records Created': updatedCompanies}, 'Successfully Executed')
             }
           })
           .catch(err => {
@@ -519,4 +516,16 @@ exports.setCompanyPrefences = function (req, res) {
       logger.serverLog(message, `${TAG}: exports.setCompanyPrefences`, req.body, {}, 'error')
       sendErrorResponse(res, 500, err)
     })
+}
+
+exports.setWhatsappSuperNumberPlan = async function (req, res) {
+  try {
+    const plan = await PlanDataLayer.findOnePlanObjectUsingQuery({ unique_ID: 'plan_E' })
+    const updateResult = await dataLayer.findOneProfileAndUpdate({ _id: req.user.companyId }, { planId: plan._id })
+    sendSuccessResponse(res, 200, updateResult)
+  } catch (err) {
+    const message = err || 'Error in fetching super number'
+    logger.serverLog(message, `${TAG}: exports.setWhatsappSuperNumberPlan`, req.body, {}, 'error')
+    sendErrorResponse(res, 500, err)
+  }
 }
