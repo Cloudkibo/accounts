@@ -30,5 +30,6 @@ router.use('/pages', require('./pages'))
 router.use('/tags/normalize', require('./tags'))
 router.use('/subscriberScript', require('./subscribers'))
 router.use('/slaDashboard/normalize', require('./slaDashboard'))
+router.get('/plans/createSuperNumberPlan', controller.createSuperNumberPlan)
 
 module.exports = router
