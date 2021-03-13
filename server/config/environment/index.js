@@ -21,7 +21,7 @@ const all = {
     password: process.env.SENDGRID_PASSWORD,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY || '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'
   },
-  captchaKey: process.env.CAPTCHA_KEY || '6LckQ14UAAAAAFH2D15YXxH9o9EQvYP3fRsL2YOU',
+  captchaKey: process.env.googleCaptchaKey || '6LetXYIUAAAAACuNrn9vRPbZLuhI8l6a7LaJPW8j',
   stripeOptions: {
     apiKey: process.env.STRIPE_KEY || 'sk_test_gB8zWtkvbbYFbFFnuj3t4EZn',
     product: 'prod_CxuUOUCZj9ZqwG',
