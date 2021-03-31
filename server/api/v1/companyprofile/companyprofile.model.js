@@ -10,6 +10,7 @@ var CompanyprofileSchema = new Schema({
   companyDetail: String,
   ownerId: { type: Schema.ObjectId, ref: 'users' },
   planId: { type: Schema.ObjectId, ref: 'plans' },
+  trialPeriod: Schema.Types.Mixed,
   automated_options: {
     type: String,
     enum: ['AUTOMATED_CHAT', 'HUMAN_CHAT', 'MIX_CHAT', 'DISABLE_CHAT'],
@@ -19,7 +20,11 @@ var CompanyprofileSchema = new Schema({
   whatsApp: Schema.Types.Mixed,
   saveAutomationMessages: { type: Boolean, default: false },
   showAgentName: { type: Boolean, default: false },
-  hideChatSessions: { type: Boolean, default: false }
+  hideChatSessions: { type: Boolean, default: false },
+  businessHours: {
+    opening: String, closing: String
+  }
+
 })
 
 var stripeOptions = config.stripeOptions
