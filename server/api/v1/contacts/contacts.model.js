@@ -14,6 +14,11 @@ let contacts = new Schema({
   unreadCount: {type: Number, default: 0},
   messagesCount: {type: Number, default: 0},
   chatbotContext: {type: String},
+  lastMessageSentByBot: { type: Schema.Types.Mixed },
+  commerceCustomerShopify: { type: Schema.Types.Mixed },
+  shoppingCart: { type: Array, default: [] },
+  chatbotPaused: { type: Boolean, default: false },
+  marketing_optin: { type: Boolean, default: false },
   pendingResponse: {
     type: Boolean,
     default: false
