@@ -13,8 +13,8 @@ module.exports = {
   // MongoDB connection options
   mongo: {
     uri: process.env.MONGO_URI || 'mongodb://localhost/accounts-prod',
-    autoIndex:false,
-    poolSize:10
+    autoIndex: false,
+    poolSize: 10
   },
   seedDB: false,
 

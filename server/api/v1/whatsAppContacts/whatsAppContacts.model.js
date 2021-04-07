@@ -18,10 +18,15 @@ let contacts = new Schema({
   lastMessagedAt: { type: Date },
   lastMessageSentByBot: { type: Schema.Types.Mixed },
   chatbotContext: {type: 'String'},
-  commerceCustomer: { type: Schema.Types.Mixed },
+  commerceCustomer: { type: Schema.Types.Mixed }, // default one is for big commerce
+  commerceCustomerShopify: { type: Schema.Types.Mixed },
   shoppingCart: { type: Array, default: [] },
+  chatbotPaused: { type: Boolean, default: false },
+  agent_activity_time: { type: Date },
   activeChatbotId: {type: String},
-  activeChatbotBuilt: {type: String}
+  activeChatbotBuilt: {type: String},
+  emailVerified: { type: Boolean, default: false },
+  marketing_optin: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('whatsAppContacts', contacts)

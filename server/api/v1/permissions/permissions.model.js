@@ -32,7 +32,8 @@ var UserPermissionsSchema = new Schema({
   surveyPermission: { type: Boolean, default: true },
   apiPermission: { type: Boolean, default: true },
   configure_message_alerts: { type: Boolean, default: true },
-  muteNotifications: [String]
+  muteNotifications: [String],
+  slaDashboard: Boolean
 })
 
 module.exports = mongoose.model('permissions', UserPermissionsSchema)

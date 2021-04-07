@@ -80,7 +80,7 @@ router.post('/query',
   auth.isAuthenticated(),
   controller.genericFetch)
 
-router.post('/aggregate', 
+router.post('/aggregate',
   auth.isAuthenticated(),
   controller.aggregateFetch)
 
@@ -88,5 +88,13 @@ router.put('/update',
   auth.isAuthenticated(),
   validate({body: validationSchema.genericUpdatePayload}),
   controller.genericUpdate)
+
+router.get('/normalizeCompanyPreferences',
+  controller.setCompanyPrefences)
+
+router.get('/setWhatsappSuperNumberPlan',
+  auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
+  controller.setWhatsappSuperNumberPlan)
 
 module.exports = router

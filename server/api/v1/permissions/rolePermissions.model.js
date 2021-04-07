@@ -33,7 +33,8 @@ let RolePermissionsSchema = new Schema({
   subscriberPermission: Boolean,
   surveySermission: Boolean,
   apiPermission: Boolean,
-  configure_message_alerts: Boolean
+  configure_message_alerts: Boolean,
+  slaDashboard: Boolean
 })
 
 module.exports = mongoose.model('role_permissions', RolePermissionsSchema)

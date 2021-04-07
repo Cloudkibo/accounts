@@ -9,20 +9,24 @@ const auth = require('./../../../auth/auth.service')
 
 router.get('/',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   controller.index)
 
 router.post('/query', 
-  auth.isAuthenticated(), 
+  auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(), 
   controller.genericFetch)
 
 router.post('/',
   validate({body: validationSchema.createPayload}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.create)
 
 router.post('/update',
   validate({body: validationSchema.genericUpdatePayload}),
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   controller.genericUpdate)
 
 router.get('/scriptPopulateCompPreferences',

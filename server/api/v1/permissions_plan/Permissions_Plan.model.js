@@ -14,6 +14,8 @@ var PermissionsSchema = new Schema({
   surveys_reports: Boolean,
   csv_exports: Boolean,
   livechat: Boolean,
+  whatsappBusiness: Boolean,
+  whatsappSuperNumber: Boolean,
   autoposting: Boolean,
   menu: Boolean,
   manage_pages: Boolean,
@@ -37,7 +39,8 @@ var PermissionsSchema = new Schema({
   webhook: Boolean,
   survey_templates: Boolean,
   poll_templates: Boolean,
-  message_alerts: Boolean
+  message_alerts: Boolean,
+  sla_dashboard: Boolean
 })
 
 module.exports = mongoose.model('permissions_plan', PermissionsSchema)
