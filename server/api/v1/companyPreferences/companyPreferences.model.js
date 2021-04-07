@@ -5,8 +5,6 @@ var Schema = mongoose.Schema
 
 var CompanyPreferencesSchema = new Schema({
   companyId: { type: Schema.ObjectId, ref: 'companyprofile' },
-  pendingSessionAlert: { type: Schema.Types.Mixed },
-  unresolveSessionAlert: { type: Schema.Types.Mixed },
   defaultZoomConfiguration: { type: Schema.Types.Mixed }
 })
 

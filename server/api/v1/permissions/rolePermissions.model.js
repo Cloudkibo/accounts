@@ -33,6 +33,7 @@ let RolePermissionsSchema = new Schema({
   subscriberPermission: Boolean,
   surveySermission: Boolean,
   apiPermission: Boolean,
+  configure_message_alerts: Boolean,
   slaDashboard: Boolean
 })
 
