@@ -37,7 +37,8 @@ let contacts = new Schema({
   waitingForBroadcastResponse: {
     status: Boolean,
     broadcastId: String
-  }
+  },
+  emailVerified: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('contacts', contacts)
