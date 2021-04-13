@@ -22,7 +22,7 @@ var CompanyprofileSchema = new Schema({
   showAgentName: { type: Boolean, default: false },
   hideChatSessions: { type: Boolean, default: false },
   businessHours: {
-    opening: String, closing: String
+    opening: String, closing: String, timezone: String
   }
 
 })
