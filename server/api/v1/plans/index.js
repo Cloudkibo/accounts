@@ -36,6 +36,6 @@ router.get('/',
   auth.isAuthorizedSuperUser(),
   controller.fetchAll)
 
-router.post('/query', auth.isAuthorizedSuperUser(), controller.genericFetch)
+router.post('/query', auth.isAuthenticated(), controller.genericFetch)
 
 module.exports = router
