@@ -12,7 +12,7 @@ exports.normazliUserPermissions = function (req, res) {
     .then(users => {
       if (users.length > 0) {
         const ids = users.map((u) => u._id)
-        Permissions.update({userId: {$in: ids}}, {slaDashboard: true}, {multi: true}).exec()
+        Permissions.update({userId: {$in: ids}}, {sla_dashboard: true}, {multi: true}).exec()
           .then(updated => {
             return res.status(200).json({status: 'success', description: 'Normalized successfully!'})
           })

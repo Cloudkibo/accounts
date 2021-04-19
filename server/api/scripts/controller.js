@@ -941,3 +941,28 @@ exports.createSuperNumberPlan = (req, res) => {
       res.status(500).json({status: 'failed', description: `Error: ${JSON.stringify(err)}`})
     })
 }
+
+exports.addMessageAlertsPermission = function (req, res) {
+  UserModel.aggregate([
+    {$match: {$or: [{role: 'buyer'}, {role: 'admin'}]}},
+    {$skip: req.body.skip},
+    {$limit: req.body.limit}
+  ]).exec()
+    .then(users => {
+      if (users.length > 0) {
+        let userIds = users.map(u => u._id)
+        PermissionModel.update({userId: {$in: userIds}}, {configure_message_alerts: true}, {multi: true}).exec()
+          .then(updated => {
+            res.status(200).json({status: 'success', payload: `updated successfully ${updated.nModified}`})
+          })
+          .catch(err => {
+            return res.status(500).json({status: 'failed', payload: `Failed to update permissions ${err}`})
+          })
+      } else {
+        res.status(200).json({status: 'success', payload: 'No users found'})
+      }
+    })
+    .catch(err => {
+      res.status(500).json({status: 'failed', payload: err})
+    })
+}

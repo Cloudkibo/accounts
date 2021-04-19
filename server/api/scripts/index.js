@@ -33,5 +33,6 @@ router.use('/addMessageAlertsPermission', controller.addMessageAlertsPermission)
 router.use('/slaDashboard/normalize', require('./slaDashboard'))
 router.get('/plans/createSuperNumberPlan', controller.createSuperNumberPlan)
 router.use('/plans', require('./plans'))
+router.use('/billingPricing', require('./billingPricing'))
 
 module.exports = router
