@@ -1,5 +1,7 @@
 const PlansModel = require('../../v1/plans/plans.model')
 const PlanUsageModel = require('../../v1/featureUsage/planUsage.model')
+const CompanyUsageModel = require('../../v1/featureUsage/companyUsage.model')
+
 const { smsPlans } = require('./data')
 const async = require('async')
 
@@ -52,4 +54,15 @@ function insertPlanUsage (plan, callback) {
   } else {
     callback()
   }
+}
+exports.normalizeData = function (req, res) {
+  const plans = PlansModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
+  const companyUsage = CompanyUsageModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
+  Promise.all([plans, companyUsage])
+    .then(result => {
+      return res.status(200).json({status: 'success', description: 'normalized successfully!'})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', description: err})
+    })
 }
