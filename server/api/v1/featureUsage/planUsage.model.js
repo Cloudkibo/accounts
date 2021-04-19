@@ -26,7 +26,8 @@ let PlanUsageSchema = new Schema({
   wordpress_autoposting: Number, // number of wordpress blogs user can connect
   broadcast_sequences: Number, // number of sequences user can create
   messages_per_sequence: Number, // number of messages per sequence
-  segmentation_lists: Number
+  segmentation_lists: Number,
+  messages: Number
 })
 
 module.exports = mongoose.model('plan_usage', PlanUsageSchema)
