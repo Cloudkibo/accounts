@@ -9,9 +9,9 @@ let PlansSchema = new Schema({
   unique_ID: String,
   amount: Number,
   interval: String,
+  platform: { type: String, enum: ['sms', 'whatsApp', 'messenger'] },
   trial_period: { type: Number, default: 30 },
-  default_individual: { type: Boolean, default: false },
-  default_team: { type: Boolean, default: false }
+  default: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('plans', PlansSchema)
