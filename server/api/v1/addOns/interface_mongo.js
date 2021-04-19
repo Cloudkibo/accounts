@@ -1,8 +1,3 @@
-/*
-This file will contain the functions for MongoDB interface.
-By separating it from data layer, we are separating the concerns.
-Thus Our web layer is agnostic of database
-*/
 const AddOnsModel = require('./addOns.model')
 
 exports.find = (criteria = {}) => {

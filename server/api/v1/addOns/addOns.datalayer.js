@@ -1,8 +1,3 @@
-/*
-This file will contain the functions for data layer.
-By separating it from controller, we are separating the concerns.
-Thus we can use it from other non express callers like cron etc
-*/
 const LogicLayer = require('./addOns.logiclayer')
 const MongoInterface = require('./interface_mongo')
 const logger = require('../../../components/logger')
@@ -15,8 +10,7 @@ exports.findAllRecords = () => {
 }
 
 exports.createOneRecord = (body) => {
-  if (LogicLayer.validateCreatePayload(body)) return MongoInterface.create(body)
-  else return new Promise((resolve, reject) => { reject(new Error('Payload is not valid')) })
+  return MongoInterface.create(body)
 }
 
 exports.updateRecords = (body) => {

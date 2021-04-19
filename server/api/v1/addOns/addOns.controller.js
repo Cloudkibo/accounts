@@ -1,9 +1,7 @@
-// Web layer of this API node
 const logger = require('../../../components/logger')
 const DataLayer = require('./addOns.datalayer')
 const TAG = '/api/v1/addOns/addOns.controller.js'
 const { sendSuccessResponse, sendErrorResponse } = require('../../global/response')
-const util = require('util')
 
 exports.index = function (req, res) {
   DataLayer.findAllRecords()
@@ -12,7 +10,7 @@ exports.index = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find addOns'
-      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')      
+      logger.serverLog(message, `${TAG}: exports.index`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -24,7 +22,7 @@ exports.create = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to create addOns'
-      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')      
+      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }
@@ -36,7 +34,7 @@ exports.query = function (req, res) {
     })
     .catch(err => {
       const message = err || 'Failed to find addOns'
-      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')      
+      logger.serverLog(message, `${TAG}: exports.query`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
     })
 }

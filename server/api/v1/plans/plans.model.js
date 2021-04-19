@@ -9,6 +9,7 @@ let PlansSchema = new Schema({
   unique_ID: String,
   amount: Number,
   interval: String,
+  platform: { type: String, enum: ['sms', 'whatsApp', 'messenger'] },
   trial_period: { type: Number, default: 30 },
   default: { type: Boolean, default: false }
 })

@@ -8,25 +8,30 @@ const auth = require('./../../../auth/auth.service')
 
 router.get('/',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   controller.index)
 
 router.post('/',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   validate({body: validationSchema.createPayload}),
   controller.create)
 
 router.post('/query',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer(),
   validate({body: validationSchema.queryPayload}),
   controller.query)
 
 router.put('/',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   validate({body: validationSchema.updatePayload}),
   controller.update)
 
 router.delete('/',
   auth.isAuthenticated(),
+  auth.isSuperUserActingAsCustomer('write'),
   validate({body: validationSchema.queryPayload}),
   controller.delete)
 

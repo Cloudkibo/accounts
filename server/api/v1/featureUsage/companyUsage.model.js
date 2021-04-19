@@ -21,6 +21,11 @@ let CompanyUsageSchema = new Schema({
   wordpress_autoposting: Number, // number of wordpress blogs user can connect
   broadcast_sequences: Number, // number of sequences user can create
   messages_per_sequence: Number, // number of messages per sequence
+  messages: Number,
+  platform: {
+    type: String,
+    enum: ['sms', 'whatsApp', 'messenger']
+  },
   segmentation_lists: Number, // Number of segmentation lists
   custom_fields: Number, // Number of user created custom fields
   tags: Number, // Number of tags

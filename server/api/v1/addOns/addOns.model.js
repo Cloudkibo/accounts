@@ -10,7 +10,11 @@ let AddOns = new Schema({
   currency: String,
   permissions: [String],
   others: Schema.Types.Mixed,
-  datetime:  {type: Date, default: Date.now}
+  datetime: {type: Date, default: Date.now},
+  platform: {
+    type: String,
+    enum: ['sms', 'whatsApp', 'messenger']
+  }
 })
 
 module.exports = mongoose.model('addOns', AddOns)
