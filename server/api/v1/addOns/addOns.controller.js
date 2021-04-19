@@ -16,13 +16,11 @@ exports.index = function (req, res) {
 }
 
 exports.create = function (req, res) {
-  console.log('in create')
   DataLayer.createOneRecord(req.body)
     .then(createdObject => {
       sendSuccessResponse(res, 200, createdObject)
     })
     .catch(err => {
-      console.log('in catch', err)
       const message = err || 'Failed to create addOns'
       logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
       sendErrorResponse(res, 500, err.toString())
