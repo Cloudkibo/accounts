@@ -107,6 +107,7 @@ function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser
             actingUser.companyId = actingCompanyUser.companyId
             actingUser.permissions = actingUserpermissions
             actingUser.currentPlan = companyActingUser.planId
+            actingUser.purchasedPlans = companyActingUser.purchasedPlans
             actingUser.last4 = companyActingUser.stripe.last4
             actingUser.plan = plan
             actingUser.uiMode = config.uiModes[actingAsUser.uiMode]
@@ -163,6 +164,7 @@ function attachUserToRequest (req, res, next, userId) {
           user.companyId = companyUser.companyId
           user.permissions = permissions
           user.currentPlan = company.planId
+          user.purchasedPlans = company.purchasedPlans
           user.last4 = company.stripe.last4
           user.plan = plan
           user.uiMode = config.uiModes[user.uiMode]
