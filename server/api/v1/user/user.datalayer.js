@@ -21,6 +21,7 @@ exports.findAllUserObjectsUsingQuery = (query) => {
 }
 
 exports.findOneUserObjectUsingQuery = (query) => {
+  console.log('query for user', query)
   return UserModel.findOne(query)
     .exec()
 }

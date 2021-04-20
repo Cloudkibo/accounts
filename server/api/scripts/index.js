@@ -35,5 +35,6 @@ router.use('/addMessageAlertsPermission', controller.addMessageAlertsPermission)
 router.use('/slaDashboard/normalize', require('./slaDashboard'))
 router.use('/plans', require('./plans'))
 router.use('/addOns', require('./addOns'))
+router.use('/billingPricing', require('./billingPricing'))
 
 module.exports = router
