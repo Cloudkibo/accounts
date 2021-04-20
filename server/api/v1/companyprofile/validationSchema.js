@@ -92,13 +92,13 @@ exports.updatePlan = {
     'plan': {
       'type': 'string'
     },
-    'stripeToken': {
+    'companyId': {
       'type': 'string'
     }
   },
   'required': [
     'plan',
-    'stripeToken'
+    'companyId'
   ]
 }
 
