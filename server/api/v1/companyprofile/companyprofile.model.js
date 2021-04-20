@@ -10,6 +10,7 @@ var CompanyprofileSchema = new Schema({
   companyDetail: String,
   ownerId: { type: Schema.ObjectId, ref: 'users' },
   planId: { type: Schema.ObjectId, ref: 'plans' },
+  purchasedPlans: Schema.Types.Mixed,
   automated_options: {
     type: String,
     enum: ['AUTOMATED_CHAT', 'HUMAN_CHAT', 'MIX_CHAT', 'DISABLE_CHAT'],

@@ -3,6 +3,7 @@ const router = express.Router()
 const smsController = require('./smsController.js')
 
 router.get('/sms/normalizeData', smsController.normalizeData)
+router.get('/sms/normalizePlans', smsController.normalizePlans)
 router.get('/sms/populatePlans', smsController.populatePlans)
 router.get('/sms/populatePlanUsage', smsController.populatePlanUsage)
 
