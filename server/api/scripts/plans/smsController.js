@@ -1,6 +1,7 @@
 const PlansModel = require('../../v1/plans/plans.model')
 const PlanUsageModel = require('../../v1/featureUsage/planUsage.model')
 const CompanyUsageModel = require('../../v1/featureUsage/companyUsage.model')
+const CompanyProfileModel = require('../../v1/companyprofile/companyprofile.model')
 
 const { smsPlans } = require('./data')
 const async = require('async')
@@ -58,11 +59,44 @@ function insertPlanUsage (plan, callback) {
 exports.normalizeData = function (req, res) {
   const plans = PlansModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
   const companyUsage = CompanyUsageModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
-  Promise.all([plans, companyUsage])
+  const companyProfiles = CompanyProfileModel.find({twilio: {$exists: true}})
+  Promise.all([plans, companyUsage, companyProfiles])
     .then(result => {
-      return res.status(200).json({status: 'success', description: 'normalized successfully!'})
+      if (result[2].length > 0) {
+        async.each(result[2], updateCompany, function (err) {
+          if (err) {
+            res.status(500).json({status: 'failed', payload: err})
+          } else {
+            res.status(200).json({status: 'success', payload: 'normalized successfully!'})
+          }
+        })
+      } else {
+        return res.status(200).json({status: 'success', description: 'normalized successfully!'})
+      }
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', description: err})
+    })
+}
+function updateCompany (company, callback) {
+  let payload = {
+    $set: {
+      sms: {
+        provider: 'twilio',
+        accountSID: company.twilio.accountSID,
+        authToken: company.twilio.authToken
+      }
+    },
+    $unset: {
+      twilio: 1
+    }
+  }
+  CompanyProfileModel.updateOne({_id: company._id}, payload, {strict: false}).exec()
+    .then(result => {
+      console.log('result', result)
+      callback()
+    })
+    .catch(err => {
+      callback(err)
     })
 }
