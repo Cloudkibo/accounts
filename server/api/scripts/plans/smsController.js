@@ -93,7 +93,37 @@ function updateCompany (company, callback) {
   }
   CompanyProfileModel.updateOne({_id: company._id}, payload, {strict: false}).exec()
     .then(result => {
-      console.log('result', result)
+      callback()
+    })
+    .catch(err => {
+      callback(err)
+    })
+}
+exports.normalizePlans = function (req, res) {
+  CompanyProfileModel.find({})
+    .then(companies => {
+      async.each(companies, updatePlan, function (err) {
+        if (err) {
+          res.status(500).json({status: 'failed', payload: err})
+        } else {
+          res.status(200).json({status: 'success', payload: 'normalized successfully!'})
+        }
+      })
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', description: err})
+    })
+}
+function updatePlan (company, callback) {
+  let payload = {
+    $set: {
+      purchasedPlans: {
+        general: company.planId
+      }
+    }
+  }
+  CompanyProfileModel.updateOne({_id: company._id}, payload, {strict: false}).exec()
+    .then(result => {
       callback()
     })
     .catch(err => {
