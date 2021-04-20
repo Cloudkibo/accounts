@@ -16,7 +16,7 @@ var CompanyprofileSchema = new Schema({
     enum: ['AUTOMATED_CHAT', 'HUMAN_CHAT', 'MIX_CHAT', 'DISABLE_CHAT'],
     default: 'MIX_CHAT'
   },
-  twilio: Schema.Types.Mixed,
+  sms: Schema.Types.Mixed,
   whatsApp: Schema.Types.Mixed,
   saveAutomationMessages: { type: Boolean, default: false },
   showAgentName: { type: Boolean, default: false },

@@ -13,7 +13,6 @@ const PagesDataLayer = require('./../api/v1/pages/pages.datalayer')
 const needle = require('needle')
 const _ = require('lodash')
 const validateJwt = expressJwt({secret: config.secrets.session})
-const util = require('util')
 
 const logger = require('../components/logger')
 
