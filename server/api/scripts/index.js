@@ -25,14 +25,16 @@ router.get('/normalizePagePermissions', controller.normalizePagePermissions)
 router.get('/normalizeCompanyProfiles', controller.normalizeCompanyProfiles)
 router.get('/normalizeWhatspContact', controller.normalizeWhatspContact)
 router.get('/deleteWhatsappData', controller.deleteWhatsappData)
+router.get('/plans/createSuperNumberPlan', controller.createSuperNumberPlan)
+
 router.use('/broadcast_api/normalize', require('./broadcastApi'))
 router.use('/pages', require('./pages'))
 router.use('/tags/normalize', require('./tags'))
 router.use('/subscriberScript', require('./subscribers'))
 router.use('/addMessageAlertsPermission', controller.addMessageAlertsPermission)
 router.use('/slaDashboard/normalize', require('./slaDashboard'))
-router.get('/plans/createSuperNumberPlan', controller.createSuperNumberPlan)
 router.use('/plans', require('./plans'))
+router.use('/addOns', require('./addOns'))
 router.use('/billingPricing', require('./billingPricing'))
 
 module.exports = router
