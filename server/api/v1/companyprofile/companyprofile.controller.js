@@ -370,7 +370,12 @@ exports.genericUpdate = function (req, res) {
 }
 
 exports.getKeys = function (req, res) {
-  res.status(200).json({status: 'success', captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey})
+  res.status(200).json({
+    status: 'success',
+    payload: {
+      captchaKey: config.captchaKey, stripeKey: config.stripeOptions.stripePubKey
+    }
+  })
 }
 
 exports.setCompanyPrefences = function (req, res) {
