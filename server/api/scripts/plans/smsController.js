@@ -59,7 +59,7 @@ function insertPlanUsage (plan, callback) {
 exports.normalizeData = function (req, res) {
   const plans = PlansModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
   const companyUsage = CompanyUsageModel.update({platform: {$exists: false}}, {$set: {platform: 'messenger'}}, {multi: true})
-  const companyProfiles = CompanyProfileModel.find({twilio: {$exists: true}})
+  const companyProfiles = CompanyProfileModel.find({$or: [{twilio: {$exists: true}}, {sms: {$exists: true}}]})
   Promise.all([plans, companyUsage, companyProfiles])
     .then(result => {
       if (result[2].length > 0) {
@@ -83,8 +83,9 @@ function updateCompany (company, callback) {
     $set: {
       sms: {
         provider: 'twilio',
-        accountSID: company.twilio.accountSID,
-        authToken: company.twilio.authToken
+        accountSID: company.twilio ? company.twilio.accountSID : company.sms.accountSID,
+        authToken: company.twilio ? company.twilio.authToken : company.sms.authToken,
+        messages: 10000
       }
     },
     $unset: {
@@ -100,33 +101,38 @@ function updateCompany (company, callback) {
     })
 }
 exports.normalizePlans = function (req, res) {
-  CompanyProfileModel.find({})
-    .then(companies => {
-      async.each(companies, updatePlan, function (err) {
-        if (err) {
-          res.status(500).json({status: 'failed', payload: err})
-        } else {
-          res.status(200).json({status: 'success', payload: 'normalized successfully!'})
-        }
-      })
+  PlansModel.findOne({unique_ID: 'sms_plan_D'})
+    .then(plan => {
+      CompanyProfileModel.find({})
+        .then(companies => {
+          async.each(companies, function (company, callback) {
+            let purchasedPlans = {
+              general: company.planId
+            }
+            if (company.sms || company.twilio) {
+              purchasedPlans['sms'] = plan._id
+            }
+            let payload = {$set: {purchasedPlans}}
+            CompanyProfileModel.updateOne({_id: company._id}, payload, {strict: false}).exec()
+              .then(result => {
+                callback()
+              })
+              .catch(err => {
+                callback(err)
+              })
+          }, function (err) {
+            if (err) {
+              res.status(500).json({status: 'failed', payload: err})
+            } else {
+              res.status(200).json({status: 'success', payload: 'normalized successfully!'})
+            }
+          })
+        })
+        .catch(err => {
+          return res.status(500).json({status: 'failed', description: err})
+        })
     })
     .catch(err => {
       return res.status(500).json({status: 'failed', description: err})
-    })
-}
-function updatePlan (company, callback) {
-  let payload = {
-    $set: {
-      purchasedPlans: {
-        general: company.planId
-      }
-    }
-  }
-  CompanyProfileModel.updateOne({_id: company._id}, payload, {strict: false}).exec()
-    .then(result => {
-      callback()
-    })
-    .catch(err => {
-      callback(err)
     })
 }
