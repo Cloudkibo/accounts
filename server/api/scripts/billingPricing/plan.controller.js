@@ -1,5 +1,6 @@
 const PlanPermissionsModel = require('../../v1/permissions_plan/Permissions_Plan.model')
 const PlanUsageModel = require('../../v1/featureUsage/planUsage.model')
+const Plans = require('../../v1/plans/plans.model')
 
 exports.planPermissions = function (req, res) {
   const basicPlan = {
@@ -254,7 +255,8 @@ exports.planPermissions = function (req, res) {
 }
 
 exports.planUsage = function (req, res) {
-  const basicPlan = {
+  // creating usage for free plan which was not there
+  const freePlan = {
     broadcasts: -1,
     surveys: -1,
     polls: -1,
@@ -293,7 +295,8 @@ exports.planUsage = function (req, res) {
     chatbot_automation: 0,
     chatbot_automation_levels: 0
   }
-  const standardPlan = {
+
+  const basicPlan = {
     broadcasts: -1,
     surveys: -1,
     polls: -1,
@@ -302,8 +305,47 @@ exports.planUsage = function (req, res) {
     polls_templates: 0,
     chat_messages: -1,
     facebook_pages: 3,
+    bots: 1,
+    subscribers: 2500,
+    phone_invitation: 0,
+    facebook_autoposting: 0,
+    twitter_autoposting: 0,
+    wordpress_autoposting: 0,
+    broadcast_sequences: 1,
+    messages_per_sequence: 3,
+    segmentation_lists: 3,
+    custom_fields: 0,
+    tags: 10,
+    tags_per_subscriber: 1,
+    template_categories: 0,
+    rss_feeds: 0,
+    news_integration_feeds: 0,
+    broadcast_levels: 3,
+    comment_capture_rules: 0,
+    messenger_codes: -1,
+    landing_pages: -1,
+    json_ads: -1,
+    messenger_ref_urls: -1,
+    overlay_widgets: -1,
+    members: 1,
+    teams: 0,
+    external_integrations: 0,
+    intents_per_bot: 25,
+    sponsored_broadcasts: -1,
+    chatbot_automation: 0,
+    chatbot_automation_levels: 0
+  }
+  const standardPlan = {
+    broadcasts: -1,
+    surveys: -1,
+    polls: -1,
+    broadcast_templates: 0,
+    survey_templates: 0,
+    polls_templates: 0,
+    chat_messages: -1,
+    facebook_pages: 5,
     bots: 3,
-    subscribers: 1000,
+    subscribers: 5000,
     phone_invitation: -1,
     facebook_autoposting: 0,
     twitter_autoposting: 0,
@@ -340,9 +382,9 @@ exports.planUsage = function (req, res) {
     survey_templates: 0,
     polls_templates: 0,
     chat_messages: -1,
-    facebook_pages: 5,
+    facebook_pages: 10,
     bots: 5,
-    subscribers: 2000,
+    subscribers: 10000,
     phone_invitation: -1,
     facebook_autoposting: 5,
     twitter_autoposting: 5,
@@ -379,9 +421,9 @@ exports.planUsage = function (req, res) {
     survey_templates: 0,
     polls_templates: 0,
     chat_messages: -1,
-    facebook_pages: 5,
+    facebook_pages: -1,
     bots: 5,
-    subscribers: 2000,
+    subscribers: -1,
     phone_invitation: -1,
     facebook_autoposting: 5,
     twitter_autoposting: 5,
@@ -411,12 +453,66 @@ exports.planUsage = function (req, res) {
     chatbot_automation_levels: 5
   }
 
+  const updateFree = PlanUsageModel.update({planId: '608c2c775b6541cd34743b48'}, freePlan, {new: true, upsert: true}).exec()
+
   const updateBasic = PlanUsageModel.update({planId: '5cac6798ad864163a0b37459'}, basicPlan).exec()
   const updateStandard = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745a'}, standardPlan).exec()
   const updatePremium = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745b'}, premiumPlan).exec()
   const updateEnterprise = PlanUsageModel.update({planId: '5cac6798ad864163a0b3745c'}, enterprisePlan).exec()
 
-  Promise.all([updateBasic, updateStandard, updatePremium, updateEnterprise])
+  Promise.all([updateFree, updateBasic, updateStandard, updatePremium, updateEnterprise])
+    .then(done => {
+      return res.status(200).json({status: 'success', description: 'Normalized successfully!'})
+    })
+    .catch(err => {
+      return res.status(500).json({status: 'failed', description: `Failed to normalize plan usage ${err}`})
+    })
+}
+
+exports.createFbUpdatePlans = function (req, res) {
+  // adding new free plan which was not there before
+  const freePlan = Plans.findOneAndUpdate({_id: '608c2c775b6541cd34743b48'}, {
+    trial_period: 30,
+    name: 'Free Plan',
+    unique_ID: 'plan_F',
+    amount: 0,
+    interval: 'monthly',
+    platform: 'messenger'
+  }, { new: true, upsert: true }).exec()
+
+  const updateBasic = Plans.update({_id: '5cac6798ad864163a0b37459'}, {
+    trial_period: 30,
+    name: 'Basic Plan',
+    unique_ID: 'plan_A',
+    amount: 10,
+    interval: 'monthly',
+    platform: 'messenger'
+  }).exec()
+  const updateStandard = Plans.update({_id: '5cac6798ad864163a0b3745a'}, {
+    trial_period: 30,
+    name: 'Standard Plan',
+    unique_ID: 'plan_B',
+    amount: 15,
+    interval: 'monthly',
+    platform: 'messenger'
+  }).exec()
+  const updatePremium = Plans.update({_id: '5cac6798ad864163a0b3745b'}, {
+    trial_period: 30,
+    name: 'Premium Plan',
+    unique_ID: 'plan_C',
+    amount: 25,
+    interval: 'monthly',
+    platform: 'messenger'
+  }).exec()
+  const updateEnterprise = Plans.update({_id: '5cac6798ad864163a0b3745c'}, {
+    trial_period: 30,
+    name: 'Enterprise Plan',
+    unique_ID: 'plan_D',
+    interval: 'monthly',
+    platform: 'messenger'
+  }).exec()
+
+  Promise.all([freePlan, updateBasic, updateStandard, updatePremium, updateEnterprise])
     .then(done => {
       return res.status(200).json({status: 'success', description: 'Normalized successfully!'})
     })
