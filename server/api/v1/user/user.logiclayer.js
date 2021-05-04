@@ -79,7 +79,7 @@ const isTeamAccount = (body) => {
   return flag
 }
 
-const prepareCompanyProfile = (body, userId, isTeam, domain, defaultPlan) => {
+const prepareCompanyProfile = (body, userId, isTeam, domain) => {
   const currentDate = new Date()
   let date = currentDate
   date.setDate(date.getDate() + 30)
@@ -87,7 +87,6 @@ const prepareCompanyProfile = (body, userId, isTeam, domain, defaultPlan) => {
     companyName: isTeam ? body.company_name : 'Pending ' + domain,
     companyDetail: isTeam ? body.company_description : 'Pending ' + domain,
     ownerId: userId,
-    planId: defaultPlan._id,
     trialPeriod: {
       status: true,
       startDate: currentDate,

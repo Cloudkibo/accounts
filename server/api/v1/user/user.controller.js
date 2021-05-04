@@ -184,101 +184,83 @@ exports.create = function (req, res) {
         dataLayer.createUserObject(payload)
           .then(user => {
             logger.serverLog(TAG, `User Found: ${user}`)
-            PlanDataLayer.findAllPlanObjectsUsingQuery({default: true})
-              .then(plans => {
-                const defaultPlan = plans[0]
-                logger.serverLog(TAG, `Default plan Found: ${util.inspect(defaultPlan)}`)
-                let companyprofileData = logicLayer.prepareCompanyProfile(req.body, user._id, isTeam, domain, defaultPlan)
-                CompanyProfileDataLayer
-                  .createProfileObject(companyprofileData)
-                  .then(companySaved => {
-                    let companyPreferences = logicLayer.prepareCompanyPreference(companySaved._id)
-                    CompanyPreferencesDataLayer.createCompanyPreferencesObject(companyPreferences)
-                      .then(res => {
-                        logger.serverLog('Company preferences saved', `${TAG}: exports.create`, req.body, {res, companyPreferences}, 'debug')
-                      })
-                      .catch(err => {
-                        const message = err || 'Failed to create company preference'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                        sendErrorResponse(res, 500, err)
-                      })
-                    let companyUsageData = logicLayer.companyUsageData(companySaved._id)
-                    FeatureUsageDataLayer.createCompanyUsage(companyUsageData)
-                      .then()
-                      .catch(err => {
-                        const message = err || 'Failed to create company Usage'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                        sendErrorResponse(res, 500, err)
-                      })
-                    // Create customer on stripe
-                    logicLayer.createCustomerOnStripe(req.body.email, req.body.name, companySaved)
-                    let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
-                    CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
-                      .then(companyUserSaved => {
-                        logger.serverLog(`Company User created: ${companyUserSaved}`, TAG)
-                        PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
-                          .then(permissionSaved => {
-                            logger.serverLog(`Permission Saved: ${permissionSaved}`, TAG)
-                            let token = auth.signToken(user._id)
-                            res.cookie('token', token)
-                            res.status(201)
-                              .json({status: 'success',
-                                token: token,
-                                userid: user._id,
-                                type: isTeam ? 'company' : 'individual'})
-                          })
-                          .catch(err => {
-                            const message = err || 'Failed to save Permission'
-                            logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                            sendErrorResponse(res, 500, err)
-                          })
-                      })
-                      .catch(err => {
-                        const message = err || 'Failed to create company User'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                        sendErrorResponse(res, 500, err)
-                      })
-                    let tokenString = logicLayer.getRandomString()
-                    VertificationTokenDataLayer
-                      .createVerificationToken({userId: user._id, token: tokenString})
-                      .then()
-                      .catch(err => {
-                        const message = err || 'Failed to New Token save'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                      })
-                    // Sending email using mailchimp if team account
-                    if (isTeam) logicLayer.sendEmailUsingMailChimp(req.body)
-                    // Sending email via sendgrid
-                    let sendgrid = utility.getSendGridObject()
-                    let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
-                    email = logicLayer.setEmailBody(email, tokenString, req.body)
-                    sendgrid.send(email, function (err, json) {
-                      if (err) {
-                        const message = err || 'Failed to sending email'
-                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                      }
-                    })
-                    // Sending email to sojharo and sir
-                    let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
-                    inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
-
-                    if (config.env === 'production') {
-                      sendgrid.send(inHouseEmail, function (err, json) {
-                        if (err) {
-                          const message = err || 'Failed to sending email'
-                          logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
-                        }
-                      })
-                    }
+            let companyprofileData = logicLayer.prepareCompanyProfile(req.body, user._id, isTeam, domain)
+            CompanyProfileDataLayer
+              .createProfileObject(companyprofileData)
+              .then(companySaved => {
+                let companyPreferences = logicLayer.prepareCompanyPreference(companySaved._id)
+                CompanyPreferencesDataLayer.createCompanyPreferencesObject(companyPreferences)
+                  .then(res => {
+                    logger.serverLog('Company preferences saved', `${TAG}: exports.create`, req.body, {res, companyPreferences}, 'debug')
                   })
                   .catch(err => {
-                    const message = err || 'Failed to create Profile'
+                    const message = err || 'Failed to create company preference'
                     logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                     sendErrorResponse(res, 500, err)
                   })
+                // Create customer on stripe
+                logicLayer.createCustomerOnStripe(req.body.email, req.body.name, companySaved)
+                let companyUserPayload = logicLayer.prepareCompanyUser(companySaved, user)
+                CompanyUserDataLayer.CreateCompanyUserObject(companyUserPayload)
+                  .then(companyUserSaved => {
+                    logger.serverLog(`Company User created: ${companyUserSaved}`, TAG)
+                    PermissionDataLayer.createUserPermission({companyId: companySaved._id, userId: user._id})
+                      .then(permissionSaved => {
+                        logger.serverLog(`Permission Saved: ${permissionSaved}`, TAG)
+                        let token = auth.signToken(user._id)
+                        res.cookie('token', token)
+                        res.status(201)
+                          .json({status: 'success',
+                            token: token,
+                            userid: user._id,
+                            type: isTeam ? 'company' : 'individual'})
+                      })
+                      .catch(err => {
+                        const message = err || 'Failed to save Permission'
+                        logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                        sendErrorResponse(res, 500, err)
+                      })
+                  })
+                  .catch(err => {
+                    const message = err || 'Failed to create company User'
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                    sendErrorResponse(res, 500, err)
+                  })
+                let tokenString = logicLayer.getRandomString()
+                VertificationTokenDataLayer
+                  .createVerificationToken({userId: user._id, token: tokenString})
+                  .then()
+                  .catch(err => {
+                    const message = err || 'Failed to New Token save'
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                  })
+                // Sending email using mailchimp if team account
+                if (isTeam) logicLayer.sendEmailUsingMailChimp(req.body)
+                // Sending email via sendgrid
+                let sendgrid = utility.getSendGridObject()
+                let email = new sendgrid.Email(logicLayer.emailHeader(req.body))
+                email = logicLayer.setEmailBody(email, tokenString, req.body)
+                sendgrid.send(email, function (err, json) {
+                  if (err) {
+                    const message = err || 'Failed to sending email'
+                    logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                  }
+                })
+                // Sending email to sojharo and sir
+                let inHouseEmail = new sendgrid.Email(logicLayer.inHouseEmailHeader(req.body))
+                inHouseEmail = logicLayer.setInHouseEmailBody(inHouseEmail, req.body)
+
+                if (config.env === 'production') {
+                  sendgrid.send(inHouseEmail, function (err, json) {
+                    if (err) {
+                      const message = err || 'Failed to sending email'
+                      logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
+                    }
+                  })
+                }
               })
               .catch(err => {
-                const message = err || 'Failed to fetch all plan'
+                const message = err || 'Failed to create Profile'
                 logger.serverLog(message, `${TAG}: exports.create`, req.body, {user: req.user}, 'error')
                 sendErrorResponse(res, 500, err)
               })
