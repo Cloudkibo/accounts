@@ -57,12 +57,12 @@ exports.index = function (req, res) {
 
 exports.setCard = function (req, res) {
   dataLayer.findOneCPWithPlanPop({_id: req.body.companyId})
-    .then(profile => {
+    .then(async profile => {
       if (!profile) {
         sendErrorResponse(res, 404, '', 'Company not found')
       }
       // Instance Level Method. No Idea if it supports promise. so keeping original callback
-      let result = logicLayer.setCard(profile, req.body.stripeToken)
+      let result = await logicLayer.setCard(profile, req.body.stripeToken)
       if (result.status === 'failed') {
         const message = result.description || 'Error in set Card'
         logger.serverLog(message, `${TAG}: exports.setCard`, req.body, {user: req.user}, 'error')
