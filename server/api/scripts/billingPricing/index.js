@@ -13,7 +13,7 @@ router.get('/normalize/rolePermissions', permissionsController.rolePermissions)
 router.post('/normalize/userPermissions', permissionsController.userPermissions)
 router.get('/normalize/planPermissions', planController.planPermissions)
 router.get('/normalize/planUsage', planController.planUsage)
-router.get('/normalize/createFbUpdatePlans', planController.createFbUpdatePlans)
+router.get('/normalize/messengerPlans', planController.createFbUpdatePlans)
 router.post('/normalize/connectedPages', companyController.connectedPages)
 
 module.exports = router

@@ -471,7 +471,7 @@ exports.planUsage = function (req, res) {
 
 exports.createFbUpdatePlans = function (req, res) {
   // adding new free plan which was not there before
-  const freePlan = Plans.findOneAndUpdate({_id: '608c2c775b6541cd34743b48'}, {
+  const freePlan = Plans.findOneAndUpdate({unique_ID: 'plan_F'}, {
     trial_period: 30,
     name: 'Free Plan',
     unique_ID: 'plan_F',
@@ -480,39 +480,42 @@ exports.createFbUpdatePlans = function (req, res) {
     platform: 'messenger'
   }, { new: true, upsert: true }).exec()
 
-  const updateBasic = Plans.update({_id: '5cac6798ad864163a0b37459'}, {
+  const basicPlan = Plans.findOneAndUpdate({unique_ID: 'plan_A'}, {
     trial_period: 30,
     name: 'Basic Plan',
     unique_ID: 'plan_A',
     amount: 10,
     interval: 'monthly',
     platform: 'messenger'
-  }).exec()
-  const updateStandard = Plans.update({_id: '5cac6798ad864163a0b3745a'}, {
+  }, { new: true, upsert: true }).exec()
+
+  const standardPlan = Plans.findOneAndUpdate({unique_ID: 'plan_B'}, {
     trial_period: 30,
     name: 'Standard Plan',
     unique_ID: 'plan_B',
     amount: 15,
     interval: 'monthly',
     platform: 'messenger'
-  }).exec()
-  const updatePremium = Plans.update({_id: '5cac6798ad864163a0b3745b'}, {
+  }, { new: true, upsert: true }).exec()
+
+  const premiumPlan = Plans.findOneAndUpdate({unique_ID: 'plan_C'}, {
     trial_period: 30,
     name: 'Premium Plan',
     unique_ID: 'plan_C',
     amount: 25,
     interval: 'monthly',
     platform: 'messenger'
-  }).exec()
-  const updateEnterprise = Plans.update({_id: '5cac6798ad864163a0b3745c'}, {
+  }, { new: true, upsert: true }).exec()
+
+  const enterprisePlan = Plans.findOneAndUpdate({unique_ID: 'plan_D'}, {
     trial_period: 30,
     name: 'Enterprise Plan',
     unique_ID: 'plan_D',
     interval: 'monthly',
     platform: 'messenger'
-  }).exec()
+  }, { new: true, upsert: true }).exec()
 
-  Promise.all([freePlan, updateBasic, updateStandard, updatePremium, updateEnterprise])
+  Promise.all([freePlan, basicPlan, standardPlan, premiumPlan, enterprisePlan])
     .then(done => {
       return res.status(200).json({status: 'success', description: 'Normalized successfully!'})
     })
