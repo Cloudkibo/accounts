@@ -42,12 +42,13 @@ exports.index = function (req, res) {
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId}, true, 'planId')
         .then(foundCompany => {
           company = foundCompany
-          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          if (foundCompany.planId) {
+            return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          } else {
+            return null
+          }
         })
         .then(plan => {
-          if (!plan) {
-            sendErrorResponse(res, 500, 'Fatal Error, plan not set for this user. Please contact support')
-          }
           user = user.toObject()
           user.companyId = companyUser.companyId
           user.permissions = permissions
