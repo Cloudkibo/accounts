@@ -93,28 +93,25 @@ function attachUserAndActingUserInfo (req, res, next, loggedInUser, actingAsUser
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: actingCompanyUser.companyId})
         .then(foundCompany => {
           companyActingUser = foundCompany
-          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          if (foundCompany.planId) {
+            return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          } else {
+            return null
+          }
         })
         .then(plan => {
-          if (!plan) {
-            return res.status(404).json({
-              status: 'failed',
-              description: 'Fatal Error, plan not set for this user. Please contact support'
-            })
-          } else {
-            var actingUser = actingAsUser.toObject()
-            actingUser.companyId = actingCompanyUser.companyId
-            actingUser.permissions = actingUserpermissions
-            actingUser.currentPlan = companyActingUser.planId
-            actingUser.purchasedPlans = companyActingUser.purchasedPlans
-            actingUser.last4 = companyActingUser.stripe.last4
-            actingUser.plan = plan
-            actingUser.uiMode = config.uiModes[actingAsUser.uiMode]
+          var actingUser = actingAsUser.toObject()
+          actingUser.companyId = actingCompanyUser.companyId
+          actingUser.permissions = actingUserpermissions
+          actingUser.currentPlan = companyActingUser.planId
+          actingUser.purchasedPlans = companyActingUser.purchasedPlans
+          actingUser.last4 = companyActingUser.stripe.last4
+          actingUser.plan = plan
+          actingUser.uiMode = config.uiModes[actingAsUser.uiMode]
 
-            req.user = loggedInUser
-            req.actingAsUser = actingUser
-            next()
-          }
+          req.user = loggedInUser
+          req.actingAsUser = actingUser
+          next()
         })
         .catch(err => {
           const message = err || 'Error at Plan Catch:'
@@ -150,15 +147,13 @@ function attachUserToRequest (req, res, next, userId) {
       CompanyProfileDataLayer.findOneCPWithPlanPop({_id: companyUser.companyId})
         .then(foundCompany => {
           company = foundCompany
-          return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          if (company.planId) {
+            return PermissionPlanDataLayer.findOnePermissionObjectUsingQuery({plan_id: foundCompany.planId._id})
+          } else {
+            return null
+          }
         })
         .then(plan => {
-          if (!plan) {
-            return res.status(404).json({
-              status: 'failed',
-              description: 'Fatal Error, plan not set for this user. Please contact support'
-            })
-          }
           user = user.toObject()
           user.companyId = companyUser.companyId
           user.permissions = permissions
